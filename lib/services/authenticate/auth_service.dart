@@ -8,12 +8,9 @@ class AuthService {
     return user != null ? User(uid: user.uid) : null;
   }
 
-  /***
-   * auth change user stream
-   * Firebase auth sends stream of updates when user signs in or out.
-   * These updates will be handle here.
-   */
-
+  /// auth change user stream
+  /// Firebase auth sends stream of updates when user signs in or out.
+  /// These updates will be handle here.
   Stream<User> get user_stream {
     return _firebase_auth.onAuthStateChanged.map(_convertFirebaseUser);
   }
@@ -21,6 +18,16 @@ class AuthService {
   // sign in with email & password
 
   // register
+  Future registerWithEmailAndPassword(String email, String password) async {
+    try {
+      AuthResult result = await _firebase_auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      return _convertFirebaseUser(result.user);
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
 
   // sign out
   Future signOut() async {

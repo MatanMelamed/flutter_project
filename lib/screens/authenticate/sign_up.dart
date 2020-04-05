@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:teamapp/models/validator.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/theme/white.dart';
+import 'package:teamapp/widgets/authenticate/inputs.dart';
 
 class SignUp extends StatefulWidget {
-
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -12,8 +13,8 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final AuthService _auth = AuthService();
 
-  String email = '';
-  String password = '';
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
 
   Widget _buildTitle() {
     return Container(
@@ -22,7 +23,6 @@ class _SignUpState extends State<SignUp> {
         child: Text(
           "TeamApp",
           style: TextStyle(
-
             color: Colors.white,
             fontSize: 32,
             fontWeight: FontWeight.bold,
@@ -54,8 +54,7 @@ class _SignUpState extends State<SignUp> {
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            colorFilter: ColorFilter.mode(
-                Color(0x484848).withOpacity(0.47), BlendMode.darken),
+            colorFilter: ColorFilter.mode(Color(0x484848).withOpacity(0.47), BlendMode.darken),
             image: AssetImage("assets/images/background_2.png"),
             fit: BoxFit.fill,
             alignment: Alignment.topCenter,
@@ -64,116 +63,108 @@ class _SignUpState extends State<SignUp> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
-            child: Stack(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left:14,top:14),
-                  child: IconButton(
-                    color: Colors.white,
-                    icon: Icon(Icons.arrow_back_ios),
-                    onPressed: (){
-                      //widget.toggleView();
-                      Navigator.of(context).pop();
-                    },
-                  ),
+              child: Stack(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 14, top: 14),
+                child: IconButton(
+                  color: Colors.white,
+                  icon: Icon(Icons.arrow_back_ios),
+                  onPressed: () {
+                    //widget.toggleView();
+                    Navigator.of(context).pop();
+                  },
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 44),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 66),
-                      _buildTitle(),
-                      _buildLogo(),
-                      SizedBox(height: 89),
-                      Form(
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              height: 50,
-                              child: TextFormField(
-                                onChanged: (val) {
-                                  setState(() {
-                                    email = val;
-                                  });
-                                },
-                                style: kLabelStyle,
-                                cursorColor: Colors.white,
-                                keyboardType: TextInputType.emailAddress,
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  labelStyle: kLabelStyle,
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 26.0),
-                            Container(
-                              height: 50,
-                              child: TextFormField(
-                                onChanged: (val) {
-                                  setState(() {
-                                    password = val;
-                                  });
-                                },
-                                obscureText: true,
-                                style: kLabelStyle,
-                                cursorColor: Colors.white,
-                                keyboardType: TextInputType.emailAddress,
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  labelStyle: kLabelStyle,
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 44),
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 66),
+                    _buildTitle(),
+                    _buildLogo(),
+                    SizedBox(height: 89),
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          height: 50,
+                          child: TextField(
+                              controller: _emailTextController,
+                              style: kLabelStyle,
+                              cursorColor: Colors.white,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: GetInputDecor('Email')),
                         ),
-                      ),
-                      SizedBox(height: 72.0),
-                      // Button
-                      Container(
-                        width: double.infinity,
-                        height: 50,
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(7)),
-                          onPressed: () {
-                            print(email);
-                            print(password);
-                          },
-                          color: Color(0x181919).withOpacity(0.97),
-                          child: Text(
-                            "Sign Up",
-                            style: TextStyle(
-                                color: Colors.white,
-                                letterSpacing: 0.3,
-                                fontFamily: 'OpenSans',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16),
-                          ),
+                        SizedBox(height: 26.0),
+                        Container(
+                          height: 50,
+                          child: TextField(
+                              controller: _passwordTextController,
+                              obscureText: true,
+                              style: kLabelStyle,
+                              cursorColor: Colors.white,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: GetInputDecor('Password')),
                         ),
-                      ),
+                      ],
+                    ),
+                    SizedBox(height: 72.0),
+                    // Button
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+                        onPressed: () async {
+                          String email = _emailTextController.text;
+                          String password = _passwordTextController.text;
 
-                    ],
-                  ),
+                          print('email: $email, password: $password');
+
+                          String error = '';
+                          if (!Validator.IsEmailValid(email)) {
+                            error += 'Email is invalid';
+                          }
+                          if (!Validator.IsPasswordValid(password)) {
+                            if (error.isNotEmpty) {
+                              error += '\n\n';
+                            }
+                            error += 'Password must be 8 characters long';
+                          }
+
+                          if (error.isNotEmpty) {
+                            GetErrorDialog(context, 'Invalid Identifications', error);
+                          }
+
+                          if (error.isEmpty) {
+                            var result = await _auth.registerWithEmailAndPassword(email, password);
+
+                            if (result == null) {
+                              GetErrorDialog(context,'Registration Error','One or more of the details is not valid.');
+                              print('failed to register');
+                            } else {
+                              print('registered');
+                              Navigator.of(context).pop();
+                            }
+                          }
+                        },
+                        color: Color(0x181919).withOpacity(0.97),
+                        child: Text(
+                          "Sign Up",
+                          style: TextStyle(
+                              color: Colors.white,
+                              letterSpacing: 0.3,
+                              fontFamily: 'OpenSans',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            )
-          ),
+              ),
+            ],
+          )),
         ),
       ),
     );

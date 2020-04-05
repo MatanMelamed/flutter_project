@@ -3,11 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/authenticate/sign_up.dart';
+import 'package:teamapp/models/validator.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/theme/white.dart';
+import 'package:teamapp/widgets/authenticate/inputs.dart';
 
 class SignIn extends StatefulWidget {
-
   @override
   _SignInState createState() => _SignInState();
 }
@@ -15,8 +16,15 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
 
-  String email = '';
-  String password = '';
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailTextController.dispose();
+    _passwordTextController.dispose();
+    super.dispose();
+  }
 
   Widget _buildTitle() {
     return Container(
@@ -79,8 +87,8 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  Widget _buildSocialBtn(
-      Function onTap, String logo_path, String name, int bgcolor) {
+  Widget _buildSocialBtn(Function onTap, String logo_path, String name,
+      int bgcolor) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -191,63 +199,30 @@ class _SignInState extends State<SignIn> {
                 _buildTitle(),
                 _buildLogo(),
                 SizedBox(height: 89),
-                Form(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        height: 50,
-                        child: TextFormField(
-                          onChanged: (val) {
-                            setState(() {
-                              email = val;
-                            });
-                          },
+                Column(
+                  children: <Widget>[
+                    Container(
+                      height: 50,
+                      child: TextField(
+                          controller: _emailTextController,
                           style: kLabelStyle,
                           cursorColor: Colors.white,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            labelStyle: kLabelStyle,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16.0),
-                      Container(
-                        height: 50,
-                        child: TextFormField(
-                          onChanged: (val) {
-                            setState(() {
-                              password = val;
-                            });
-                          },
+                          decoration: GetInputDecor('Email')),
+                    ),
+                    SizedBox(height: 16.0),
+                    Container(
+                      height: 50,
+                      child: TextField(
+                          controller: _passwordTextController,
                           obscureText: true,
                           style: kLabelStyle,
                           cursorColor: Colors.white,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            labelStyle: kLabelStyle,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                          ),
-                        ),
+                          decoration: GetInputDecor('Password')
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 16.0),
                 // Button
@@ -257,9 +232,25 @@ class _SignInState extends State<SignIn> {
                   child: RaisedButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(7)),
-                    onPressed: () {
-                      print(email);
-                      print(password);
+                    onPressed: () async {
+                      String email = _emailTextController.text;
+                      String password = _passwordTextController.text;
+
+                      String error = '';
+                      if (!Validator.IsEmailValid(_emailTextController.text)) {
+                        error += 'Email is invalid';
+                      }
+                      if (!Validator.IsPasswordValid(_passwordTextController.text)) {
+                        if(error.isNotEmpty){
+                          error += '\n';
+                        }
+                        error += 'Password must be 8 characters long';
+                      }
+                      print(error);
+                      if (error.isNotEmpty){
+                        GetErrorDialog(context,'Invalid Identifications', error);
+                      }
+
                     },
                     color: Color(0x181919).withOpacity(0.97),
                     child: Text(
