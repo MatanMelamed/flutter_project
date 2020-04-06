@@ -15,6 +15,15 @@ class _SignUpState extends State<SignUp> {
 
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+  final _passwordValidationTextController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailTextController.dispose();
+    _passwordTextController.dispose();
+    _passwordValidationTextController.dispose();
+    super.dispose();
+  }
 
   Widget _buildTitle() {
     return Container(
@@ -95,7 +104,7 @@ class _SignUpState extends State<SignUp> {
                               keyboardType: TextInputType.emailAddress,
                               decoration: GetInputDecor('Email')),
                         ),
-                        SizedBox(height: 26.0),
+                        SizedBox(height: 16.0),
                         Container(
                           height: 50,
                           child: TextField(
@@ -105,6 +114,17 @@ class _SignUpState extends State<SignUp> {
                               cursorColor: Colors.white,
                               keyboardType: TextInputType.emailAddress,
                               decoration: GetInputDecor('Password')),
+                        ),
+                        SizedBox(height: 16.0),
+                        Container(
+                          height: 50,
+                          child: TextField(
+                              controller: _passwordValidationTextController,
+                              obscureText: true,
+                              style: kLabelStyle,
+                              cursorColor: Colors.white,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: GetInputDecor('Password validation')),
                         ),
                       ],
                     ),
@@ -118,29 +138,24 @@ class _SignUpState extends State<SignUp> {
                         onPressed: () async {
                           String email = _emailTextController.text;
                           String password = _passwordTextController.text;
+                          String passValid = _passwordValidationTextController.text;
 
                           print('email: $email, password: $password');
 
                           String error = '';
-                          if (!Validator.IsEmailValid(email)) {
-                            error += 'Email is invalid';
-                          }
-                          if (!Validator.IsPasswordValid(password)) {
-                            if (error.isNotEmpty) {
-                              error += '\n\n';
-                            }
-                            error += 'Password must be 8 characters long';
-                          }
+                          error += Validator.ValidateEmail(email);
+                          error += error.isNotEmpty ? '\n' : '';
+                          error += Validator.ValidatePassword(password);
+                          error += error.isNotEmpty ? '\n' : '';
+                          error += password == passValid ? '' : 'passwords do not match';
 
                           if (error.isNotEmpty) {
-                            GetErrorDialog(context, 'Invalid Identifications', error);
-                          }
-
-                          if (error.isEmpty) {
+                            GetErrorDialog(context, 'Invalid Credentials', error);
+                          } else {
                             var result = await _auth.registerWithEmailAndPassword(email, password);
 
                             if (result == null) {
-                              GetErrorDialog(context,'Registration Error','One or more of the details is not valid.');
+                              GetErrorDialog(context, 'Registration Error', 'One or more of the details is not valid.');
                               print('failed to register');
                             } else {
                               print('registered');

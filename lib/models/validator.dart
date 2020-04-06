@@ -4,14 +4,19 @@ class Validator{
 
 
   static String ValidateEmail(String email){
-    return IsEmailValid(email) ? '' : null;
+    return _IsEmailValid(email) ? '' : 'Email is invalid.';
   }
 
-  static bool IsEmailValid(String email){
+  static String ValidatePassword(String password){
+    //return _IsPasswordValid(password) ? '' : 'Password must be between 8 and 30 characters and contain at least one digit, lowercase and uppercase letters.';
+    return password.isNotEmpty ? '' : 'Enter a password.';
+  }
+
+  static bool _IsEmailValid(String email){
     return _emailReg.allMatches(email).isNotEmpty;
   }
 
-  static bool IsPasswordValid(String email){
+  static bool _IsPasswordValid(String email){
     return _passwordReg.allMatches(email).isNotEmpty;
   }
 }

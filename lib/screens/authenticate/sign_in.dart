@@ -72,8 +72,7 @@ class _SignInState extends State<SignIn> {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             'or sign in with',
-            style: TextStyle(
-                color: Colors.white, fontSize: 14, letterSpacing: 0.2),
+            style: TextStyle(color: Colors.white, fontSize: 14, letterSpacing: 0.2),
           ),
         ),
         Expanded(
@@ -87,8 +86,7 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  Widget _buildSocialBtn(Function onTap, String logo_path, String name,
-      int bgcolor) {
+  Widget _buildSocialBtn(Function onTap, String logo_path, String name, int bgcolor) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -131,11 +129,9 @@ class _SignInState extends State<SignIn> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        _buildSocialBtn(() => print('Login with Facebook'),
-            "assets/logos/facebook.svg", "Facebook", 0x4268B3),
+        _buildSocialBtn(() => print('Login with Facebook'), "assets/logos/facebook.svg", "Facebook", 0x4268B3),
         SizedBox(width: 15),
-        _buildSocialBtn(() => print('Login with Google'),
-            "assets/logos/google.svg", "Gmail", 0xE62F2E),
+        _buildSocialBtn(() => print('Login with Google'), "assets/logos/google.svg", "Gmail", 0xE62F2E),
       ],
     );
   }
@@ -182,9 +178,8 @@ class _SignInState extends State<SignIn> {
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            colorFilter: ColorFilter.mode(
-                Color(0x484848).withOpacity(0.47), BlendMode.darken),
-            image: AssetImage("assets/images/background_1.png"),
+            colorFilter: ColorFilter.mode(Color(0x484848).withOpacity(0.47), BlendMode.darken),
+            image: AssetImage("assets/images/background_3.png"),
             fit: BoxFit.fill,
             alignment: Alignment.topCenter,
           ),
@@ -219,8 +214,7 @@ class _SignInState extends State<SignIn> {
                           style: kLabelStyle,
                           cursorColor: Colors.white,
                           keyboardType: TextInputType.emailAddress,
-                          decoration: GetInputDecor('Password')
-                      ),
+                          decoration: GetInputDecor('Password')),
                     ),
                   ],
                 ),
@@ -230,36 +224,34 @@ class _SignInState extends State<SignIn> {
                   width: double.infinity,
                   height: 50,
                   child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
                     onPressed: () async {
                       String email = _emailTextController.text;
                       String password = _passwordTextController.text;
 
-                      String error = '';
-                      if (!Validator.IsEmailValid(_emailTextController.text)) {
-                        error += 'Email is invalid';
-                      }
-                      if (!Validator.IsPasswordValid(_passwordTextController.text)) {
-                        if(error.isNotEmpty){
-                          error += '\n';
-                        }
-                        error += 'Password must be 8 characters long';
-                      }
-                      print(error);
-                      if (error.isNotEmpty){
-                        GetErrorDialog(context,'Invalid Identifications', error);
-                      }
+                      print('email: $email, password: $password');
 
+                      String error = '';
+                      error += Validator.ValidateEmail(email);
+                      error += error.isNotEmpty ? '\n\n' : '';
+                      error += Validator.ValidatePassword(password);
+
+                      print(error);
+                      if (error.isNotEmpty) {
+                        GetErrorDialog(context, 'Invalid Credentials', error);
+                      } else {
+                        var result = await _auth.signInWithEmailAndPassword(email, password);
+                        if(result == null){
+                          error = 'Could not sign in with those credentials';
+                          GetErrorDialog(context, 'Invalid Credentials', error);
+                        }
+                      }
                     },
                     color: Color(0x181919).withOpacity(0.97),
                     child: Text(
                       "Let's Go!",
                       style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'OpenSans',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16),
+                          color: Colors.white, fontFamily: 'OpenSans', fontWeight: FontWeight.w700, fontSize: 16),
                     ),
                   ),
                 ),
