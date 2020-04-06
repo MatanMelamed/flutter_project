@@ -7,6 +7,7 @@ import 'package:teamapp/models/validator.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/theme/white.dart';
 import 'package:teamapp/widgets/authenticate/inputs.dart';
+import 'package:teamapp/widgets/loading.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -18,6 +19,8 @@ class _SignInState extends State<SignIn> {
 
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+
+  bool loading = false;
 
   @override
   void dispose() {
@@ -184,7 +187,7 @@ class _SignInState extends State<SignIn> {
             alignment: Alignment.topCenter,
           ),
         ),
-        child: Scaffold(
+        child: loading ? Loading() : Scaffold(
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 44),
@@ -240,8 +243,10 @@ class _SignInState extends State<SignIn> {
                       if (error.isNotEmpty) {
                         GetErrorDialog(context, 'Invalid Credentials', error);
                       } else {
+                        setState(() => loading = true);
                         var result = await _auth.signInWithEmailAndPassword(email, password);
-                        if(result == null){
+                        if (result == null) {
+                          loading = false;
                           error = 'Could not sign in with those credentials';
                           GetErrorDialog(context, 'Invalid Credentials', error);
                         }
