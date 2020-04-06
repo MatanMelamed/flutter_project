@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'feed.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -6,6 +7,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _bottomNavidationIndex =0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +30,39 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[MenuBar(), MyFeedWindow()],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _bottomNavidationIndex,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text("Home"),
+            backgroundColor: Colors.deepPurpleAccent
+          ),
+
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              title: Text("Seach group"),
+              backgroundColor: Colors.green
+          ),
+
+          BottomNavigationBarItem(
+              icon: Icon(Icons.create),
+              title: Text("Create group"),
+              backgroundColor: Colors.red
+          ),
+
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              title: Text("Notifications"),
+              backgroundColor: Colors.blue
+          )
+        ],
+        onTap: (index) {
+          setState(() {
+            _bottomNavidationIndex = index;
+          });
+        },
+      ),
     );
   }
 
@@ -35,35 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return "Eyal";
   }
 }
-
-
-class MyFeedWindow extends StatefulWidget {
-  @override
-  _MyFeedWindowState createState() => _MyFeedWindowState();
-}
-
-class _MyFeedWindowState extends State<MyFeedWindow> {
-  final List<String> _listOf = <String>["פגישה ב20.12.2019 בשעה 16:00 במגרש של הפועל מחנה יהודה", "פגישה ב21.12.2019 במגרש הטניס","1","2","3","4","5","6","7","8","9","10","11"]; //list of saved  words
-
-  @override
-  Widget build(BuildContext context) {
-    return new Expanded(
-        child: new ListView.builder(
-      itemBuilder: (_, int index) {
-//      if (index >= _listOf.length) {
-//        _listOf.addAll(_listOf().take(10));
-//      }
-        return _buildRow(_listOf[index]);
-      }, itemCount: _listOf.length,
-      scrollDirection: Axis.vertical,
-        ));
-  }
-
-  Widget _buildRow(String word) {
-    return ListTile(title: Text(word), trailing: Icon(Icons.expand_more));
-  }
-}
-
 
 
 class MenuBar extends StatelessWidget {
