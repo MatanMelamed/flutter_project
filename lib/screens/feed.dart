@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class MyFeedWindow extends StatefulWidget {
+class FeedPage extends StatefulWidget {
   @override
-  _MyFeedWindowState createState() => _MyFeedWindowState();
+  _FeedPageState createState() => _FeedPageState();
 }
 
-class _MyFeedWindowState extends State<MyFeedWindow> {
+class _FeedPageState extends State<FeedPage> {
   final List<EntryInfo> _entries = <EntryInfo>[];
   ScrollController _scrollController = new ScrollController();
 
@@ -23,14 +23,14 @@ class _MyFeedWindowState extends State<MyFeedWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return new Expanded(
-        child: new ListView.builder(
+    return new Scaffold(
+        body: ListView.builder(
       controller: _scrollController,
       itemCount: _entries.length,
       scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-          leading: Icon(Icons.person),//Category
+          leading: Icon(Icons.person), //Category
           title: Text(_entries[index].title),
           subtitle: Text(_entries[index].description),
           trailing: Icon(Icons.unfold_more),
@@ -42,22 +42,19 @@ class _MyFeedWindowState extends State<MyFeedWindow> {
     ));
   }
 
-
   //TO CHANGE
   void addEntries(int n) {
-    int counter =0;
-    for (int i=0; i< n; i++) {
+    int counter = 0;
+    for (int i = 0; i < n; i++) {
       counter++;
       EntryInfo e = new EntryInfo();
       e.title = "Hi TeamApp " + counter.toString();
       e.description = "Hi TeamApp";
       e.category = "Hi TeamApp";
-        _entries.add(e);
+      _entries.add(e);
       setState(() {});
     }
   }
-
-
 
   @override
   void dispose() {

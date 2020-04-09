@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'feed.dart';
+import 'search.dart';
+import 'create.dart';
+import 'notifications.dart';
+import 'mainDrawer.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -7,7 +11,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _bottomNavidationIndex =0;
+  int _selectedPage = 0;
+  final _pageOptions = [
+    FeedPage(),
+    SearchPage(),
+    CreatePage(),
+    NotificationsPage()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -19,47 +29,35 @@ class _MyHomePageState extends State<MyHomePage> {
             child: new Text("Hello " + getUserName() + "!",
                 style: TextStyle(fontSize: 20)),
           ),
-          backgroundColor: Colors.lightGreen),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[MenuBar(), MyFeedWindow()],
-        ),
-      ),
+          backgroundColor: Theme.of(context).primaryColor),
+      drawer: MainDrawer(),
+      body: _pageOptions[_selectedPage],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _bottomNavidationIndex,
+        currentIndex: _selectedPage,
+        iconSize: 30,
+        selectedFontSize: 15,
+        unselectedFontSize: 10,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text("Home"),
-            backgroundColor: Colors.deepPurpleAccent
-          ),
-
+              icon: Icon(Icons.home),
+              title: Text("Home"),
+              backgroundColor: Colors.deepPurpleAccent),
           BottomNavigationBarItem(
               icon: Icon(Icons.search),
               title: Text("Seach group"),
-              backgroundColor: Colors.green
-          ),
-
+              backgroundColor: Colors.green),
           BottomNavigationBarItem(
               icon: Icon(Icons.create),
               title: Text("Create group"),
-              backgroundColor: Colors.red
-          ),
-
+              backgroundColor: Colors.blueAccent),
           BottomNavigationBarItem(
               icon: Icon(Icons.notifications),
               title: Text("Notifications"),
-              backgroundColor: Colors.blue
-          )
+              backgroundColor: Colors.red)
         ],
         onTap: (index) {
           setState(() {
-            _bottomNavidationIndex = index;
+            _selectedPage = index;
           });
         },
       ),
@@ -72,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
 class MenuBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -80,7 +77,6 @@ class MenuBar extends StatelessWidget {
       child: new Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-
         children: <Widget>[
           new Column(
             children: <Widget>[

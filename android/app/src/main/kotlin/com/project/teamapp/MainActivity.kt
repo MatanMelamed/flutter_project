@@ -1,4 +1,4 @@
-package com.example.spinder
+package com.project.teamapp
 
 import android.os.Bundle
 

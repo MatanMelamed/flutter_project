@@ -1,4 +1,4 @@
-# spinder
+# TeamApp
 
 A new Flutter application.
 
