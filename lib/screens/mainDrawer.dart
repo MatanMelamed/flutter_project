@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:teamapp/services/authenticate/auth_service.dart';
 
 
 class MainDrawer extends StatelessWidget {
+  final AuthService _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -64,7 +67,9 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout',style: TextStyle(fontSize: 18)),
-            onTap: null,
+            onTap: () async {
+              await _authService.signOut(); // wait until completion
+            },
           ),
         ],
       ),

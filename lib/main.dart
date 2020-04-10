@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'screens/HomePage.dart';
+import 'package:provider/provider.dart';
+import 'package:teamapp/services/authenticate/auth_service.dart';
+import 'package:teamapp/widgets/auth_warrper.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return StreamProvider.value(
+      value: AuthService().user_stream, // what the provider listens to
+      child: MaterialApp(
+        home: AuthWrapper(),
       ),
-      home: MyHomePage(),
     );
   }
 }
-
-
