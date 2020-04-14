@@ -32,7 +32,8 @@ class AuthService {
     try {
       AuthResult result = await _firebase_auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return _convertFirebaseUser(result.user);
+      FirebaseUser user = result.user;
+      return _convertFirebaseUser(user);
     } catch (e) {
       print(e.toString());
       return null;

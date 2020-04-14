@@ -9,6 +9,6 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
     // return either home or authenticate widget
-    return user != null ? Home() : Authenticate();
+    return user != null ? Home(uid : user.uid) : Authenticate();
   }
 }
