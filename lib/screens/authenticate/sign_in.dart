@@ -177,7 +177,7 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+      return SafeArea(
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

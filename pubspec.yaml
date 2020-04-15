@@ -10,12 +10,22 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter
+  flutter_rounded_date_picker: 1.0.4
   cupertino_icons: ^0.1.2
   firebase_auth: ^0.15.5+3
   cloud_firestore: ^0.13.4+2
+  firebase_storage:
   provider: ^4.0.4
   flutter_svg: ^0.17.3+1
   flutter_spinkit: ^4.1.2+1
+  datetime_picker_formfield: ^1.0.0
+  image_picker: ^0.6.0+9
+  date_format:
+  gender_selection: ^1.0.0
+  cached_network_image: ^2.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +47,7 @@ flutter:
     - assets/images/background_2.png
     - assets/images/background_3.png
     - assets/images/background_4.png
+    - assets/images/user.png
 
   fonts:
     - family: OpenSans

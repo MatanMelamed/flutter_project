@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:teamapp/models/validator.dart';
+import 'package:teamapp/screens/archive/page_transitions.dart';
+import 'package:teamapp/screens/profile/create_profile.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/theme/white.dart';
 import 'package:teamapp/widgets/authenticate/inputs.dart';
@@ -165,7 +167,8 @@ class _SignUpState extends State<SignUp> {
                                   print('failed to register');
                                 } else {
                                   print('registered');
-                                  Navigator.of(context).pop();
+
+                                  Navigator.of(context).push(createRoute(CreateProfile(uid: result.uid)));
                                 }
                               }
                             },
