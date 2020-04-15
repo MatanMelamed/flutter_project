@@ -203,7 +203,7 @@ class _CreateProfileState extends State<CreateProfile> {
                         }
                         else{
                           var result = await UserManagement(uid: this.uid)
-                              .singUpUserData(_fullNameTextController.text, _birthdayController, _gender, _imageProfile);
+                              .signUpUserData(_fullNameTextController.text, _birthdayController, _gender, _imageProfile);
                           print(result);
 
                           Navigator.of(context).pop();
