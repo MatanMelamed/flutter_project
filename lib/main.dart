@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:teamapp/screens/group_creation/creation_wrapper.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/widgets/auth_warrper.dart';
 
@@ -11,7 +12,8 @@ class MyApp extends StatelessWidget {
     return StreamProvider.value(
       value: AuthService().user_stream, // what the provider listens to
       child: MaterialApp(
-        home: AuthWrapper(),
+//        home: AuthWrapper(),
+      home: GroupCreationPage(),
       ),
     );
   }
