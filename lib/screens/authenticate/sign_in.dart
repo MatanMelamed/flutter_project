@@ -246,7 +246,7 @@ class _SignInState extends State<SignIn> {
                         setState(() => loading = true);
                         var result = await _auth.signInWithEmailAndPassword(email, password);
                         if (result == null) {
-                          loading = false;
+                          setState(() => loading = false);
                           error = 'Could not sign in with those credentials';
                           GetErrorDialog(context, 'Invalid Credentials', error);
                         }
