@@ -42,12 +42,12 @@ flutter:
     - assets/logos/teamapp_1.png
     - assets/logos/teamapp.png
 
+    - images/dog-image.jpg
     - assets/images/background_1.png
     - assets/images/background_2.png
     - assets/images/background_3.png
     - assets/images/background_4.png
     - assets/images/user.png
-
 
   fonts:
     - family: OpenSans
