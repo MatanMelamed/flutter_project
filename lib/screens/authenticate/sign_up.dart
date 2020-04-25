@@ -167,7 +167,7 @@ class _SignUpState extends State<SignUp> {
                                   print('failed to register');
                                 } else {
                                   print('registered');
-
+                                  Navigator.of(context).pop();
                                   Navigator.of(context).push(createRoute(CreateProfile(uid: result.uid)));
                                 }
                               }

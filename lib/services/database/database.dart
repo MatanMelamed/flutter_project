@@ -14,7 +14,7 @@ class DatabaseService {
   final CollectionReference usersCollection = Firestore.instance.collection('users');
 
   // TODO - need to add more things
-  Future singUpUserData(String fullname, DateTime birthday, String gender) async{
+  Future signUpUserData(String fullname, DateTime birthday, String gender) async{
     return usersCollection.document(userId).setData({
       'uid': userId,
       'name': fullname,
@@ -44,6 +44,8 @@ class DatabaseService {
       );
     }).toList();
   }
+
+  //need to add - get notifications stream
 
 }
 

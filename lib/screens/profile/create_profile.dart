@@ -15,13 +15,10 @@ class CreateProfile extends StatefulWidget {
   CreateProfile({ this.uid });
 
   @override
-  _CreateProfileState createState() => _CreateProfileState(uid: this.uid);
+  _CreateProfileState createState() => _CreateProfileState();
 }
 
 class _CreateProfileState extends State<CreateProfile> {
-  final String uid;
-
-  _CreateProfileState({this.uid});
 
   final _fullNameTextController = TextEditingController();
   DateTime _birthdayController;
@@ -202,7 +199,7 @@ class _CreateProfileState extends State<CreateProfile> {
                           GetErrorDialog(context, 'Invalid Credentials', error);
                         }
                         else{
-                          var result = await UserManagement(uid: this.uid)
+                          var result = await UserManagement(uid: widget.uid)
                               .singUpUserData(_fullNameTextController.text, _birthdayController, _gender, _imageProfile);
                           print(result);
 
