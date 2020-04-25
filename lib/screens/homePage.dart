@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
+import 'package:teamapp/services/database/user_management.dart';
 import 'feed.dart';
 import 'search.dart';
 import 'create.dart';
@@ -21,54 +24,54 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
+    print("context home:" + context.toString());
+    final user = Provider.of<User>(context);
+    return StreamProvider.value(
+      value: UserManagement(uid: user.uid).user,
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+              // Here we take the value from the MyHomePage object that was created by
+              // the App.build method, and use it to set our appbar title.
 //            title: Center(
 //              child: new Text("Hello " + getUserName() + "!",
 //                  style: TextStyle(fontSize: 20)),
 //            ),
-            title: Text("Title of the AppBar"),
-            centerTitle: true,
-            backgroundColor: Theme.of(context).primaryColor,
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.notifications),
-                color: Colors.white,
-                onPressed: () {
-                  print("notifications clicked");
-                  Navigator.of(context).push(createRoute(NotificationsPage()));
-                },
-              )
-            ],
-            bottom: TabBar(
-              tabs: <Widget>[
-                Tab(
-                  text: "Home",
-                ),
-                Tab(
-                  text: "Search",
-                ),
-                Tab(
-                  text: "Create",
+              title: Text("Title of the AppBar"),
+              centerTitle: true,
+              backgroundColor: Theme.of(context).primaryColor,
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.notifications),
+                  color: Colors.white,
+                  onPressed: () {
+                    print("notifications clicked");
+                    Navigator.of(context).push(createRoute(NotificationsPage()));
+                  },
                 )
               ],
-            )
-          ),
-        drawer: MainDrawer(),
-        body: TabBarView(
-          children: _pageOptions,
-        )
+              bottom: TabBar(
+                tabs: <Widget>[
+                  Tab(
+                    text: "Home",
+                  ),
+                  Tab(
+                    text: "Search",
+                  ),
+                  Tab(
+                    text: "Create",
+                  )
+                ],
+              )
+            ),
+          drawer: MainDrawer(),
+          body: TabBarView(
+            children: _pageOptions,
+          )
+        ),
       ),
     );
-  }
-
-  String getUserName() {
-    //Go To local DB
-    return "Eyal";
   }
 }
 

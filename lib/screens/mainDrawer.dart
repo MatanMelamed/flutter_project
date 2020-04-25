@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:teamapp/models/user_data.dart';
+import 'package:teamapp/screens/archive/page_transitions.dart';
+import 'package:teamapp/screens/profile/profile_page.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 
 
@@ -7,6 +11,7 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserData>(context);
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -23,13 +28,12 @@ class MainDrawer extends StatelessWidget {
                     margin: EdgeInsets.only(top:30,bottom: 10),
                     decoration: BoxDecoration( //OPTIONAL
                       shape: BoxShape.circle,
-                      image: DecorationImage(image: NetworkImage('https://hgtvhome.sndimg.com/content/dam/images/hgtv/fullset/2018/3/22/0/shutterstock_national-puppy-day-224423782.jpg.rend.hgtvcom.966.725.suffix/1521744674350.jpeg'),
+                      image: DecorationImage(image: NetworkImage(user.imageurl),
                         fit: BoxFit.fill
                       )
                     ),
                   ),
-                  Text('Doggy Doggy',style: TextStyle(color: Colors.white,fontSize: 22),),
-                  Text('Doggy@gmail.com',style: TextStyle(color: Colors.white),)
+                  Text(user.fullname,style: TextStyle(color: Colors.white,fontSize: 22),),
                 ],
               ),
             ),
@@ -37,7 +41,9 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.person),
             title: Text('Profile',style: TextStyle(fontSize: 18)),
-            onTap: null,
+            onTap: (){
+              Navigator.of(context).push(createRoute(ProfilePage(user: user)));
+            },
           ),
           ListTile(
             leading: Icon(Icons.group),

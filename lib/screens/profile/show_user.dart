@@ -4,17 +4,18 @@ import 'package:provider/provider.dart';
 import 'package:teamapp/models/user_data.dart';
 
 class ShowUserData extends StatefulWidget{
+  UserData user;
+  ShowUserData({this.user});
   @override
-  State<StatefulWidget> createState() => _ShowUserDataState();
-
+  State<StatefulWidget> createState() => _ShowUserDataState(user: user);
 }
 
 class _ShowUserDataState extends State<ShowUserData>{
+  UserData user;
+  _ShowUserDataState({this.user});
+
   @override
   Widget build(BuildContext context) {
-
-    final user = Provider.of<UserData>(context);
-
     return Column(
       children: <Widget>[
         Container(
