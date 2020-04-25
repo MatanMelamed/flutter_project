@@ -12,7 +12,7 @@ class UserManagement {
 
   UserManagement({this.uid});
 
-  Future singUpUserData(
+  Future signUpUserData(
       String fullname, DateTime birthday, String gender, File image) async {
     var url = await UserManagement(uid: this.uid).saveProfileImage(image);
     print(url);
