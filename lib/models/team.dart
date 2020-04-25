@@ -26,7 +26,7 @@ class Team {
     return Team(
         tid: "007",
         name: "TeamApp",
-        description: "Best team ever.",
+        description: "TeamApp is all about racing snails!\nHelp each other with snails workouts!\nMy the best snail wins!",
         isPrivate: false,
         //owner: User.getBasicExample(),
         groupID: "002");

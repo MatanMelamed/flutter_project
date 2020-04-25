@@ -28,6 +28,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/icons/options-halved.svg
     - assets/logos/facebook.jpg
     - assets/logos/facebook.svg
     - assets/logos/google.jpg
