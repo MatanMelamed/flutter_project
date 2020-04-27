@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:teamapp/screens/group_creation/group_creation.dart';
+
+import 'group_creation.dart';
 
 class GroupCreationPage extends StatelessWidget {
   @override
@@ -12,4 +13,5 @@ class GroupCreationPage extends StatelessWidget {
       body: GroupCreationBody(),
     );
   }
+
 }

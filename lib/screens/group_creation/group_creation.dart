@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:flutter/rendering.dart';
+
+import 'package:teamapp/models/group_sketch.dart';
+import 'package:teamapp/widgets/group_creation/usefull_widgets.dart';
 
 class GroupCreationBody extends StatefulWidget {
   @override
@@ -9,10 +12,10 @@ class GroupCreationBody extends StatefulWidget {
 class _GroupCreationBodyState extends State<GroupCreationBody> {
   int curr = 0;
   List<Step> steps;
-  List<String> friends = ['1', '2', '3'];
+  List<String> friends = [];
+  bool isPublic = true;
   final _friendsController = TextEditingController();
   static var data = GroupData();
-
   final _formKey = GlobalKey<FormState>();
   final _singleKeys = [
     GlobalKey<FormFieldState>(),
@@ -25,7 +28,7 @@ class _GroupCreationBodyState extends State<GroupCreationBody> {
   }
 
   void _cancel() {
-    if (curr - 1 > 0) _goTo(curr - 1);
+    if (curr - 1 >= 0) _goTo(curr - 1);
   }
 
   void _next() {
@@ -40,120 +43,143 @@ class _GroupCreationBodyState extends State<GroupCreationBody> {
     }
   }
 
-  Step _getFirstStep() {
-    return StepCreator.getTextFormStep(
-        title: 'Group\'s Name',
-        labelText: 'Enter your Group\'s Name',
-        key: _singleKeys[0],
-        onSaved: (String value) {
-          data.groupName = value;
-          print("GroupName: " + data.groupName);
-        },
-        validator: (value) {
-          if (value.isEmpty || value.length < 1) {
-            print('Validator1 FAIL');
-            return 'Please enter a Name';
-          }
-          print('Validator1 OK');
-          return null;
-        });
+  Step _getGroupNameStep() {
+    return Step(
+        title: Text('Group\'s Name'),
+        isActive: true,
+        content: FormCreator.getTextFormField(
+          labelText: 'Enter your Group\'s Name',
+          key: _singleKeys[0],
+          onSaved: (String value) => data.groupName = value,
+          validator: (value) {
+            if (value.isEmpty || value.length < 1) return 'Please enter Name';
+            return null;
+          },
+        ));
   }
 
-  Step _getSecondStep() {
+  Widget _getSepListView() {
+    return ListView.separated(
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        return UserListTile(
+            name: index + 1 <= friends.length ? friends[index] : null,
+            trailing: IconButton(
+              icon: Icon(Icons.remove_circle_outline),
+              onPressed: () => setState(() => friends.removeAt(index)),
+            ));
+      },
+      separatorBuilder: (context, index) {
+        return Divider(color: Colors.black);
+      },
+      itemCount: friends.length,
+    );
+  }
+
+  Step _getGroupMembersStep() {
     return Step(
-      title: Text('Friend\'s'),
-      isActive: true,
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TypeAheadFormField(
+        title: Text('Friend\'s'),
+        isActive: true,
+        content: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          FormCreator.getTypeAheadFormField(
             key: _singleKeys[1],
-            suggestionsCallback: (pattern) => ['AVI', 'ELI', 'YOSSI'],
-            itemBuilder: (context, suggestion) =>
-                ListTile(title: Text(suggestion)),
-            transitionBuilder: (context, suggestionBox, controller) =>
-                suggestionBox,
+            labelText: 'Choose your friends',
+            suggestionCallBack: (pattern) =>
+                ['Avi Israeli', 'Eli Israeli', 'Yossi Israeli'],
             onSuggestionSelected: (suggestion) {
               setState(() {
                 friends.insert(0, suggestion);
-                print("Friend added: " + suggestion);
-                print(friends);
                 _friendsController.clear();
               });
             },
             validator: (value) {
-              if (value.isEmpty) {
-                print('validator2 FAIL');
-                return 'Please select friend';
-              }
-              print('validator2 OK');
+              if (friends.isEmpty) return 'Please select Friend';
               return null;
             },
-            onSaved: (value) {
-              data.members.addAll(friends);
-              print("all Friends saved, 'value' == " + value);
-            },
-            textFieldConfiguration: TextFieldConfiguration(
-              controller: _friendsController,
-              decoration: InputDecoration(labelText: 'choose your friends'),
-            ),
+            onSaved: (value) => data.members.addAll(friends),
+            controller: _friendsController,
           ),
           SizedBox(
             height: 150.0,
             width: 300.0,
-            child: ListView.builder(
-              padding: EdgeInsets.all(1.0),
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemExtent: 180.0,
-              itemCount: friends.length,
-              itemBuilder: (context, i) {
-                print(i);
-                return Container(
-                  margin: EdgeInsets.all(10.0),
-                  padding: EdgeInsets.all(3.0),
-                  child: Card(
-                      child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 15.0,
-                      child: Icon(
-                        Icons.remove,
-                        size: 20.0,
-                      ),
-                    ),
-                    title: Text(
-                      'Regev Ben Ratzon',
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  )),
-                );
-              },
-            ),
+            child: _getSepListView(),
           )
-        ],
-      ),
-    );
+        ]));
   }
 
-  Step _getThirdStep() {
-    return StepCreator.getTextFormStep(
-        title: 'Description',
-        labelText: 'Enter Short Description',
-        key: _singleKeys[2],
-        maxLines: 4,
-        onSaved: (String value) {
-          data.description = value;
-          print("description: " + data.description);
-        });
+  Step _getDescriptionStep() {
+    return Step(
+        title: Text('Description'),
+        isActive: true,
+        content: FormCreator.getTextFormField(
+          key: _singleKeys[2],
+          labelText: 'Enter short description (optional)',
+          maxLines: 4,
+          onSaved: (value) => data.description = value,
+        ));
+  }
+
+  Step _getPrivacyStep() {
+    return Step(
+        title: Text("private\\public"),
+        isActive: true,
+        content: TextSwitch(
+          text: "would you like that people will see your group ?",
+          switchValue: isPublic,
+          onChanged: (bool value) {
+            data.isPublic = value;
+            setState(() => isPublic = value);
+          },
+        ));
+  }
+
+  Widget _controlsBuilder(BuildContext context,
+      {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+    if (curr >= 3) {
+      return Container(
+        alignment: Alignment.center,
+          margin: EdgeInsets.symmetric(vertical: 50.0),
+          child: IconTextButton(
+        padding: EdgeInsets.all(3.0),
+        text: 'Create!',
+        icon: Icons.create,
+        onPressed: () => {},
+      ));
+    } else {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.all(20.0),
+            child: IconTextButton(
+              text: 'Back',
+              onPressed: curr != 0 ? onStepCancel : null,
+              padding: EdgeInsets.all(3.0),
+              icon: Icons.arrow_upward,
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.all(20.0),
+            child: IconTextButton(
+              padding: EdgeInsets.all(3.0),
+              text: 'Next',
+              onPressed: onStepContinue,
+              icon: Icons.arrow_downward,
+            ),
+          ),
+        ],
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    steps = <Step>[_getFirstStep(), _getSecondStep(), _getThirdStep()];
-
+    steps = <Step>[
+      _getGroupNameStep(),
+      _getGroupMembersStep(),
+      _getDescriptionStep(),
+      _getPrivacyStep()
+    ];
     return Form(
       key: _formKey,
       child: ListView(
@@ -161,63 +187,16 @@ class _GroupCreationBodyState extends State<GroupCreationBody> {
           Stepper(
             type: StepperType.vertical,
             currentStep: curr,
-            onStepTapped: _goTo,
+            controlsBuilder: _controlsBuilder,
+            onStepTapped: (step) {
+              if (step <= curr)
+                _goTo(step);
+            },
             onStepCancel: _cancel,
             onStepContinue: _next,
             steps: steps,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: RaisedButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  // TODO: all input is OK, so need to submit and move to
-                  // TODO: the previous page ...
-                }
-              },
-              child: Text('Submit'),
-            ),
-          ),
         ],
-      ),
-    );
-  }
-}
-
-class GroupData {
-  String groupName;
-  String description;
-  bool public;
-  List<String> members = List<String>();
-
-  GroupData({this.groupName, this.public = false, this.description = ''});
-}
-
-class StepCreator {
-  static Step getTextFormStep(
-      {String title,
-      String labelText,
-      GlobalKey<FormFieldState> key,
-      void Function(String) onSaved,
-      String Function(String) validator,
-      int maxLines = 1,
-      double fontSize = 10}) {
-    return Step(
-      title: Text(title),
-      isActive: true,
-      content: TextFormField(
-        key: key,
-        keyboardType: TextInputType.text,
-        onSaved: onSaved,
-        maxLines: maxLines,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: TextStyle(
-            decorationStyle: TextDecorationStyle.solid,
-            fontSize: fontSize,
-          ),
-        ),
       ),
     );
   }
