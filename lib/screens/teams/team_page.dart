@@ -53,7 +53,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                       callback: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) {
                           return EditViewImage(
-                            imageProvider: AssetImage("assets/images/default_profile_img.png"),
+                            imageProvider: AssetImage("assets/images/default_profile_image.png"),
                             onSaveNewImageFile: (file) {},
                             heroTag: "teamProfileImage",
                           );

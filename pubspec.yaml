@@ -47,7 +47,7 @@ flutter:
     - assets/images/background_2.png
     - assets/images/background_3.png
     - assets/images/background_4.png
-    - assets/images/default_profile_img.png
+    - assets/images/default_profile_image.png
     - assets/images/team.jpg
     - assets/images/touch.svg
 

@@ -18,7 +18,7 @@ class _TriesState extends State<Tries> {
 
   create() async {
     print('Creating objects');
-    File file = await Utilities.loadImageFromAssetsAsFile("images/default_profile_img.png");
+    File file = await Utilities.loadImageFromAssetsAsFile("images/default_profile_image.png");
     Team team = Team.fromWithinApp(
         name: "TeamApp",
         description: "The best team of all!\nAll about snail racing!\nShare your knowledge of snails!",

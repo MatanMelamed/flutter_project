@@ -17,7 +17,7 @@ class DiamondImage extends StatefulWidget {
 class _DiamondImageState extends State<DiamondImage> {
   Image getImage(double width, double height) {
     return Image(
-      image: widget.imageProvider ?? AssetImage("assets/images/default_profile_img.png"),
+      image: widget.imageProvider ?? AssetImage("assets/images/default_profile_image.png"),
       width: width,
       height: height,
       fit: BoxFit.cover,
