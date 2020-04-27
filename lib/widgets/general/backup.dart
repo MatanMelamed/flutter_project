@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:teamapp/services/general/imagery.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 class FullScreenImagee extends StatefulWidget {

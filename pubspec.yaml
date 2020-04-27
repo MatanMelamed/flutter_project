@@ -13,12 +13,15 @@ dependencies:
   cupertino_icons: ^0.1.2
   firebase_auth: ^0.15.5+3
   cloud_firestore: ^0.13.4+2
+  firebase_storage:
   provider: ^4.0.4
   flutter_svg: ^0.17.3+1
   flutter_spinkit: ^4.1.2+1
   image_picker: ^0.6.0+9
   image_cropper: ^1.2.1
   photo_view: ^0.9.2
+  path_provider: ^1.6.7
+
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +31,10 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/tests/1.jpg
+    - assets/tests/2.jpg
+    - assets/tests/3.png
+    - assets/tests/4.jpg
     - assets/icons/options-halved.svg
     - assets/logos/facebook.jpg
     - assets/logos/facebook.svg

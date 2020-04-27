@@ -5,10 +5,12 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/teams/team_options.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
+import 'package:teamapp/widgets/general/editViewImage.dart';
 import 'package:teamapp/widgets/general/narrow_returnbar.dart';
 
 class TeamPage extends StatefulWidget {
@@ -21,9 +23,6 @@ class TeamPage extends StatefulWidget {
 }
 
 class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
-  File previewImage;
-
-  Widget GetPreviewImage() {}
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +31,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
     double top = MediaQuery.of(context).padding.top;
 
     return Scaffold(
+      //appBar: AppBar(),
       body: SafeArea(
         child: SizedBox(
           height: height - top,
@@ -40,49 +40,42 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               GetNarrowReturnBar(context),
-//              Container(
-//                height: 30,
-//                width: double.infinity,
-//                child: Align(
-//                  alignment: Alignment.centerLeft,
-//                  child: SizedBox(
-//                    child: IconButton(
-//                        onPressed: () {
-//                          Navigator.of(context).pop();
-//                        },
-//                        icon: Icon(
-//                          Icons.arrow_back_ios,
-//                          size: 16,
-//                        )),
-//                  ),
-//                ),
-//                decoration: BoxDecoration(boxShadow: <BoxShadow>[
-//                  BoxShadow(color: Colors.black54, blurRadius: 10.0, offset: Offset(0.0, 0.75))
-//                ], color: Colors.blue),
-//              ),
-              SizedBox(height: 30),
               Container(
+                padding: EdgeInsets.symmetric(vertical: 35),
                 width: width,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(width: 10),
-                    DiamondImage(),
-                    SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        print('team options clicked');
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) => TeamOptionsPage(team: widget.team)));
+                    SizedBox(width: 25),
+                    DiamondImage(
+                      size: 110,
+                      heroTag: "teamProfileImage",
+                      callback: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return EditViewImage(
+                            imageProvider: AssetImage("assets/images/default_profile_img.png"),
+                            onSaveNewImageFile: (file) {},
+                            heroTag: "teamProfileImage",
+                          );
+                        }));
                       },
-                      child: Container(
-                        padding: EdgeInsets.only(top: 13),
-                        child: SvgPicture.asset(
-                          "assets/icons/options-halved.svg",
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          print('team options clicked');
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) => TeamOptionsPage(team: widget.team)));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(top: 13),
+                          child: SvgPicture.asset(
+                            "assets/icons/options-halved.svg",
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(width: 17),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,7 +102,6 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              SizedBox(height: 30),
               DefaultTabController(
                 length: 2,
                 child: Expanded(
@@ -117,7 +109,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                     children: <Widget>[
                       Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black87, width: 3),
+                          border: Border.all(color: Colors.white70, width: 2),
                           color: Colors.blue[400],
                         ),
                         //color: Colors.blue[400],
