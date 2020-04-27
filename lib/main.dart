@@ -6,6 +6,9 @@ import 'package:teamapp/widgets/auth_warrper.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+
+
+
   @override
   Widget build(BuildContext context) {
     AuthService authService = AuthService();
