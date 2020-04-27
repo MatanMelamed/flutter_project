@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:teamapp/models/storage_image.dart';
+import 'package:teamapp/models/storageImage.dart';
 
 class StorageManager {
   static Future<StorageImage> saveImage(File image, String identification) async {

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:teamapp/models/storage_image.dart';
+import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 import 'package:teamapp/services/general/utilites.dart';
@@ -18,7 +18,7 @@ class _TriesState extends State<Tries> {
 
   create() async {
     print('Creating objects');
-    File file = await Utilities.loadImage("images/default_profile_img.png");
+    File file = await Utilities.loadImageFromAssetsAsFile("images/default_profile_img.png");
     Team team = Team.fromWithinApp(
         name: "TeamApp",
         description: "The best team of all!\nAll about snail racing!\nShare your knowledge of snails!",
@@ -41,8 +41,8 @@ class _TriesState extends State<Tries> {
 
   replace() async {
     await load();
-    File f = await Utilities.loadImage('images/team.jpg');
-    await StorageManager.updateImage(f, StorageImage(url: t.imageUrl,path: t.imageRemotePath));
+    File f = await Utilities.loadImageFromAssetsAsFile('images/team.jpg');
+    await StorageManager.updateImage(f, t.imageRemotePath);
     load();
   }
 
@@ -62,25 +62,25 @@ class _TriesState extends State<Tries> {
         body: Container(
           child: t == null
               ? Container(
-                  child: Text('text'),
-                )
+            child: Text('text'),
+            )
               : Column(
-                  children: <Widget>[
-                    Text('Tid: ${t.tid}'),
-                    Text('Image Url: ${t.imageUrl}'),
-                    Text('Image Path: ${t.imageRemotePath}'),
-                    Text('User Lists ID: ${t.ulid}'),
-                    Text('Name: ${t.name}'),
-                    Image(
-                      image: NetworkImage(t.imageUrl),
-                    ),
-                    Text('Description: ${t.description}'),
-                    Text('Is Private: ${t.isPrivate}'),
-                    Text('Owner ID: ${t.ownerUid}'),
-                  ],
+            children: <Widget>[
+              Text('Tid: ${t.tid}'),
+              Text('Image Url: ${t.imageUrl}'),
+              Text('Image Path: ${t.imageRemotePath}'),
+              Text('User Lists ID: ${t.ulid}'),
+              Text('Name: ${t.name}'),
+              Image(
+                image: NetworkImage(t.imageUrl),
                 ),
+              Text('Description: ${t.description}'),
+              Text('Is Private: ${t.isPrivate}'),
+              Text('Owner ID: ${t.ownerUid}'),
+            ],
+            ),
+          ),
         ),
-      ),
-    );
+      );
   }
 }

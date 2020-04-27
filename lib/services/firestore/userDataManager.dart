@@ -1,0 +1,54 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:teamapp/models/storageImage.dart';
+import 'package:teamapp/models/user.dart';
+import 'package:teamapp/services/firestore/firestoreManager.dart';
+
+class UserDataManager {
+  static final CollectionReference usersCollection = Firestore.instance.collection("users");
+
+  static Future<User> createUser(User user, File userImage) async {
+    DocumentReference docRef = await usersCollection.add({
+                                                           'first_name': user.firstName,
+                                                           'last_name': user.lastName,
+                                                           'birthday': user.birthday.toString(),
+                                                           'gender': user.gender
+                                                         });
+
+    // add and register image
+    StorageImage image = await StorageManager.saveImage(userImage, docRef.documentID);
+
+    docRef.updateData({'imageUrl': image.url, 'imagePath': image.path});
+
+    return User.fromDatabase(
+        uid: docRef.documentID,
+        remoteImage: image,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        gender: user.gender,
+        birthday: user.birthday
+        );
+  }
+
+  static Future<User> getUser(String uid) async {
+    User user;
+    DocumentSnapshot docSnap = await usersCollection.document(uid).get();
+
+    if (docSnap.exists) {
+      Map<String, dynamic> data = docSnap.data;
+      user = new User.fromDatabase(
+          uid: docSnap.documentID,
+          remoteImage: StorageImage(url: data['imageUrl'], path: data['imagePath']),
+          firstName: data['first_name'],
+          lastName: data['last_name'],
+          gender: data['gender'],
+          birthday: StorageManager.convertStringToDateTime(data['birthday'])
+          );
+    } else {
+      print('Tried to get nonexistent user id');
+    }
+
+    return user;
+  }
+}

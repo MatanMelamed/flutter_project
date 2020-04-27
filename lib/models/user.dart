@@ -1,18 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:teamapp/models/storageImage.dart';
 
 class User {
   String uid;
-  String first_name;
-  String last_name;
-  Image image;
+  StorageImage remoteImage;
 
-  User({String uid, String first_name, String last_name, Image image}) : this.image = image ?? defaultImage() {}
+  String firstName;
+  String lastName;
+  String gender;
+  DateTime birthday;
 
-  static defaultImage() {
-    return Image.asset("assets/images/default_profile_img.png");
-  }
+  User.fromDatabase({
+                      @required this.uid,
+                      @required this.remoteImage,
+                      @required this.firstName,
+                      @required this.lastName,
+                      @required this.gender,
+                      @required this.birthday
+                    });
 
-  static getBasicExample(){
-    return User(uid: "007",first_name: "Matan",last_name: "Melamed");
-  }
+  User.fromWithinApp({
+                       @required this.firstName,
+                       @required this.lastName,
+                       @required this.gender,
+                       @required this.birthday
+                     });
 }

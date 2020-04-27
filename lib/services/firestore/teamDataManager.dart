@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:teamapp/models/group.dart';
-import 'package:teamapp/models/storage_image.dart';
+import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/services/firestore/GroupDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
