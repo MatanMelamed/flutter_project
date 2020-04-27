@@ -20,6 +20,7 @@ class User {
                     });
 
   User.fromWithinApp({
+                       @required this.uid,
                        @required this.firstName,
                        @required this.lastName,
                        @required this.gender,

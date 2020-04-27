@@ -9,20 +9,28 @@ class UserDataManager {
   static final CollectionReference usersCollection = Firestore.instance.collection("users");
 
   static Future<User> createUser(User user, File userImage) async {
-    DocumentReference docRef = await usersCollection.add({
-                                                           'first_name': user.firstName,
-                                                           'last_name': user.lastName,
-                                                           'birthday': user.birthday.toString(),
-                                                           'gender': user.gender
-                                                         });
+    var data = {
+      'first_name': user.firstName,
+      'last_name': user.lastName,
+      'birthday': user.birthday.toString(),
+      'gender': user.gender
+    };
 
-    // add and register image
-    StorageImage image = await StorageManager.saveImage(userImage, docRef.documentID);
+    // create a ref to be created
+    DocumentReference docRef = usersCollection.document(user.uid);
 
+    // set new user with it's data
+    await docRef.setData(data);
+
+    // add image
+    StorageImage image = await StorageManager.saveImage(userImage, user.uid);
+
+    // update image remote details for usage and future changes.
     docRef.updateData({'imageUrl': image.url, 'imagePath': image.path});
 
+    // return the full user
     return User.fromDatabase(
-        uid: docRef.documentID,
+        uid: user.uid,
         remoteImage: image,
         firstName: user.firstName,
         lastName: user.lastName,

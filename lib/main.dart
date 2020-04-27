@@ -11,10 +11,14 @@ import 'package:teamapp/widgets/general/editViewImage.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+
+
+
   @override
   Widget build(BuildContext context) {
+    AuthService authService = AuthService();
     return StreamProvider.value(
-      value: AuthService().user_stream, // what the provider listens to
+      value: authService.userStream, // what the provider listens to
       child: MaterialApp(
         //home: AuthWrapper(),
         //home: DummyNavigateOnClick(w: TeamPage(team: ,)),
