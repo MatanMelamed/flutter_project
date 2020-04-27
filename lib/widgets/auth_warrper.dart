@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/authenticate/authenticate.dart';
-import 'file:///C:/Users/Eden/AndroidStudioProjects/flutter_project/lib/screens/home/home.dart';
+import 'package:teamapp/screens/home/home.dart';
 
 class AuthWrapper extends StatelessWidget {
   @override
