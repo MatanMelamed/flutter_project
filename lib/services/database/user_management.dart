@@ -33,15 +33,22 @@ class UserManagement {
     return usersCollections.document(uid).snapshots().map(_userFromSnapshot);
   }
 
+  Stream<List<UserData>> get allUser {
+    return usersCollections.snapshots().map(_allUserFromQuerySnapshot);
+  }
+
   UserData _userFromSnapshot(DocumentSnapshot snapshot) {
     return UserData(
         fullname: snapshot.data['fullname'] ?? '',
         gender: snapshot.data['gender'] ?? '',
         birthday: convertStringToDateTime(snapshot.data['birthday']) ??
             DateTime.now(),
-        uid: snapshot.data['uid'] ?? '' ,
-        imageurl: snapshot.data['imageurl']
-    );
+        uid: snapshot.data['uid'] ?? '',
+        imageurl: snapshot.data['imageurl']);
+  }
+
+  List<UserData> _allUserFromQuerySnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) => _userFromSnapshot(doc)).toList();
   }
 
   Future<String> saveProfileImage(File image) async {

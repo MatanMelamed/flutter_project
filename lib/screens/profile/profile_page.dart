@@ -4,8 +4,6 @@ import 'package:teamapp/models/user_data.dart';
 import 'package:teamapp/screens/profile/create_profile.dart';
 import 'package:teamapp/screens/profile/show_user.dart';
 import 'package:teamapp/widgets/clip_path.dart';
-import 'package:teamapp/services/database/user_management.dart';
-import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   UserData user ;
@@ -45,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
     print("context profil:" + context.toString());
     return Scaffold(
         body: Container(
-      color: Colors.black,
+      color: Colors.white,
       child: new Stack(
         children: <Widget>[
           ClipPath(
