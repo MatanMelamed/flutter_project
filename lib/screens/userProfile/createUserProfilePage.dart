@@ -249,7 +249,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                     selectedGenderCheckIcon: Icons.check,
                     // default Icons.check
                     onChanged: (Gender gender) {
-                      _gender = gender.toString();
+                      _gender = gender.toString().substring("Gender.".length);
                       print(gender);
                     },
                     equallyAligned: true,
@@ -273,7 +273,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
 
                         String error = validateError();
 
-                        if (false && error.isNotEmpty) {
+                        if (error.isNotEmpty) {
                           GetErrorDialog(context, 'Invalid Credentials', error);
                         }
                         else {
