@@ -10,9 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_localizations:
-    sdk: flutter
-  flutter_rounded_date_picker: 1.0.4
   cupertino_icons: ^0.1.2
   firebase_auth: ^0.15.5+3
   cloud_firestore: ^0.13.4+2
@@ -20,11 +17,12 @@ dependencies:
   provider: ^4.0.4
   flutter_svg: ^0.17.3+1
   flutter_spinkit: ^4.1.2+1
-  datetime_picker_formfield: ^1.0.0
   image_picker: ^0.6.0+9
+  image_cropper: ^1.2.1
+  photo_view: ^0.9.2
+  path_provider: ^1.6.7
   date_format:
   gender_selection: ^1.0.0
-  cached_network_image: ^2.0.0
 
 
 dev_dependencies:
@@ -35,6 +33,11 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/tests/1.jpg
+    - assets/tests/2.jpg
+    - assets/tests/3.png
+    - assets/tests/4.jpg
+    - assets/icons/options-halved.svg
     - assets/logos/facebook.jpg
     - assets/logos/facebook.svg
     - assets/logos/google.jpg
@@ -42,12 +45,14 @@ flutter:
     - assets/logos/teamapp_1.png
     - assets/logos/teamapp.png
 
-    - images/dog-image.jpg
     - assets/images/background_1.png
     - assets/images/background_2.png
     - assets/images/background_3.png
     - assets/images/background_4.png
-    - assets/images/user.png
+    - assets/images/default_profile_image.png
+    - assets/images/team.jpg
+    - assets/images/touch.svg
+
 
   fonts:
     - family: OpenSans

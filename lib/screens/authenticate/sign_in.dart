@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/authenticate/sign_up.dart';
 import 'package:teamapp/models/validator.dart';
+import 'package:teamapp/screens/userProfile/createUserProfilePage.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/theme/white.dart';
 import 'package:teamapp/widgets/authenticate/inputs.dart';
@@ -146,7 +147,7 @@ class _SignInState extends State<SignIn> {
         //widget.toggleView();
         //Navigator.push(context,PageSignUp());
 
-        Navigator.of(context).push(createRoute(SignUp()));
+        Navigator.of(context).push(createRoute(CreateUserPage()));
       },
       child: RichText(
         text: TextSpan(
@@ -237,7 +238,7 @@ class _SignInState extends State<SignIn> {
                       String error = '';
                       error += Validator.ValidateEmail(email);
                       error += error.isNotEmpty ? '\n\n' : '';
-                      error += Validator.ValidatePassword(password);
+                      //error += Validator.ValidatePassword(password);
 
                       print(error);
                       if (error.isNotEmpty) {
