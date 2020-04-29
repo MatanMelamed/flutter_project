@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/screens/Home/notifications_badge.dart';
-import 'package:teamapp/services/database/user_management.dart';
+import 'package:teamapp/services/firestore/userDataManager.dart';
+//import 'package:teamapp/services/database/user_management.dart';
 import 'feed.dart';
 import 'search.dart';
 import 'create.dart';
@@ -30,9 +31,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider.value(
-      value: UserManagement(uid: widget.uid).user,
-      child: DefaultTabController(
+//    return StreamProvider.value(
+//      value: UserDataManager(uid: widget.uid).user,
+//      value: UserDataManager.getUser(widget.uid),
+//    child: DefaultTabController(
+    return DefaultTabController(
         length: 3,
         child: Scaffold(
           appBar: AppBar(
@@ -87,7 +90,6 @@ class _HomePageState extends State<HomePage> {
             children: _pageOptions,
           )
         ),
-      ),
-    );
+      );
   }
 }

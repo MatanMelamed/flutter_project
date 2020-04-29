@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:teamapp/models/user_data.dart';
-import 'package:teamapp/screens/archive/page_transitions.dart';
-import 'package:teamapp/screens/profile/profile_page.dart';
+import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 
 
@@ -11,7 +9,7 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData>(context);
+    final user = Provider.of<User>(context);
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -28,12 +26,12 @@ class MainDrawer extends StatelessWidget {
                     margin: EdgeInsets.only(top:30,bottom: 10),
                     decoration: BoxDecoration( //OPTIONAL
                       shape: BoxShape.circle,
-                      image: DecorationImage(image: NetworkImage(user.imageurl),
+                      image: DecorationImage(image: NetworkImage(user.remoteImage.url),
                         fit: BoxFit.fill
                       )
                     ),
                   ),
-                  Text(user.fullname,style: TextStyle(color: Colors.white,fontSize: 22),),
+                  Text(user.firstName + user.lastName,style: TextStyle(color: Colors.white,fontSize: 22),),
                 ],
               ),
             ),
@@ -42,7 +40,7 @@ class MainDrawer extends StatelessWidget {
             leading: Icon(Icons.person),
             title: Text('Profile',style: TextStyle(fontSize: 18)),
             onTap: (){
-              Navigator.of(context).push(createRoute(ProfilePage(user: user)));
+//              Navigator.of(context).push(createRoute(ProfilePage(user: user)));
             },
           ),
           ListTile(

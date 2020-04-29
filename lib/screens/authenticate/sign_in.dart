@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
-import 'package:teamapp/screens/authenticate/sign_up.dart';
+//import 'package:teamapp/screens/authenticate/sign_up.dart';
 import 'package:teamapp/models/validator.dart';
 import 'package:teamapp/screens/userProfile/createUserProfilePage.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
