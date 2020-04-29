@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:teamapp/screens/Home/notifications_badge.dart';
-import 'package:teamapp/services/firestore/userDataManager.dart';
-//import 'package:teamapp/services/database/user_management.dart';
 import 'feed.dart';
 import 'search.dart';
 import 'create.dart';
@@ -11,9 +8,6 @@ import 'dart:async';
 
 
 class HomePage extends StatefulWidget {
-  final String uid ;
-
-  HomePage({this.uid});
 
   @override
   _HomePageState createState() => _HomePageState();
