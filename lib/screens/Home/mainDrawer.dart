@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 
+import '../archive/page_transitions.dart';
+import '../userProfile/mainUserProfilePage.dart';
+
+
 
 class MainDrawer extends StatelessWidget {
   final AuthService _authService = AuthService();
@@ -40,7 +44,7 @@ class MainDrawer extends StatelessWidget {
             leading: Icon(Icons.person),
             title: Text('Profile',style: TextStyle(fontSize: 18)),
             onTap: (){
-//              Navigator.of(context).push(createRoute(ProfilePage(user: user)));
+              Navigator.of(context).push(createRoute(MainUserProfilePage()));
             },
           ),
           ListTile(

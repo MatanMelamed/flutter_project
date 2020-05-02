@@ -52,6 +52,8 @@ flutter:
     - assets/images/default_profile_image.png
     - assets/images/team.jpg
     - assets/images/touch.svg
+    - assets/images/three_friends_play.png
+    - assets/images/number_one.jpg
 
 
   fonts:
