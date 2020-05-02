@@ -29,61 +29,63 @@ class _HomePageState extends State<HomePage> {
 //      value: UserDataManager(uid: widget.uid).user,
 //      value: UserDataManager.getUser(widget.uid),
 //    child: DefaultTabController(
-    return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-              title: Text("Title of the AppBar"),
-              centerTitle: true,
-              backgroundColor: Theme.of(context).primaryColor,
-              actions: <Widget>[
-                IconButton(
-                  icon: StreamBuilder(
-                    initialData: _notificationsCounter,
-                    stream: _notificationsController.stream,
-                    builder: (_, snapshot) => BadgeIcon(
-                      icon: Icon(Icons.notifications, size: 25),
-                      badgeCount: snapshot.data,
+    return SafeArea( // Optional !!
+      child: DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            appBar: AppBar(
+                title: Text("Title of the AppBar"),
+                centerTitle: true,
+                backgroundColor: Theme.of(context).primaryColor,
+                actions: <Widget>[
+                  IconButton(
+                    icon: StreamBuilder(
+                      initialData: _notificationsCounter,
+                      stream: _notificationsController.stream,
+                      builder: (_, snapshot) => BadgeIcon(
+                        icon: Icon(Icons.notifications, size: 25),
+                        badgeCount: snapshot.data,
+                      ),
                     ),
-                  ),
-                  onPressed: (() {
-                    print("notifications button clicked");
-                    this._notificationsCounter=0;
-                    _notificationsController.sink.add(_notificationsCounter);
-                  }),
-                ),
-                IconButton(
-                  icon: Icon(Icons.plus_one),
-                  onPressed: (() {
-                    setState(() {
-                      this._notificationsCounter++;
+                    onPressed: (() {
+                      print("notifications button clicked");
+                      this._notificationsCounter=0;
                       _notificationsController.sink.add(_notificationsCounter);
-                      print("increased notification");
-                    });
-                  }),
-
-                )
-              ],
-
-              bottom: TabBar(
-                tabs: <Widget>[
-                  Tab(
-                    text: "Home",
+                    }),
                   ),
-                  Tab(
-                    text: "Search",
-                  ),
-                  Tab(
-                    text: "Create",
+                  IconButton(
+                    icon: Icon(Icons.plus_one),
+                    onPressed: (() {
+                      setState(() {
+                        this._notificationsCounter++;
+                        _notificationsController.sink.add(_notificationsCounter);
+                        print("increased notification");
+                      });
+                    }),
+
                   )
                 ],
-              )
-            ),
-          drawer: MainDrawer(),
-          body: TabBarView(
-            children: _pageOptions,
-          )
+
+                bottom: TabBar(
+                  tabs: <Widget>[
+                    Tab(
+                      text: "Home",
+                    ),
+                    Tab(
+                      text: "Search",
+                    ),
+                    Tab(
+                      text: "Create",
+                    )
+                  ],
+                )
+              ),
+            drawer: MainDrawer(),
+            body: TabBarView(
+              children: _pageOptions,
+            )
+          ),
         ),
-      );
+    );
   }
 }
