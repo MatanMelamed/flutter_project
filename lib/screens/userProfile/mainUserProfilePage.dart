@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
+import 'package:teamapp/screens/friend/friendStatusButton.dart';
+import 'editUserProfilePage.dart';
 
 class MainUserProfilePage extends StatefulWidget {
   final User user;
@@ -13,20 +16,42 @@ class MainUserProfilePage extends StatefulWidget {
 }
 
 class _MainUserProfilePageState extends State<MainUserProfilePage> {
-  User user;
-  ImageProvider imageProvider;
+  User userProfile;
+  ImageProvider imageProfileProvider;
+  ImageProvider imageBackProvider;
 
   @override
   void initState() {
-    user = widget.user;
-    imageProvider = NetworkImage(user.remoteImage.url) ?? AssetImage(widget.defaultUserImage);
+    userProfile = widget.user;
+    imageProfileProvider = NetworkImage(userProfile.remoteImage.url) ?? AssetImage(widget.defaultUserImage);
+    imageBackProvider = NetworkImage('https://www.sageisland.com/wp-content/uploads/2017/06/beat-instagram-algorithm.jpg');
     super.initState();
+  }
+
+
+  Widget editButton(User currentOnlineUser, BuildContext context){
+    if (currentOnlineUser.uid != userProfile.uid){
+      return Icon(Icons.person);
+    }
+    else{
+      return IconButton(
+        icon: Icon(Icons.edit),
+        color: Colors.blueAccent,
+        tooltip: 'Increase volume by 10',
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditUserPage()));
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    var currentOnlineUser = Provider.of<User>(context, listen: true);
     return new Scaffold(
-      appBar: null,
+      appBar: new AppBar(
+        title: Text("Profile Page"),
+      ),
       body: new ListView(
         children: <Widget>[
           Container(
@@ -41,7 +66,7 @@ class _MainUserProfilePageState extends State<MainUserProfilePage> {
                     decoration: BoxDecoration(
                         image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: NetworkImage('https://www.sageisland.com/wp-content/uploads/2017/06/beat-instagram-algorithm.jpg')
+                            image: imageBackProvider
                         )
                     ),
                   ),)
@@ -55,7 +80,7 @@ class _MainUserProfilePageState extends State<MainUserProfilePage> {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: imageProvider,
+                          image: imageProfileProvider,
                         ),
                         border: Border.all(
                             color: Colors.white,
@@ -74,25 +99,21 @@ class _MainUserProfilePageState extends State<MainUserProfilePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(user.firstName + " " + user.lastName, style: TextStyle(
+                Text(userProfile.firstName + " " + userProfile.lastName, style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 28.0
                 )),
                 SizedBox(width: 5.0,),
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  color: Colors.blueAccent,
-                  tooltip: 'Increase volume by 10',
-                  onPressed: () {
-                    print('edit prass\n');
-                  },
-                ),
+                editButton(currentOnlineUser, context),
               ],
             ),
           ),
 
           SizedBox(height: 12.0,),
 
+          FriendStatusButton(otherUser: userProfile,) ,
+
+          SizedBox(height: 20.0,),
           Container(
             padding: EdgeInsets.only(left: 10.0,right: 10.0),
             child: Column(
@@ -100,7 +121,7 @@ class _MainUserProfilePageState extends State<MainUserProfilePage> {
                 Row(children: <Widget>[
                   ImageIcon(AssetImage('assets/icons/icons8-gender-100.png')),
                   SizedBox(width: 20.0,),
-                  Text(user.gender,  style: TextStyle(
+                  Text(userProfile.gender,  style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold),
                   )
@@ -110,7 +131,7 @@ class _MainUserProfilePageState extends State<MainUserProfilePage> {
                 Row(children: <Widget>[
                   ImageIcon(AssetImage('assets/icons/icons8-age-100.png')),
                   SizedBox(width: 20.0,),
-                  Text('age:  '+ (DateTime.now().difference(user.birthday).inDays/365).toStringAsFixed(1),  style: TextStyle(
+                  Text('age:  '+ (DateTime.now().difference(userProfile.birthday).inDays/365).toStringAsFixed(1),  style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold),
                   )
@@ -118,7 +139,7 @@ class _MainUserProfilePageState extends State<MainUserProfilePage> {
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );
