@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:teamapp/models/validator.dart';
+import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/theme/white.dart';
 import 'package:teamapp/widgets/authenticate/inputs.dart';

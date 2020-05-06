@@ -13,10 +13,18 @@ dependencies:
   cupertino_icons: ^0.1.2
   firebase_auth: ^0.15.5+3
   cloud_firestore: ^0.13.4+2
+  firebase_storage:
   provider: ^4.0.4
   flutter_svg: ^0.17.3+1
   flutter_spinkit: ^4.1.2+1
   flutter_typeahead: ^1.8.0
+  image_picker: ^0.6.0+9
+  image_cropper: ^1.2.1
+  photo_view: ^0.9.2
+  path_provider: ^1.6.7
+  date_format:
+  gender_selection: ^1.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -26,6 +34,13 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/tests/1.jpg
+    - assets/tests/2.jpg
+    - assets/tests/3.png
+    - assets/tests/4.jpg
+    - assets/icons/options-halved.svg
+    - assets/icons/icons8-gender-100.png
+    - assets/icons/icons8-age-100.png
     - assets/logos/facebook.jpg
     - assets/logos/facebook.svg
     - assets/logos/google.jpg
@@ -37,6 +52,11 @@ flutter:
     - assets/images/background_2.png
     - assets/images/background_3.png
     - assets/images/background_4.png
+    - assets/images/default_profile_image.png
+    - assets/images/team.jpg
+    - assets/images/touch.svg
+    - assets/images/three_friends_play.png
+    - assets/images/number_one.jpg
 
 
   fonts:

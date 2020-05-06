@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
-import 'package:teamapp/screens/authenticate/sign_up.dart';
+//import 'package:teamapp/screens/authenticate/sign_up.dart';
 import 'package:teamapp/models/validator.dart';
+import 'package:teamapp/screens/userProfile/createUserProfilePage.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/theme/white.dart';
 import 'package:teamapp/widgets/authenticate/inputs.dart';
@@ -146,7 +147,7 @@ class _SignInState extends State<SignIn> {
         //widget.toggleView();
         //Navigator.push(context,PageSignUp());
 
-        Navigator.of(context).push(createRoute(SignUp()));
+        Navigator.of(context).push(createRoute(CreateUserPage()));
       },
       child: RichText(
         text: TextSpan(
@@ -177,7 +178,7 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+      return SafeArea(
       child: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -237,7 +238,7 @@ class _SignInState extends State<SignIn> {
                       String error = '';
                       error += Validator.ValidateEmail(email);
                       error += error.isNotEmpty ? '\n\n' : '';
-                      error += Validator.ValidatePassword(password);
+                      //error += Validator.ValidatePassword(password);
 
                       print(error);
                       if (error.isNotEmpty) {
@@ -246,7 +247,7 @@ class _SignInState extends State<SignIn> {
                         setState(() => loading = true);
                         var result = await _auth.signInWithEmailAndPassword(email, password);
                         if (result == null) {
-                          loading = false;
+                          setState(() => loading = false);
                           error = 'Could not sign in with those credentials';
                           GetErrorDialog(context, 'Invalid Credentials', error);
                         }

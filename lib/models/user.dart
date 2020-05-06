@@ -1,7 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:teamapp/models/storageImage.dart';
+
 class User {
+  String uid;
+  StorageImage remoteImage;
+  String firstName;
+  String lastName;
+  String gender;
+  DateTime birthday;
 
-final String uid;
+  User.fromDatabase({
+                      @required this.uid,
+                      @required this.remoteImage,
+                      @required this.firstName,
+                      @required this.lastName,
+                      @required this.gender,
+                      @required this.birthday
+                    });
 
-User({this.uid});
 
+  User.fromWithinApp({
+                       @required this.uid,
+                       @required this.firstName,
+                       @required this.lastName,
+                       @required this.gender,
+                       @required this.birthday
+                     });
 }
