@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
+import 'package:teamapp/screens/friend/searchUsers.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
-
-import '../archive/page_transitions.dart';
-import '../userProfile/mainUserProfilePage.dart';
-
-
+import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
 
 class MainDrawer extends StatelessWidget {
   final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
+    User user = Provider.of<User>(context, listen: true);
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -29,13 +26,13 @@ class MainDrawer extends StatelessWidget {
                     height: 100,
                     margin: EdgeInsets.only(top:30,bottom: 10),
                     decoration: BoxDecoration( //OPTIONAL
-                      shape: BoxShape.circle,
-                      image: DecorationImage(image: NetworkImage(user.remoteImage.url),
-                        fit: BoxFit.fill
-                      )
+                        shape: BoxShape.circle,
+                        image: DecorationImage(image: NetworkImage(user.remoteImage.url),
+                            fit: BoxFit.fill
+                        )
                     ),
                   ),
-                  Text(user.firstName + user.lastName,style: TextStyle(color: Colors.white,fontSize: 22),),
+                  Text(user.firstName + " " +user.lastName,style: TextStyle(color: Colors.white,fontSize: 22),),
                 ],
               ),
             ),
@@ -44,13 +41,15 @@ class MainDrawer extends StatelessWidget {
             leading: Icon(Icons.person),
             title: Text('Profile',style: TextStyle(fontSize: 18)),
             onTap: (){
-              Navigator.of(context).push(createRoute(MainUserProfilePage()));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainUserProfilePage(user: user)));
             },
           ),
           ListTile(
             leading: Icon(Icons.group),
             title: Text('friends',style: TextStyle(fontSize: 18)),
-            onTap: null,
+            onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) =>SearchUsers()));
+            },
           ),
           ListTile(
             leading: Icon(Icons.people),
