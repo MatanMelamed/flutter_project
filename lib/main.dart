@@ -23,8 +23,7 @@ class MyApp extends StatelessWidget {
         //home: AuthWrapper(),
         //home: DummyNavigateOnClick(w: TeamPage(team: ,)),
         //home: DummyNavigateOnClick(w: FullScreenImage()),
-        //home: Tries(),
-        home: AddImagesTester(),
+        home: Tries(),
       ),
     );
   }
