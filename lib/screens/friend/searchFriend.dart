@@ -3,19 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/friend/searchByName.dart';
-import 'package:teamapp/services/firestore/searchByName/userSearchByName.dart';
+import 'package:teamapp/services/firestore/searchByName/friendSearchByName.dart';
 
-class SearchUsers extends StatefulWidget {
-
+class SearchFriends extends StatefulWidget {
   @override
-  _SearchUsersState createState() => new _SearchUsersState();
+  _SearchFriendsState createState() => new _SearchFriendsState();
 }
 
-class _SearchUsersState extends State<SearchUsers> {
+class _SearchFriendsState extends State<SearchFriends> {
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: true);
-    return SearchByName(
-        user: user, searchUserByName: UserSearchByName(), title: 'Search New Friend',);
+    return SearchByName(user: user, searchUserByName: FriendSearchByName(), title: 'Friends',);
   }
 }

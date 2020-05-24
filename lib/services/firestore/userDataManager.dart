@@ -5,7 +5,7 @@ import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 
-class UserDataManager {
+class UserDataManager{
   static final CollectionReference usersCollection =
       Firestore.instance.collection("users");
 
@@ -103,10 +103,5 @@ class UserDataManager {
     return user;
   }
 
-  static searchByName(String searchField) {
-    return usersCollection
-        .where('searchKey',
-            isEqualTo: searchField.substring(0, 1).toUpperCase())
-        .getDocuments();
-  }
+
 }
