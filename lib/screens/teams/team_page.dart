@@ -14,7 +14,7 @@ import 'package:teamapp/widgets/general/editViewImage.dart';
 import 'package:teamapp/widgets/general/narrow_returnbar.dart';
 
 class TeamPage extends StatefulWidget {
-  Team team;
+  final Team team;
 
   TeamPage({this.team});
 
@@ -24,6 +24,12 @@ class TeamPage extends StatefulWidget {
 
 class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
 
+  bool isAdmin;
+  @override
+  void initState() {
+    super.initState();
+    isAdmin = widget.team.ownerUid == "C5h3rKCR9Rh7qbGmfc3didEuZlu1";
+  }
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -49,13 +55,15 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                     SizedBox(width: 25),
                     DiamondImage(
                       size: 110,
+                      imageProvider: NetworkImage(widget.team.remoteImage.url),
                       heroTag: "teamProfileImage",
                       callback: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) {
                           return EditViewImage(
-                            imageProvider: AssetImage("assets/images/default_profile_image.png"),
+                            imageProvider: NetworkImage(widget.team.remoteImage.url),
                             onSaveNewImageFile: (file) {},
                             heroTag: "teamProfileImage",
+                            mode: isAdmin ? EditViewImageMode.ViewAndEdit : EditViewImageMode.ViewOnly,
                           );
                         }));
                       },
