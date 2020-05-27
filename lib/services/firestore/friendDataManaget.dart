@@ -1,7 +1,7 @@
 //import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'file:///C:/Users/Eden/AndroidStudioProjects/flutter_project/lib/services/firestore/searchByName/searchUserByName.dart';
+import 'searchByName/searchUserByName.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 
 class FriendDataManager{
