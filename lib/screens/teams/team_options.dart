@@ -46,8 +46,8 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
   void initState() {
     super.initState();
     team = widget.team;
-    // isAdmin = team.ownerUid == "C5h3rKCR9Rh7qbGmfc3didEuZlu1";
-    isAdmin = false;
+    isAdmin = team.ownerUid == "C5h3rKCR9Rh7qbGmfc3didEuZlu1";
+//    isAdmin = false;
     loadUsers();
   }
 
@@ -162,33 +162,38 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                   ],
                 ),
               ),
-              Container(
-                padding: EdgeInsets.only(bottom: 25),
-                width: double.infinity,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Text(
-                      !team.isPublic
-                          ? "This team is private."
-                          : "This team is public.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black87, fontSize: 16),
-                    ),
-                    !isAdmin
-                        ? SizedBox(height: 0, width: 0)
-                        : Positioned(
-                            right: 30,
-                            child: Switch(
-                              value: team.isPublic,
-                              onChanged: (value) {
-                                print(value);
-                                TeamDataManager.updateTeamPrivacy(team, value);
-                                setState(() {});
-                              },
-                            ),
-                          )
-                  ],
+              Tooltip(
+                message: !team.isPublic
+                    ? "Private means the team won't show up in searches."
+                    : "Public means the team will show up in searches.",
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 25),
+                  width: double.infinity,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Text(
+                        !team.isPublic
+                            ? "This team is private."
+                            : "This team is public.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black87, fontSize: 16),
+                      ),
+                      !isAdmin
+                          ? SizedBox(height: 0, width: 0)
+                          : Positioned(
+                              right: 30,
+                              child: Switch(
+                                value: team.isPublic,
+                                onChanged: (value) {
+                                  print(value);
+                                  TeamDataManager.updateTeamPrivacy(team, value);
+                                  setState(() {});
+                                },
+                              ),
+                            )
+                    ],
+                  ),
                 ),
               ),
               Container(
