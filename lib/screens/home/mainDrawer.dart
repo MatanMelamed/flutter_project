@@ -29,7 +29,7 @@ class MainDrawer extends StatelessWidget {
                         //OPTIONAL
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                            image: NetworkImage(user.remoteImage.url),
+                            image: NetworkImage('https://www.sageisland.com/wp-content/uploads/2017/06/beat-instagram-algorithm.jpg'),//user.remoteImage.url),
                             fit: BoxFit.fill)),
                   ),
                   Text(

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:teamapp/Tests/auto_login.dart';
-import 'package:teamapp/Tests/creators/viewTeamPageTester.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
+import 'package:teamapp/widgets/auth_warrper.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +12,7 @@ class MyApp extends StatelessWidget {
     return StreamProvider.value(
       value: authService.userStream, // what the provider listens to
       child: MaterialApp(
-        home: AutoLogin(user: DummyUsers.Elizabeth,child: ViewTeamPageTester()),
+        home: AuthWrapper(),
         // home: ImgSaving(),
       ),
     );
