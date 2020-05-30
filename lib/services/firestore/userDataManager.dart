@@ -6,10 +6,12 @@ import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 
 class UserDataManager {
-  static final CollectionReference usersCollection = Firestore.instance.collection("users");
+  static final CollectionReference usersCollection =
+      Firestore.instance.collection("users");
 
   static Future<User> createUser(User user, File userImage) async {
     var data = {
+      'email': user.email,
       'first_name': user.firstName,
       'last_name': user.lastName,
       'birthday': user.birthday.toString(),
@@ -30,13 +32,13 @@ class UserDataManager {
 
     // return the full user
     return User.fromDatabase(
+        email: user.email,
         uid: user.uid,
         remoteImage: image,
         firstName: user.firstName,
         lastName: user.lastName,
         gender: user.gender,
-        birthday: user.birthday
-        );
+        birthday: user.birthday);
   }
 
   static Future<User> getUser(String uid) async {
@@ -46,13 +48,14 @@ class UserDataManager {
     if (docSnap.exists) {
       Map<String, dynamic> data = docSnap.data;
       user = new User.fromDatabase(
+        email: data['email'],
           uid: docSnap.documentID,
-          remoteImage: StorageImage(url: data['imageUrl'], path: data['imagePath']),
+          remoteImage:
+              StorageImage(url: data['imageUrl'], path: data['imagePath']),
           firstName: data['first_name'],
           lastName: data['last_name'],
           gender: data['gender'],
-          birthday: StorageManager.convertStringToDateTime(data['birthday'])
-          );
+          birthday: StorageManager.convertStringToDateTime(data['birthday']));
     } else {
       print('Tried to get nonexistent user id');
     }
