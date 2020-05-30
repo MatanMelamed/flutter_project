@@ -5,7 +5,6 @@ class User {
   String email;
   String uid;
   StorageImage remoteImage;
-
   String firstName;
   String lastName;
   String gender;
@@ -19,6 +18,7 @@ class User {
       @required this.lastName,
       @required this.gender,
       @required this.birthday});
+
 
   User.fromWithinApp(
       {@required this.email,

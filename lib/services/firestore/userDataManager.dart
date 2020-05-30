@@ -5,6 +5,7 @@ import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 
+
 class UserDataManager {
   static final CollectionReference usersCollection =
       Firestore.instance.collection("users");
@@ -15,7 +16,8 @@ class UserDataManager {
       'first_name': user.firstName,
       'last_name': user.lastName,
       'birthday': user.birthday.toString(),
-      'gender': user.gender
+      'gender': user.gender,
+      'searchKey': user.firstName.substring(0, 1).toUpperCase()
     };
 
     // create a ref to be created
@@ -62,6 +64,7 @@ class UserDataManager {
 
     return user;
   }
+
 
 
 }

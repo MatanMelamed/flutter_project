@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/authenticate/sign_in.dart';
+
 import 'package:teamapp/screens/authenticate/sign_up.dart';
 import 'package:teamapp/screens/teams/team_page.dart';
 
