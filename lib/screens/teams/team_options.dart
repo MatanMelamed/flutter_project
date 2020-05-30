@@ -16,8 +16,9 @@ import 'package:teamapp/widgets/teams/team_user_dialog.dart';
 
 class TeamOptionsPage extends StatefulWidget {
   final Team team;
+  final bool isAdmin;
 
-  TeamOptionsPage({this.team});
+  TeamOptionsPage({@required this.team, @required this.isAdmin});
 
   @override
   _TeamOptionsPageState createState() => _TeamOptionsPageState();
@@ -27,14 +28,12 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
   Team team;
   List<User> users;
   bool loading;
-  bool isAdmin;
 
   loadUsers() async {
     setState(() => loading = true);
     users = [];
     UsersList usersList =
         await UsersListDataManager.getUsersList('v7m9ZAgQLxc3ZJ3JRXdr');
-    // UsersList usersList = await UsersListDataManager.getUsersList(team.ulid);
     for (final uid in usersList.membersUids) {
       User user = await UserDataManager.getUser(uid);
       users.add(user);
@@ -46,8 +45,6 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
   void initState() {
     super.initState();
     team = widget.team;
-    isAdmin = team.ownerUid == "C5h3rKCR9Rh7qbGmfc3didEuZlu1";
-//    isAdmin = false;
     loadUsers();
   }
 
@@ -67,28 +64,28 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              IconButton(
-                icon: Icon(Icons.account_circle),
-                onPressed: () {
-                  isAdmin = !isAdmin;
-                  setState(() {});
-                },
-              ),
+//              IconButton(
+//                icon: Icon(Icons.account_circle),
+//                onPressed: () {
+//                  isAdmin = !isAdmin;
+//                  setState(() {});
+//                },
+//              ),
               GetNarrowReturnBar(context),
               SizedBox(height: 30),
               DiamondImage(
                 size: 150,
-                imageProvider: NetworkImage(team.remoteImage.url),
+                imageProvider: NetworkImage(team.remoteStorageImage.url),
                 callback: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return EditViewImage(
-                      imageProvider: NetworkImage(team.remoteImage.url),
-                      onSaveNewImageFile: (file) {
-                        TeamDataManager.updateTeamImage(team, file);
+                      imageProvider: NetworkImage(team.remoteStorageImage.url),
+                      onSaveNewImageFile: (file) async{
+                        await TeamDataManager.updateTeamImage(team, file);
                         setState(() {});
                       },
                       heroTag: "teamProfileImage",
-                      mode: isAdmin
+                      mode: widget.isAdmin
                           ? EditViewImageMode.ViewAndEdit
                           : EditViewImageMode.ViewOnly,
                     );
@@ -111,7 +108,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
                     ),
-                    !isAdmin
+                    !widget.isAdmin
                         ? SizedBox(height: 0, width: 0)
                         : Positioned(
                             right: 30,
@@ -141,7 +138,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black54, fontSize: 16),
                     ),
-                    !isAdmin
+                    !widget.isAdmin
                         ? SizedBox(height: 0, width: 0)
                         : Positioned(
                             right: 30,
@@ -179,7 +176,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.black87, fontSize: 16),
                       ),
-                      !isAdmin
+                      !widget.isAdmin
                           ? SizedBox(height: 0, width: 0)
                           : Positioned(
                               right: 30,
@@ -187,7 +184,8 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                                 value: team.isPublic,
                                 onChanged: (value) {
                                   print(value);
-                                  TeamDataManager.updateTeamPrivacy(team, value);
+                                  TeamDataManager.updateTeamPrivacy(
+                                      team, value);
                                   setState(() {});
                                 },
                               ),
@@ -225,7 +223,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                         )
                       ],
                     ),
-                    !isAdmin
+                    !widget.isAdmin
                         ? SizedBox(height: 0, width: 0)
                         : Positioned(
                             right: 10,
@@ -289,7 +287,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
               context: context,
               builder: (ctx) => TeamUserDialog(
                     user: user,
-                    isAdmin: isAdmin,
+                    isAdmin: widget.isAdmin,
                     viewProfileCallback: () {}, // todo implement view user
                     removeUserCallback: () {
                       _removeUser(user);

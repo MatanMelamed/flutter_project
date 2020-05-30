@@ -9,7 +9,6 @@ class ViewTeamPageTester extends StatefulWidget {
 }
 
 class _ViewTeamPageTesterState extends State<ViewTeamPageTester> {
-
   Team team;
 
   loadTeam() async {
@@ -19,14 +18,12 @@ class _ViewTeamPageTesterState extends State<ViewTeamPageTester> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadTeam();
   }
 
   @override
   Widget build(BuildContext context) {
-    return team == null ? Container() :
-    TeamPage(team: team);
+    return team == null ? Container() : TeamPage(team: team);
   }
 }

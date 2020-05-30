@@ -9,11 +9,9 @@ import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 
 class TeamDataManager {
-  static final CollectionReference teamsCollection =
-      Firestore.instance.collection("teams");
+  static final CollectionReference teamsCollection = Firestore.instance.collection("teams");
 
-  static Future<Team> createTeam(Team team, File teamImage,
-      {UsersList group}) async {
+  static Future<Team> createTeam(Team team, File teamImage, {UsersList group}) async {
     DocumentReference docRef = await teamsCollection.add({
       'name': team.name,
       'description': team.description,
@@ -21,22 +19,17 @@ class TeamDataManager {
       'owner': team.ownerUid,
     });
     // register group on firestore
-    UsersList createdUsersList = await UsersListDataManager.createUsersList(
-        group ?? UsersList.fromWithinApp(membersUids: []));
+    UsersList createdUsersList =
+        await UsersListDataManager.createUsersList(group ?? UsersList.fromWithinApp(membersUids: []));
 
     // add and register image
-    StorageImage image =
-        await StorageManager.saveImage(teamImage, docRef.documentID);
+    StorageImage image = await StorageManager.saveImage(teamImage, 'teamProfiles/' + docRef.documentID);
 
-    docRef.updateData({
-      'imageUrl': image.url,
-      'imagePath': image.path,
-      'ulid': createdUsersList.ulid
-    });
+    docRef.updateData({'imageUrl': image.url, 'imagePath': image.path, 'ulid': createdUsersList.ulid});
 
     return Team.fromDatabase(
         tid: docRef.documentID,
-        remoteImage: image,
+        remoteStorageImage: image,
         ulid: createdUsersList.ulid,
         name: team.name,
         description: team.description,
@@ -65,8 +58,9 @@ class TeamDataManager {
   }
 
   static void updateTeamImage(Team team, File newImage) async {
-    team.remoteImage =
-        await StorageManager.updateImage(newImage, team.remoteImage.path);
+    team.remoteStorageImage = await StorageManager.updateStorageImage(newImage, team.remoteStorageImage);
+    DocumentReference docRef = teamsCollection.document(team.tid);
+    docRef.updateData({'imageUrl': team.remoteStorageImage.url});
   }
 
   static void updateTeamPrivacy(Team team, bool newValue) {
@@ -83,8 +77,7 @@ class TeamDataManager {
       Map<String, dynamic> data = docSnap.data;
       team = new Team.fromDatabase(
           tid: docSnap.documentID,
-          remoteImage:
-              StorageImage(url: data['imageUrl'], path: data['imagePath']),
+          remoteStorageImage: StorageImage(url: data['imageUrl'], path: data['imagePath']),
           ulid: data['ulid'],
           name: data['name'],
           description: data['description'],

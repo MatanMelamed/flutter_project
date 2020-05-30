@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/team.dart';
+import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/teams/team_options.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
@@ -16,20 +17,34 @@ import 'package:teamapp/widgets/general/narrow_returnbar.dart';
 class TeamPage extends StatefulWidget {
   final Team team;
 
-  TeamPage({this.team});
+  TeamPage({@required this.team});
 
   @override
   _TeamPageState createState() => _TeamPageState();
 }
 
 class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
-
   bool isAdmin;
+
   @override
   void initState() {
     super.initState();
-    isAdmin = widget.team.ownerUid == "C5h3rKCR9Rh7qbGmfc3didEuZlu1";
+    isAdmin = false;
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    checkIsAdmin();
+  }
+
+  checkIsAdmin() async {
+    final user = Provider.of<User>(context);
+    setState(() {
+      isAdmin = widget.team.ownerUid == user.uid;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -55,15 +70,19 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                     SizedBox(width: 25),
                     DiamondImage(
                       size: 110,
-                      imageProvider: NetworkImage(widget.team.remoteImage.url),
+                      imageProvider: NetworkImage(widget.team.remoteStorageImage.url),
                       heroTag: "teamProfileImage",
                       callback: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
                           return EditViewImage(
-                            imageProvider: NetworkImage(widget.team.remoteImage.url),
+                            imageProvider:
+                                NetworkImage(widget.team.remoteStorageImage.url),
                             onSaveNewImageFile: (file) {},
                             heroTag: "teamProfileImage",
-                            mode: isAdmin ? EditViewImageMode.ViewAndEdit : EditViewImageMode.ViewOnly,
+                            mode: isAdmin
+                                ? EditViewImageMode.ViewAndEdit
+                                : EditViewImageMode.ViewOnly,
                           );
                         }));
                       },
@@ -73,8 +92,11 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                       child: GestureDetector(
                         onTap: () {
                           print('team options clicked');
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) => TeamOptionsPage(team: widget.team)));
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => TeamOptionsPage(
+                                    team: widget.team,
+                                    isAdmin: isAdmin,
+                                  )));
                         },
                         child: Container(
                           padding: EdgeInsets.only(top: 13),
@@ -92,16 +114,21 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                             padding: const EdgeInsets.only(top: 10, left: 5),
                             child: Text(
                               widget.team.name,
-                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                           ),
                           Container(
                             height: 85,
-                            padding: const EdgeInsets.only(top: 10, left: 0, right: 3),
+                            padding: const EdgeInsets.only(
+                                top: 10, left: 0, right: 3),
                             child: Text(
                               widget.team.description,
                               //overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black38),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black38),
                             ),
                           ),
                         ],
@@ -129,8 +156,12 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                           ),
                           indicatorColor: Colors.orange,
                           tabs: <Widget>[
-                            Tab(child: Text('Meetups', style: TextStyle(fontSize: 18))),
-                            Tab(child: Text('Messages', style: TextStyle(fontSize: 18))),
+                            Tab(
+                                child: Text('Meetups',
+                                    style: TextStyle(fontSize: 18))),
+                            Tab(
+                                child: Text('Messages',
+                                    style: TextStyle(fontSize: 18))),
                           ],
                         ),
                       ),
