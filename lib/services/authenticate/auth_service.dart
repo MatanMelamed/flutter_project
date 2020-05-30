@@ -9,6 +9,7 @@ class AuthService {
 
   // singleton
   static final AuthService _authService = AuthService._internal();
+
   factory AuthService() => _authService;
 
   // updates
@@ -19,7 +20,7 @@ class AuthService {
   static bool isInCreationMode = false;
   static String futureUid = '';
 
-  AuthService._internal(){
+  AuthService._internal() {
     _streamController = StreamController<User>();
     userStateChanges = _streamController.stream.asBroadcastStream();
     _firebaseAuth.onAuthStateChanged.listen((data) async {
@@ -34,6 +35,12 @@ class AuthService {
         futureUid = data.uid;
       }
     });
+  }
+
+  void updateCurrentUser() async {
+    String uid = (await _firebaseAuth.currentUser()).uid;
+    User user = await UserDataManager.getUser(uid);
+    _streamController.add(user);
   }
 
   _notifyOnUserLogout() async {
@@ -55,7 +62,7 @@ class AuthService {
     isInCreationMode = true;
   }
 
-  void endCreationMode() async{
+  void endCreationMode() async {
     print('authenticaton service is off create mode now.');
     isInCreationMode = false;
     if (futureUid.isNotEmpty) {
@@ -72,7 +79,8 @@ class AuthService {
   }
 
   // sign returns the newly created firebase user
-  Future<FirebaseUser> signInWithEmailAndPassword(String email, String password) async {
+  Future<FirebaseUser> signInWithEmailAndPassword(
+      String email, String password) async {
     try {
       AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -84,7 +92,8 @@ class AuthService {
   }
 
   // register returns the newly created firebase user
-  Future<FirebaseUser> registerWithEmailAndPassword(String email, String password) async {
+  Future<FirebaseUser> registerWithEmailAndPassword(
+      String email, String password) async {
     try {
       AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
