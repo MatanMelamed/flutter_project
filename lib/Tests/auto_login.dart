@@ -15,15 +15,21 @@ enum DummyUsers{
 
 class AutoLogin extends StatelessWidget {
 
-  final DummyUsers user;
+  DummyUsers user;
+  Map<DummyUsers,String> userToUid;
 
-  AutoLogin(this.user);
+  AutoLogin(this.user){
+    userToUid = new Map();
+    userToUid[DummyUsers.Mike] = '6XmkIWBQOQTSH1DKNkqpNl697mF3';
+    userToUid[DummyUsers.Motek] = '3vgCItKZeXNQemeewn59rfrZFfV2';
+    userToUid[DummyUsers.Elizabeth] = 'C5h3rKCR9Rh7qbGmfc3didEuZlu1';
+    userToUid[DummyUsers.Michael] = 'lLV6SK8LhiTLXLCgfYbx6iDLOYs1';
+  }
 
-  login(){
-    String email;
-    if(user == DummyUsers.Motek){
-      email = ""
-    }
+  login() async {
+    AuthService authService = AuthService();
+    String email = (await UserDataManager.getUser(userToUid[user])).e;
+    authService.signInWithEmailAndPassword(email, password)
   }
 
   @override
