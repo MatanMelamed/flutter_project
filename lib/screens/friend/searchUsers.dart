@@ -15,7 +15,12 @@ class _SearchUsersState extends State<SearchUsers> {
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: true);
-    return SearchByName(
-        user: user, searchUserByName: UserSearchByName(), title: 'Search New Friend',);
+    return new Scaffold(
+        appBar: new AppBar(
+          title: Text('Search New Friend'),
+        ),
+        body: SearchByName(
+          user: user, searchUserByName: UserSearchByName(), showAll: false,)
+    );
   }
 }

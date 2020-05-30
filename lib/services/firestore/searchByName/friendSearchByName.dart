@@ -12,7 +12,8 @@ class FriendSearchByName implements SearchUserByName {
     UserSearchByName.searchByNameDocument(searchField)
         .then((QuerySnapshot docs) async {
       for (int i = 0; i < docs.documents.length; ++i) {
-        DocumentSnapshot documentFriendSnapshot =  await friend.document(docs.documents[i].documentID).get();
+        DocumentSnapshot documentFriendSnapshot =
+            await friend.document(docs.documents[i].documentID).get();
         if (documentFriendSnapshot.exists)
           _queryResultSet.add(docs.documents[i]);
       }
@@ -20,4 +21,19 @@ class FriendSearchByName implements SearchUserByName {
     return _queryResultSet;
   }
 
+  @override
+  Future<List> getAll({currentUser}) async {
+    var _queryResultSet = [];
+    var friend = _friendRef.document(currentUser).collection('userFriends');
+    return UserSearchByName.usersCollection
+        .getDocuments()
+        .then((QuerySnapshot docs) async {
+      for (int i = 0; i < docs.documents.length; ++i) {
+        DocumentSnapshot documentFriendSnapshot =
+            await friend.document(docs.documents[i].documentID).get();
+        if (documentFriendSnapshot.exists)
+          _queryResultSet.add(docs.documents[i]);
+      }
+    }).then((value) => _queryResultSet);
+  }
 }
