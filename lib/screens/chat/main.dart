@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:teamapp/screens/chat/auth_wrapper.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 
+import 'package:teamapp/screens/chat/auth_wrapper.dart';
 
 void main() => runApp(MyApp());
 

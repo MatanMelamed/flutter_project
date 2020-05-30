@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:teamapp/models/user.dart';
+import 'package:teamapp/widgets/chat/message.dart';
+import 'package:teamapp/widgets/chat/send_button.dart';
+import 'package:teamapp/widgets/general/diamond_image.dart';
 
 class Chat extends StatefulWidget {
-  static const String id = "CHAT";
-  final FirebaseUser user;
+  final User user;
 
   Chat({Key key, this.user}) : super(key: key);
 
@@ -13,16 +16,18 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final Firestore _fireStore = Firestore.instance;
   TextEditingController msgController = TextEditingController();
   ScrollController scrollController = ScrollController();
 
-  void _delete(bool x) {
-    if (x)
-      _fireStore.collection('messages').getDocuments().then((snapshot) {
-        for (DocumentSnapshot ds in snapshot.documents) ds.reference.delete();
-      });
+  void _delete() {
+    /*
+    * Only for debugging purposes !
+    * Deletes all 'message' collection from the DB.
+    * */
+    _fireStore.collection('messages').getDocuments().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.documents) ds.reference.delete();
+    });
   }
 
   Widget _streamBuilder(
@@ -31,67 +36,66 @@ class _ChatState extends State<Chat> {
       return Center(
         child: CircularProgressIndicator(),
       );
-    List<DocumentSnapshot> docs = snapShot.data.documents;
+    else {
+      var myID = Provider.of<User>(cxt).uid;
+      var docs = snapShot.data.documents;
 
-    List<Widget> messages = docs
-        .map(
-          (doc) => Message(
-            from: doc.data['from'],
-            message: doc.data['message'],
-            me: widget.user.email == doc.data['from'],
-            timeStamp: doc.data['timestamp'],
-          ),
-        )
-        .toList();
-
-    // Only for help and Debug !
-    this._delete(false);
-
-    return ListView(
-      controller: scrollController,
-      children: messages,
-    );
+      return ListView.builder(
+        padding: EdgeInsets.all(10.0),
+        itemBuilder: (context, index) {
+          return Message(
+            userID: docs[index].data['userID'],
+            message: docs[index].data['message'],
+            timestamp: docs[index].data['timestamp'],
+            me: myID == docs[index].data['userID'],
+          );
+        },
+        itemCount: docs.length,
+        controller: scrollController,
+      );
+    }
   }
 
   Future<void> _onSend() async {
     if (msgController.text.length > 0) {
       await _fireStore.collection("messages").add({
         "message": msgController.text,
-        "from": widget.user.email,
+        "userID": widget.user.uid,
         "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
       });
 
       msgController.clear();
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,
-        curve: Curves.easeOut,
-        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+        duration: const Duration(milliseconds: 600),
       );
     }
   }
 
-
+  Widget _getUserImage() {
+    return DiamondImage(
+          imageProvider: NetworkImage(widget.user.remoteImage.url),
+        ) ??
+        Image.asset("assets/images/default_profile_image.png");
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         leading: Hero(
           tag: 'logo',
           child: Container(
             height: 40.0,
-            child: Image.asset("assets/images/default_profile_image.png"),
+            child: this._getUserImage(),
           ),
         ),
         title: Text("Tensor Chat"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
-            onPressed: () {
-              _auth.signOut();
-              Navigator.of(context).popUntil((r) => r.isFirst);
-            },
+            onPressed: () => Navigator.of(context).pop(),
           )
         ],
       ),
@@ -104,7 +108,7 @@ class _ChatState extends State<Chat> {
                 stream: this
                     ._fireStore
                     .collection("messages")
-                    .orderBy('timestamp')
+                    .orderBy("timestamp")
                     .snapshots(),
                 builder: _streamBuilder,
               ),
@@ -122,7 +126,6 @@ class _ChatState extends State<Chat> {
                     ),
                   ),
                   SendButton(
-                    text: "Send",
                     onSend: this._onSend,
                   ),
                 ],
@@ -130,56 +133,6 @@ class _ChatState extends State<Chat> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class SendButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onSend;
-
-  SendButton({Key key, this.text, this.onSend}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(5.0),
-      child: FlatButton(
-        color: Colors.blueGrey,
-        onPressed: this.onSend,
-        child: Text(this.text),
-      ),
-    );
-  }
-}
-
-class Message extends StatelessWidget {
-  final String from;
-  final String message;
-  final String timeStamp;
-  final bool me;
-
-  Message({this.from, this.message, this.me, this.timeStamp});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment:
-            this.me ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(from),
-          Material(
-            color: this.me ? Colors.teal : Colors.red,
-            borderRadius: BorderRadius.circular(10.0),
-            elevation: 6.0,
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-              child: Text(this.message),
-            ),
-          ),
-        ],
       ),
     );
   }
