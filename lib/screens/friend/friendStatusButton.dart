@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/firestore/friendDataManaget.dart';
+import 'package:teamapp/widgets/loading.dart';
 
 class FriendStatusButton extends StatefulWidget {
   final User otherUser;
@@ -19,15 +20,9 @@ class _FriendStatusButtonState extends State<FriendStatusButton> {
   bool loading = false;
 
   Future<String> createDataBase(User currentOnlineUser) async {
-    setState(() {
-      loading = true;
-    });
     _friendDataManager = FriendDataManager(
         userId: currentOnlineUser.uid, otherId: widget.otherUser.uid);
     _status = await _friendDataManager.getStatus();
-    setState(() {
-      loading = false;
-    });
     return _status;
   }
 
@@ -41,8 +36,8 @@ class _FriendStatusButtonState extends State<FriendStatusButton> {
           loading = true;
         });
         functionOnClick();
-        setState(() async {
-          _status = await _friendDataManager.getStatus();
+        _status = await _friendDataManager.getStatus().then((value) => value);
+        setState(() {
           loading = false;
         });
       },
@@ -59,7 +54,7 @@ class _FriendStatusButtonState extends State<FriendStatusButton> {
     );
   }
 
-  Widget buildNotTheSameUser(User currentOnlineUser){
+  Widget buildNotTheSameUser(User currentOnlineUser, String _status){
     createDataBase(currentOnlineUser);
     if (_status == "no_friend")
       return abstractButton(
@@ -87,7 +82,17 @@ class _FriendStatusButtonState extends State<FriendStatusButton> {
   Widget build(BuildContext context) {
     var currentOnlineUser = Provider.of<User>(context);
     if (currentOnlineUser.uid != widget.otherUser.uid) {
-      return loading ? Container(width: 0.0, height: 0.0,) : buildNotTheSameUser(currentOnlineUser);
+      return FutureBuilder<String>(
+        future: createDataBase(currentOnlineUser),
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.hasData) {
+            return loading ? Loading() : buildNotTheSameUser(currentOnlineUser, snapshot.data);
+          } else {
+            return Loading();
+          }
+        },
+      );
+
     }
     return SizedBox();
   }
