@@ -49,8 +49,15 @@ class TeamDataManager {
     docRef.updateData({'description': newDescription});
   }
 
-  static void addUserToTeam(Team team, User newUser) {
-    UsersListDataManager.addUser(team.ulid, newUser.uid);
+  static Future<bool> addUserToTeam(Team team, {User newUser, String newUserUid}) async {
+    if (newUser != null) {
+      return UsersListDataManager.addUser(team.ulid, newUser.uid);
+    } else if (newUserUid.isNotEmpty) {
+      return UsersListDataManager.addUser(team.ulid, newUserUid);
+    } else {
+      print('error in add user to team, got null user and empty uid');
+      return false;
+    }
   }
 
   static void removeUserFromTeam(Team team, User user) {

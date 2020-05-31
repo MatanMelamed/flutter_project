@@ -5,10 +5,8 @@ import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 
-
 class UserDataManager {
-  static final CollectionReference usersCollection =
-      Firestore.instance.collection("users");
+  static final CollectionReference usersCollection = Firestore.instance.collection("users");
 
   static Future<User> createUser(User user, File userImage) async {
     var data = {
@@ -50,10 +48,9 @@ class UserDataManager {
     if (docSnap.exists) {
       Map<String, dynamic> data = docSnap.data;
       user = new User.fromDatabase(
-        email: data['email'],
+          email: data['email'],
           uid: docSnap.documentID,
-          remoteImage:
-              StorageImage(url: data['imageUrl'], path: data['imagePath']),
+          remoteImage: StorageImage(url: data['imageUrl'], path: data['imagePath']),
           firstName: data['first_name'],
           lastName: data['last_name'],
           gender: data['gender'],
@@ -65,7 +62,7 @@ class UserDataManager {
     return user;
   }
 
-  static Future<User> updateUser(User user, File userImage) async{
+  static Future<User> updateUser(User user, File userImage) async {
     var data = {
       'first_name': user.firstName,
       'last_name': user.lastName,
@@ -80,15 +77,13 @@ class UserDataManager {
     // set new user with it's data
     await docRef.updateData(data);
     StorageImage image;
-    if(userImage != null) {
+    if (userImage != null) {
       // update image
-      image = await StorageManager.updateStorageImage(
-          userImage, user.remoteImage);
+      image = await StorageManager.updateStorageImage(userImage, user.remoteImage);
 
       // update image remote details for usage and future changes.
       docRef.updateData({'imageUrl': image.url, 'imagePath': image.path});
-    }
-    else{
+    } else {
       image = user.remoteImage;
     }
     // return the full user
@@ -106,8 +101,7 @@ class UserDataManager {
     var user = new User.fromDatabase(
         email: data['email'],
         uid: docSnap.documentID,
-        remoteImage:
-        StorageImage(url: data['imageUrl'], path: data['imagePath']),
+        remoteImage: StorageImage(url: data['imageUrl'], path: data['imagePath']),
         firstName: data['first_name'],
         lastName: data['last_name'],
         gender: data['gender'],
@@ -115,4 +109,12 @@ class UserDataManager {
     return user;
   }
 
+  static Stream<User> getAllUsers() async* {
+    await for (QuerySnapshot querySnap in usersCollection.snapshots()) {
+      for (DocumentSnapshot docSnap in querySnap.documents) {
+        User user = await getUser(docSnap.documentID);
+        yield user;
+      }
+    }
+  }
 }
