@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:teamapp/models/user.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/validator.dart';
@@ -161,16 +163,20 @@ class _CreateTeamPageTesterState extends State<CreateTeamPageTester> {
                             onPressed: () async {
                               setState(() => loading = true);
 
-                              if (_teamName.text.isEmpty || _description.text.isEmpty || _ownerID.text.isEmpty){
+                              if (_teamName.text.isEmpty || _description.text.isEmpty){
                                 print('some field is empty! must not be!');
                                 setState(() => loading = false);
                                 return;
+                              }
+                              String owner = _ownerID.text;
+                              if (owner.isEmpty){
+                                owner = Provider.of<User>(context).uid;
                               }
                               Team team = Team.fromWithinApp(
                                   name: _teamName.text,
                                   description: _description.text,
                                   isPublic: true,
-                                  ownerUid: _ownerID.text);
+                                  ownerUid: owner);
 
                               team = await TeamDataManager.createTeam(team, _teamImage,
                                   usersList: UsersList.fromWithinApp(membersUids: [_ownerID.text]));
