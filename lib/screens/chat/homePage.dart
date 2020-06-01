@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/screens/Home/create.dart';
-import 'package:teamapp/screens/Home/feed.dart';
-import 'package:teamapp/screens/Home/mainDrawer.dart';
+import 'package:teamapp/screens/home/create.dart';
+import 'package:teamapp/screens/home/feed.dart';
+import 'package:teamapp/screens/home/mainDrawer.dart';
 import 'package:teamapp/screens/Home/notifications_badge.dart';
-import 'package:teamapp/screens/Home/search.dart';
+import 'package:teamapp/screens/home/search.dart';
 import 'dart:async';
 
 import 'package:teamapp/screens/chat/chat.dart';
@@ -18,6 +18,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _notificationsCounter = 0;
   StreamController<int> _notificationsController = StreamController<int>();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _notificationsController.close();
+  }
 
   final _pageOptions = [FeedPage(), SearchPage(), CreatePage()];
 
@@ -55,14 +61,13 @@ class _HomePageState extends State<HomePage> {
                   IconButton(
                     icon: Icon(Icons.plus_one),
                     onPressed: (() {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => Chat(
-                            user: Provider.of<User>(context, listen: true),
-                          )));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => Chat(
+                                user: Provider.of<User>(context, listen: true),
+                              )));
                       setState(() {
                         this._notificationsCounter++;
-                        _notificationsController.sink
-                            .add(_notificationsCounter);
+                        _notificationsController.sink.add(_notificationsCounter);
                         print("increased notification");
                       });
                     }),
