@@ -56,8 +56,7 @@ class _EditUserPageState extends State<EditUserPage> {
         initialDate: _birthdayController,
         firstDate: DateTime(1901, 1),
         lastDate: DateTime(DateTime.now().year - 3));
-    if (picked != null &&
-        (_birthdayController == null || picked != _birthdayController))
+    if (picked != null && (_birthdayController == null || picked != _birthdayController))
       setState(() {
         _birthdayController = picked;
         _date.value = TextEditingValue(text: dateFormat(picked));
@@ -65,25 +64,22 @@ class _EditUserPageState extends State<EditUserPage> {
   }
 
   initialization(User currentOnlineUser) {
-    _firstNameController =
-        TextEditingController(text: currentOnlineUser.firstName);
-    _lastNameController =
-        TextEditingController(text: currentOnlineUser.lastName);
+    _firstNameController = TextEditingController(text: currentOnlineUser.firstName);
+    _lastNameController = TextEditingController(text: currentOnlineUser.lastName);
     _birthdayController = currentOnlineUser.birthday;
     _gender = currentOnlineUser.gender;
   }
 
-
-  updateUserData(User currentOnlineUser) async{
+  updateUserData(User currentOnlineUser) async {
     String error = validateError();
 
     if (error.isNotEmpty) {
-      GetErrorDialog(
-          context, 'Invalid Credentials', error);
+      GetErrorDialog(context, 'Invalid Credentials', error);
     } else {
       setState(() => loading = true);
 
       User newUser = User.fromWithinApp(
+          email: currentOnlineUser.email,
           uid: currentOnlineUser.uid,
           firstName: _firstNameController.text,
           lastName: _lastNameController.text,
@@ -92,17 +88,14 @@ class _EditUserPageState extends State<EditUserPage> {
 
       // add to database
 
-      await UserDataManager.updateUser(
-          newUser, _imageProfile);
+      await UserDataManager.updateUser(newUser, _imageProfile);
 
       setState(() {
         loading = false;
       });
 
-     // SnackBar successSnackBar = SnackBar(content: Text("Profile has been update successfuly."),);
+      // SnackBar successSnackBar = SnackBar(content: Text("Profile has been update successfuly."),);
       //_scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
-
-
 
       // listen to user login - when user logs in - pop navigator
       Navigator.of(context).pop();
@@ -131,18 +124,14 @@ class _EditUserPageState extends State<EditUserPage> {
                         Container(
                           child: GestureDetector(
                             onTap: () {
-                              FocusScopeNode currentFocus =
-                                  FocusScope.of(context);
+                              FocusScopeNode currentFocus = FocusScope.of(context);
                               if (!currentFocus.hasPrimaryFocus) {
                                 currentFocus.unfocus();
                               }
                             },
                             child: Text(
                               'Edit Profile',
-                              style: TextStyle(
-                                  color: Colors.white70,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40),
+                              style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 40),
                             ),
                           ),
                         ),
@@ -154,15 +143,11 @@ class _EditUserPageState extends State<EditUserPage> {
                               color: Colors.white,
                               image: DecorationImage(
                                   image: _imageProfile == null
-                                      ? NetworkImage(
-                                          currentOnlineUser.remoteImage.url)
+                                      ? NetworkImage(currentOnlineUser.remoteImage.url)
                                       : FileImage(_imageProfile),
                                   fit: BoxFit.cover),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(75.0)),
-                              boxShadow: [
-                                BoxShadow(blurRadius: 7.0, color: Colors.black)
-                              ]),
+                              borderRadius: BorderRadius.all(Radius.circular(75.0)),
+                              boxShadow: [BoxShadow(blurRadius: 7.0, color: Colors.black)]),
                         ),
                         SizedBox(
                             height: 50.0,
@@ -245,8 +230,7 @@ class _EditUserPageState extends State<EditUserPage> {
                           selectedGenderCheckIcon: Icons.check,
                           // default Icons.check
                           onChanged: (Gender gender) {
-                            _gender =
-                                gender.toString().substring("Gender.".length);
+                            _gender = gender.toString().substring("Gender.".length);
                             print(gender);
                           },
                           equallyAligned: true,
@@ -262,8 +246,7 @@ class _EditUserPageState extends State<EditUserPage> {
                           width: double.infinity,
                           height: 50,
                           child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
                             onPressed: () async {
                               updateUserData(currentOnlineUser);
                             },
@@ -290,8 +273,7 @@ class _EditUserPageState extends State<EditUserPage> {
 
   String validateError() {
     String error = '';
-    error += Validator.ValidateFullName(
-            '${_firstNameController.text} ${_lastNameController.text}') +
+    error += Validator.ValidateFullName('${_firstNameController.text} ${_lastNameController.text}') +
         Validator.ValidateBirthday(_birthdayController) +
         Validator.ValidateGender(_gender);
     print(error);

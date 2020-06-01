@@ -88,6 +88,7 @@ class UserDataManager {
     }
     // return the full user
     return User.fromDatabase(
+        email: user.email,
         uid: user.uid,
         remoteImage: image,
         firstName: user.firstName,

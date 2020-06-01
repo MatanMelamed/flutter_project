@@ -11,7 +11,6 @@ import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/widgets/general/text_input_dialog.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
 import 'package:teamapp/widgets/general/editViewImage.dart';
-import 'package:teamapp/widgets/general/narrow_returnbar.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/teams/team_alert.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
@@ -32,22 +31,22 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
   List<User> users;
   bool loading;
 
-  loadUsers() async {
-    setState(() => loading = true);
-    users = [];
-    UsersList usersList = await UsersListDataManager.getUsersList('v7m9ZAgQLxc3ZJ3JRXdr');
-    for (final uid in usersList.membersUids) {
-      User user = await UserDataManager.getUser(uid);
-      users.add(user);
-    }
-    setState(() => loading = false);
-  }
-
   @override
   void initState() {
     super.initState();
     team = widget.team;
     loadUsers();
+  }
+
+  loadUsers() async {
+    setState(() => loading = true);
+    users = [];
+    UsersList usersList = await UsersListDataManager.getUsersList(team.ulid);
+    for (final uid in usersList.membersUids) {
+      User user = await UserDataManager.getUser(uid);
+      users.add(user);
+    }
+    setState(() => loading = false);
   }
 
   @override
@@ -63,6 +62,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
 
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(),
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -73,7 +73,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
 //                  setState(() {});
 //                },
 //              ),
-              GetNarrowReturnBar(context),
+              //GetNarrowReturnBar(context),
               SizedBox(height: 30),
               DiamondImage(
                 size: 150,
@@ -224,7 +224,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                 ),
               ),
               Container(
-                child: loading == true
+                child: loading
                     ? Container(
                         height: 150,
                         child: Loading(),
@@ -292,7 +292,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
             ));
 
     if (shouldRemove) {
-      TeamDataManager.removeUserFromTeam(team, user);
+      TeamDataManager.removeUserFromTeam(team, newUser: user);
       setState(() {
         loadUsers();
       });

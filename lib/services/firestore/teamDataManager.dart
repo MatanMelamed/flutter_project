@@ -10,22 +10,29 @@ import 'package:teamapp/services/firestore/firestoreManager.dart';
 
 class TeamDataManager {
   static final CollectionReference teamsCollection = Firestore.instance.collection("teams");
+  static final CollectionReference userTeamCollection = Firestore.instance.collection("user_teams");
 
-  static Future<Team> createTeam(Team team, File teamImage, {UsersList group}) async {
+  static final String allUserTeams = "InTeams"; // the teams that the user is in them
+
+  static Future<Team> createTeam(Team team, File teamImage, {UsersList usersList}) async {
     DocumentReference docRef = await teamsCollection.add({
       'name': team.name,
       'description': team.description,
       'isPublic': team.isPublic,
       'owner': team.ownerUid,
     });
-    // register group on firestore
+
+    // register team on firestore
     UsersList createdUsersList =
-        await UsersListDataManager.createUsersList(group ?? UsersList.fromWithinApp(membersUids: []));
+        await UsersListDataManager.createUsersList(usersList ?? UsersList.fromWithinApp(membersUids: []));
 
     // add and register image
     StorageImage image = await StorageManager.saveImage(teamImage, 'teamProfiles/' + docRef.documentID);
 
     docRef.updateData({'imageUrl': image.url, 'imagePath': image.path, 'ulid': createdUsersList.ulid});
+
+    // add team to user's teams
+    recordNewTeamForUser(docRef.documentID, team.ownerUid);
 
     return Team.fromDatabase(
         tid: docRef.documentID,
@@ -47,21 +54,6 @@ class TeamDataManager {
     team.description = newDescription;
     DocumentReference docRef = teamsCollection.document(team.tid);
     docRef.updateData({'description': newDescription});
-  }
-
-  static Future<bool> addUserToTeam(Team team, {User newUser, String newUserUid}) async {
-    if (newUser != null) {
-      return UsersListDataManager.addUser(team.ulid, newUser.uid);
-    } else if (newUserUid.isNotEmpty) {
-      return UsersListDataManager.addUser(team.ulid, newUserUid);
-    } else {
-      print('error in add user to team, got null user and empty uid');
-      return false;
-    }
-  }
-
-  static void removeUserFromTeam(Team team, User user) {
-    UsersListDataManager.removeUser(team.ulid, user.uid);
   }
 
   static void updateTeamImage(Team team, File newImage) async {
@@ -95,5 +87,76 @@ class TeamDataManager {
     }
 
     return team;
+  }
+
+  static Future<bool> recordNewTeamForUser(String tid, String uid) async {
+    DocumentReference userTeamsRef = userTeamCollection.document(uid);
+    DocumentSnapshot snapshot = await userTeamsRef.get();
+
+    // user doesn't have teams yet, it's his first team, then create his tracking teams doc.
+    if(!snapshot.exists){
+      userTeamsRef.setData({});
+    }
+
+    DocumentReference newTeamRecord = userTeamsRef.collection(allUserTeams).document(tid);
+    return newTeamRecord.setData({}).then((_) {
+      return true;
+    }).catchError((error) {
+      print('error in recording new team $tid for user $uid.');
+      return false;
+    });
+  }
+
+  static Future<bool> addUserToTeam(Team team, {User newUser, String newUserUid}) async {
+    String uid;
+    if (newUser != null) {
+      uid = newUser.uid;
+    } else if (newUserUid.isNotEmpty) {
+      uid = newUserUid;
+    } else {
+      print('error in recording new team for null user.');
+      return false;
+    }
+
+    UsersListDataManager.addUser(team.ulid, uid);
+    return recordNewTeamForUser(team.tid, uid);
+  }
+
+  static void removeUserFromTeam(Team team, {User newUser, String newUserUid}) {
+    String uid;
+    if (newUser != null) {
+      uid = newUser.uid;
+    } else if (newUserUid.isNotEmpty) {
+      uid = newUserUid;
+    } else {
+      print('error in recording new team for null user.');
+    }
+
+    UsersListDataManager.removeUser(team.ulid, uid);
+    userTeamCollection.document(uid).collection(allUserTeams).document(team.tid).delete();
+  }
+
+  static Future<List<Team>> getUserTeams(User user) async {
+    List<Team> teams = [];
+    DocumentReference userTeamsRef = userTeamCollection.document(user.uid);
+    print(userTeamsRef.documentID);
+    DocumentSnapshot userTeamsSnapshot = await userTeamsRef.get();
+
+    if (userTeamsSnapshot.exists) {
+      try {
+        QuerySnapshot result = await userTeamsRef.collection(allUserTeams).getDocuments();
+        // query snapshot is a query result, may contain docs.
+        for (int i = 0; i < result.documents.length; i++) {
+          DocumentSnapshot tidDoc = result.documents[i];
+          teams.add(await getTeam(tidDoc.documentID));
+        }
+      } catch (e, s) {
+        print(s);
+      }
+    }else{
+      print('no teams found for user ${user.uid}');
+    }
+
+    return teams;
   }
 }

@@ -39,6 +39,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
   }
 
   checkIsAdmin() async {
+    print('check is admin run');
     final user = Provider.of<User>(context);
     setState(() {
       isAdmin = widget.team.ownerUid == user.uid;
@@ -52,7 +53,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
     double top = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      //appBar: AppBar(),
+      appBar: AppBar(),
       body: SafeArea(
         child: SizedBox(
           height: height - top,
@@ -60,7 +61,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              GetNarrowReturnBar(context),
+              // GetNarrowReturnBar(context),
               Container(
                 padding: EdgeInsets.symmetric(vertical: 35),
                 width: width,
@@ -91,6 +92,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: GestureDetector(
                         onTap: () {
+                          print('is admin: $isAdmin');
                           print('team options clicked');
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => TeamOptionsPage(

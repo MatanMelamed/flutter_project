@@ -5,11 +5,10 @@ class UsersListDataManager {
   static final CollectionReference usersListsCollection = Firestore.instance.collection("users_lists");
 
   static Future<UsersList> createUsersList(UsersList usersList) async {
-    DocumentReference docRef = await usersListsCollection.document();
+    DocumentReference docRef = usersListsCollection.document();
     docRef.setData({});
 
     for (var i = 0; i < usersList.membersUids.length; i++) {
-      // docRef.collection("members").add({'user': group.membersUids[i]});
       DocumentReference userDocRef = docRef.collection("members").document(usersList.membersUids[i]);
       userDocRef.setData({});
     }

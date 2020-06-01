@@ -23,6 +23,13 @@ class _HomePageState extends State<HomePage> {
     CreatePage()
   ];
 
+
+  @override
+  void dispose() {
+    super.dispose();
+    _notificationsController.close();
+  }
+
   @override
   Widget build(BuildContext context) {
 //    return StreamProvider.value(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/friend/searchFriend.dart';
+import 'package:teamapp/screens/teams/user_teams.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
 
@@ -59,7 +60,11 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.people),
             title: Text('Manage teams', style: TextStyle(fontSize: 18)),
-            onTap: null,
+            onTap: (){
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context)=>UserTeams())
+              );
+            },
           ),
           ListTile(
             leading: Icon(Icons.info),
