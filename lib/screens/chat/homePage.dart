@@ -4,7 +4,7 @@ import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/home/create.dart';
 import 'package:teamapp/screens/home/feed.dart';
 import 'package:teamapp/screens/home/mainDrawer.dart';
-import 'package:teamapp/screens/Home/notifications_badge.dart';
+import 'package:teamapp/screens/home/notifications_badge.dart';
 import 'package:teamapp/screens/home/search.dart';
 import 'dart:async';
 

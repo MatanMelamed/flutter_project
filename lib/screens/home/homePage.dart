@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:teamapp/screens/Home/notifications_badge.dart';
-import 'feed.dart';
-import 'search.dart';
-import 'create.dart';
-import 'mainDrawer.dart';
+import 'package:teamapp/screens/home/create.dart';
 import 'dart:async';
+import 'package:teamapp/screens/home/feed.dart';
+import 'package:teamapp/screens/home/mainDrawer.dart';
+import 'package:teamapp/screens/home/search.dart';
 
 
 class HomePage extends StatefulWidget {
