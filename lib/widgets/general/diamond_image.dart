@@ -7,8 +7,9 @@ class DiamondImage extends StatefulWidget {
   final double size;
   final String heroTag;
   final void Function() callback;
+  final double frameWidth;
 
-  DiamondImage({this.imageProvider, this.size = 125, this.heroTag = "", this.callback});
+  DiamondImage({this.imageProvider, this.size = 125, this.heroTag = "", this.callback, this.frameWidth = 5});
 
   @override
   _DiamondImageState createState() => _DiamondImageState();
@@ -27,14 +28,14 @@ class _DiamondImageState extends State<DiamondImage> {
   Widget getContent(double width, double height, double k) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black87, width: 5),
+        border: Border.all(color: Colors.black87, width: widget.frameWidth),
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
       child: ClipRRect(
         child: Transform.rotate(
           angle: -pi / 4,
           child: Transform.scale(
-              scale: k / 1.3,
+              scale: k / 1,
               child: widget.heroTag != ""
                   ? Hero(tag: widget.heroTag, child: getImage(width, height))
                   : getImage(width, height)),

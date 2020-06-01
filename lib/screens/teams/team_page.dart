@@ -18,7 +18,7 @@ import 'package:teamapp/widgets/general/narrow_returnbar.dart';
 class TeamPage extends StatefulWidget {
   final Team team;
 
-  TeamPage({this.team});
+  TeamPage({@required this.team});
 
   @override
   _TeamPageState createState() => _TeamPageState();
@@ -30,7 +30,21 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    isAdmin = widget.team.ownerUid == "C5h3rKCR9Rh7qbGmfc3didEuZlu1";
+    isAdmin = false;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    checkIsAdmin();
+  }
+
+  checkIsAdmin() async {
+    print('check is admin run');
+    final user = Provider.of<User>(context);
+    setState(() {
+      isAdmin = widget.team.ownerUid == user.uid;
+    });
   }
 
   @override
@@ -40,7 +54,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
     double top = MediaQuery.of(context).padding.top;
 
     return Scaffold(
-      //appBar: AppBar(),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: SafeArea(
           child: SizedBox(
@@ -49,7 +63,7 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                GetNarrowReturnBar(context),
+                // GetNarrowReturnBar(context),
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 35),
                   width: width,
@@ -60,14 +74,14 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                       DiamondImage(
                         size: 110,
                         imageProvider:
-                            NetworkImage(widget.team.remoteImage.url),
+                            NetworkImage(widget.team.remoteStorageImage.url),
                         heroTag: "teamProfileImage",
                         callback: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return EditViewImage(
-                              imageProvider:
-                                  NetworkImage(widget.team.remoteImage.url),
+                              imageProvider: NetworkImage(
+                                  widget.team.remoteStorageImage.url),
                               onSaveNewImageFile: (file) {},
                               heroTag: "teamProfileImage",
                               mode: isAdmin
@@ -81,10 +95,13 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: GestureDetector(
                           onTap: () {
+                            print('is admin: $isAdmin');
                             print('team options clicked');
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    TeamOptionsPage(team: widget.team)));
+                                builder: (context) => TeamOptionsPage(
+                                      team: widget.team,
+                                      isAdmin: isAdmin,
+                                    )));
                           },
                           child: Container(
                             padding: EdgeInsets.only(top: 13),

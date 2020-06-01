@@ -25,21 +25,21 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
         body: ListView.builder(
-      controller: _scrollController,
-      itemCount: _entries.length,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          leading: Icon(Icons.person), //Category
-          title: Text(_entries[index].title),
-          subtitle: Text(_entries[index].description),
-          trailing: Icon(Icons.unfold_more),
-          isThreeLine: true,
-          selected: false,
-          dense: true,
-        );
-      },
-    ));
+          controller: _scrollController,
+          itemCount: _entries.length,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              leading: Icon(Icons.person), //Category
+              title: Text(_entries[index].title),
+              subtitle: Text(_entries[index].description),
+              trailing: Icon(Icons.unfold_more),
+              isThreeLine: true,
+              selected: false,
+              dense: true,
+            );
+          },
+        ));
   }
 
   //TO CHANGE

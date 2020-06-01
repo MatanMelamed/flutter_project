@@ -1,6 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'dart:html';
 
-class FriendDataManager {
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'searchByName/searchUserByName.dart';
+import 'package:teamapp/services/firestore/userDataManager.dart';
+
+class FriendDataManager{
   static final CollectionReference _friendRequestRef =
       Firestore.instance.collection("friendsRequest");
   static final CollectionReference _friendRef =
