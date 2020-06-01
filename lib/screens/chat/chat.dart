@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/widgets/chat/message.dart';
 import 'package:teamapp/widgets/chat/send_button.dart';
@@ -8,8 +8,9 @@ import 'package:teamapp/widgets/general/diamond_image.dart';
 
 class Chat extends StatefulWidget {
   final User user;
+  final Team team;
 
-  Chat({Key key, this.user}) : super(key: key);
+  Chat({Key key, this.user, this.team}) : super(key: key);
 
   @override
   _ChatState createState() => _ChatState();
@@ -37,7 +38,7 @@ class _ChatState extends State<Chat> {
         child: CircularProgressIndicator(),
       );
     else {
-      var myID = Provider.of<User>(cxt).uid;
+      var myID = widget.user.uid;
       var docs = snapShot.data.documents;
 
       return ListView.builder(
@@ -91,13 +92,7 @@ class _ChatState extends State<Chat> {
             child: this._getUserImage(),
           ),
         ),
-        title: Text("Tensor Chat"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () => Navigator.of(context).pop(),
-          )
-        ],
+        title: Text(widget.team.name + " Chat"),
       ),
       body: SafeArea(
         child: Column(

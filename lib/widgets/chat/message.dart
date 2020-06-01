@@ -43,7 +43,7 @@ class _MessageState extends State<Message> {
                   height: 5.0,
                 ),
                 Material(
-                  color: me ? Colors.teal : Colors.red,
+                  color: me ? Colors.lightBlue : Colors.green,
                   borderRadius: BorderRadius.circular(50.0),
                   elevation: 6.0,
                   child: Container(
