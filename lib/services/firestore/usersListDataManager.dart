@@ -60,4 +60,17 @@ class UsersListDataManager {
 
     return usersList;
   }
+
+  static Future<void> removeUserList(String ulid) async {
+    DocumentReference listRef = usersListsCollection.document(ulid);
+
+    QuerySnapshot usersSnap =
+    await listRef
+        .collection("members")
+        .getDocuments();
+
+    for (var userSnap in usersSnap.documents) await userSnap.reference.delete();
+
+    return listRef.delete();
+  }
 }

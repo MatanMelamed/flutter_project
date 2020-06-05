@@ -1,55 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-
-class FormCreator {
-  static TextFormField getTextFormField(
-      {String labelText,
-      GlobalKey<FormFieldState> key,
-      void Function(String) onSaved,
-      String Function(String) validator,
-      int maxLines = 1,
-      double fontSize = 10}) {
-    return TextFormField(
-      key: key,
-      keyboardType: TextInputType.text,
-      onSaved: onSaved,
-      maxLines: maxLines,
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: TextStyle(
-          decorationStyle: TextDecorationStyle.solid,
-          fontSize: fontSize,
-        ),
-      ),
-    );
-  }
-
-  static TypeAheadFormField getTypeAheadFormField(
-      {GlobalKey<FormFieldState> key,
-      List<String> Function(String) suggestionCallBack,
-      void Function(dynamic) onSuggestionSelected,
-      String Function(String) validator,
-      void Function(String) onSaved,
-      TextEditingController controller,
-      String labelText}) {
-    return TypeAheadFormField(
-      key: key,
-      suggestionsCallback: suggestionCallBack,
-      itemBuilder: (context, suggestion) => ListTile(
-        title: Text(suggestion),
-      ),
-      transitionBuilder: (context, suggestionBox, controller) => suggestionBox,
-      onSuggestionSelected: onSuggestionSelected,
-      validator: validator,
-      onSaved: onSaved,
-      textFieldConfiguration: TextFieldConfiguration(
-          autofocus: true,
-          controller: controller,
-          decoration: InputDecoration(labelText: labelText)),
-    );
-  }
-}
 
 class IconTextButton extends StatelessWidget {
   final Color color;
@@ -57,12 +6,14 @@ class IconTextButton extends StatelessWidget {
   final IconData icon;
   final String text;
   final EdgeInsetsGeometry padding;
+  final BorderRadius radius;
   final void Function() onPressed;
 
   IconTextButton(
       {this.color,
       this.padding,
       this.textColor = Colors.white,
+      this.radius = BorderRadius.zero,
       @required this.icon,
       @required this.text,
       @required this.onPressed});
@@ -70,6 +21,8 @@ class IconTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
+      shape: RoundedRectangleBorder(
+          borderRadius: radius, side: BorderSide(color: color)),
       padding: padding,
       color: color ?? Theme.of(context).primaryColor,
       textColor: textColor,
@@ -108,24 +61,22 @@ class TextSwitch extends StatelessWidget {
   }
 }
 
-class UserListTile extends StatelessWidget {
-  final String name;
+class SuggestionTile extends StatelessWidget {
+  final NetworkImage image;
+  final String title;
   final Widget trailing;
-  final Image image;
 
-  UserListTile({@required this.name, this.image, this.trailing});
+  SuggestionTile({this.image, this.title, this.trailing});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: image ?? Icon(Icons.person_pin, size: 40.0),
-      title: Container(
-        alignment: Alignment.center,
-        child: Text(
-          name,
-          style: TextStyle(fontWeight: FontWeight.w400),
-        ),
-      ),
+      leading: image != null
+          ? CircleAvatar(
+              backgroundImage: image,
+            )
+          : Icon(Icons.person_pin),
+      title: Text(title ?? ""),
       trailing: trailing,
     );
   }

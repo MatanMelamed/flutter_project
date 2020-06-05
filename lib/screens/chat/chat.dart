@@ -59,7 +59,12 @@ class _ChatState extends State<Chat> {
 
   Future<void> _onSend() async {
     if (msgController.text.length > 0) {
-      await _fireStore.collection("messages").add({
+      print("Tean Chat id: ${widget.team.chatId}");
+      await _fireStore
+          .collection("messages")
+          .document(widget.team.chatId)
+          .collection("chat")
+          .add({
         "message": msgController.text,
         "userID": widget.user.uid,
         "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
@@ -103,6 +108,8 @@ class _ChatState extends State<Chat> {
                 stream: this
                     ._fireStore
                     .collection("messages")
+                    .document(widget.team.chatId)
+                    .collection("chat")
                     .orderBy("timestamp")
                     .snapshots(),
                 builder: _streamBuilder,
@@ -121,7 +128,10 @@ class _ChatState extends State<Chat> {
                     ),
                   ),
                   SendButton(
-                    onSend: this._onSend,
+                    onSend: () async {
+                      await this._onSend();
+                      setState(() {});
+                    },
                   ),
                 ],
               ),

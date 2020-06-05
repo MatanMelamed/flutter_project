@@ -6,6 +6,7 @@ import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/teams/team_page.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/widgets/loading.dart';
+import 'package:teamapp/widgets/teams/team_alert.dart';
 import 'package:teamapp/widgets/teams/team_card.dart';
 
 class UserTeams extends StatefulWidget {
@@ -29,6 +30,20 @@ class _UserTeamsState extends State<UserTeams> {
     setState(() => isLoading = true);
     teams = await TeamDataManager.getUserTeams(currentUser);
     setState(() => isLoading = false);
+  }
+
+  showAlertDialog(BuildContext context, Team team) async {
+    await showDialog(context: context,
+        builder: (context) => TeamAlertDialog(
+          title: 'Alert',
+          content: 'Are You Sure You Want To Delete ${team.name}',
+          confirmCallback: () async {
+            await TeamDataManager.deleteTeam(team.tid);
+            setState(() => Navigator.of(context).pop());
+          },
+          cancelCallback: () => Navigator.of(context).pop(),
+        )
+    );
   }
 
   @override
@@ -91,11 +106,16 @@ class _UserTeamsState extends State<UserTeams> {
                               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                               child: TeamCard(
                                 team: currentTeam,
-                                callback: () {
+                                onTap: () {
                                   Navigator.of(context)
                                       .push(MaterialPageRoute(builder: (context) => TeamPage(team: currentTeam)));
                                 },
-                              ));
+                                onLongPress: () {
+                                  showAlertDialog(context, currentTeam);
+                                  setState(() {});
+                                },
+                              ),
+                          );
                         },
                         separatorBuilder: (ctx, idx) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),

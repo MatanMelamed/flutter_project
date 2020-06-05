@@ -6,6 +6,7 @@ class Team {
   String tid;
   StorageImage remoteStorageImage;
   String ulid; //user list id
+  String chatId;
 
   // given by the user
   String name;
@@ -21,6 +22,7 @@ class Team {
     @required this.description,
     @required this.isPublic,
     @required this.ownerUid,
+    this.chatId
   });
 
   Team.fromWithinApp({
