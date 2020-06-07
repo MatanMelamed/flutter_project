@@ -10,6 +10,7 @@ import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/chat/chat.dart';
+import 'package:teamapp/screens/meetings/team_meetings.dart';
 import 'package:teamapp/screens/teams/team_options.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
 import 'package:teamapp/widgets/general/editViewImage.dart';
@@ -40,7 +41,6 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
   }
 
   checkIsAdmin() async {
-    print('check is admin run');
     final user = Provider.of<User>(context);
     setState(() {
       isAdmin = widget.team.ownerUid == user.uid;
@@ -95,8 +95,6 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: GestureDetector(
                           onTap: () {
-                            print('is admin: $isAdmin');
-                            print('team options clicked');
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => TeamOptionsPage(
                                       team: widget.team,
@@ -175,7 +173,10 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                             children: <Widget>[
                               Container(
                                 height: 200,
-                                color: Colors.lightBlueAccent[100],
+                                //color: Colors.lightBlueAccent[100],
+                                child: TeamMeetings(
+                                  team: widget.team,
+                                ),
                               ),
                               Container(
                                 height: 200,

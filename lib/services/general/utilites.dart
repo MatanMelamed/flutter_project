@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:date_format/date_format.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -10,5 +11,17 @@ class Utilities {
     await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
 
     return file;
+  }
+}
+
+extension StringExtension on String {
+  String capitalizeOnlyFirst() {
+    return "${this.toLowerCase()[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+  }
+}
+
+extension ToString on DateTime {
+  String toDisplayString() {
+    return formatDate(this, [dd, '-', mm, '-', yyyy]);
   }
 }

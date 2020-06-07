@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:teamapp/widgets/meeting/AgeSliderDialog.dart';
 
 class Dialogs {
   static void showTwoButtonsDialog(
       {@required BuildContext context,
-        @required MaterialButton firstButton,
-        @required MaterialButton secondButton,
-        @required Widget title,
-        @required Widget content}) {
+      @required MaterialButton firstButton,
+      @required MaterialButton secondButton,
+      @required Widget title,
+      @required Widget content}) {
     AlertDialog dialog = AlertDialog(
       title: title,
       content: content,
@@ -19,11 +20,19 @@ class Dialogs {
     );
   }
 
-  static showTextInputDialog(BuildContext context, String description) async{
+  static showTextInputDialog(BuildContext context, String description) async {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           return TextInputDialog(description);
+        });
+  }
+
+  static showAgeSlider(BuildContext context, int currentStart, int currentEnd) async {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AgeSliderDialog(currentStart: currentStart, currentEnd: currentEnd);
         });
   }
 }

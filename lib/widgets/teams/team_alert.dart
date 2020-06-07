@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-class TeamAlertDialog extends StatefulWidget {
+class GeneralAlertDialog extends StatefulWidget {
   final String title;
   final String content;
   final void Function() confirmCallback;
   final void Function() cancelCallback;
 
-  TeamAlertDialog(
+  GeneralAlertDialog(
       {@required this.title,
       @required this.content,
       this.cancelCallback,
       this.confirmCallback});
 
   @override
-  _TeamAlertDialogState createState() => _TeamAlertDialogState();
+  _GeneralAlertDialogState createState() => _GeneralAlertDialogState();
 }
 
-class _TeamAlertDialogState extends State<TeamAlertDialog> {
+class _GeneralAlertDialogState extends State<GeneralAlertDialog> {
   void Function() emptyCallback = () {};
 
   @override

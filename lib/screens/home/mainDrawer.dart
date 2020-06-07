@@ -25,13 +25,14 @@ class MainDrawer extends StatelessWidget {
                   Container(
                     width: 100,
                     height: 100,
+                    //padding: EdgeInsets.only(top: 30,bottom: 10),
                     margin: EdgeInsets.only(top: 30, bottom: 10),
                     decoration: BoxDecoration(
                         //OPTIONAL
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                            image: NetworkImage('https://www.sageisland.com/wp-content/uploads/2017/06/beat-instagram-algorithm.jpg'),//user.remoteImage.url),
-                            fit: BoxFit.fill)),
+                            image: NetworkImage(user.remoteImage.url),
+                            fit: BoxFit.cover)),
                   ),
                   Text(
                     user.firstName + " " + user.lastName,

@@ -13,7 +13,7 @@ class _ViewTeamPageTesterState extends State<ViewTeamPageTester> {
   Team team;
 
   loadTeam() async {
-    team = await TeamDataManager.getTeam('y6MsA6Trg0hri3OOxBfF');
+    team = await TeamDataManager.getTeam('d2pe9OlwAWmhmaBF77sV');
     setState(() {});
   }
 

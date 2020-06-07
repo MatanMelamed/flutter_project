@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/screens/teams/team_add_user.dart';
 import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
+import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
@@ -41,8 +43,9 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
   loadUsers() async {
     setState(() => loading = true);
     users = [];
-    UsersList usersList = await UsersListDataManager.getUsersList(team.ulid);
-    for (final uid in usersList.membersUids) {
+    RecordList usersList = await TeamToUsers().getRecordsList(widget.team.tid);
+//    UsersList usersList = await UsersListDataManager.getUsersList(team.ulid);
+    for (final uid in usersList.data) {
       User user = await UserDataManager.getUser(uid);
       users.add(user);
     }
@@ -175,7 +178,6 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                               child: Switch(
                                 value: team.isPublic,
                                 onChanged: (value) {
-                                  print(value);
                                   TeamDataManager.updateTeamPrivacy(team, value);
                                   setState(() {});
                                 },
@@ -274,7 +276,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
   void _removeUser(User user) async {
     bool shouldRemove = await showDialog(
         context: context,
-        builder: (ctx) => TeamAlertDialog(
+        builder: (ctx) => GeneralAlertDialog(
               title: 'Alert',
               content: "Are you sure you want to remove " +
                   user.firstName +

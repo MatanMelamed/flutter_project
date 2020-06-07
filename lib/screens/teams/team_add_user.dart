@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/models/usersList.dart';
+import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
@@ -17,7 +19,7 @@ class TeamAddUser extends StatefulWidget {
 }
 
 class _TeamAddUserState extends State<TeamAddUser> {
-  UsersList teamUsersList;
+  RecordList teamUsersList;
   Stream<User> usersStream;
   List<User> allUsersList = [];
   List<User> filteredUsersList = [];
@@ -40,9 +42,10 @@ class _TeamAddUserState extends State<TeamAddUser> {
   }
 
   void _loadUsers() async {
-    teamUsersList = await UsersListDataManager.getUsersList(widget.team.ulid);
+    // teamUsersList = await UsersListDataManager.getUsersList(widget.team.tid);
+    teamUsersList = await TeamToUsers().getRecordsList(widget.team.tid);
     usersStream = UserDataManager.getAllUsers();
-    usersStream.where((user) => !teamUsersList.membersUids.contains(user.uid)).listen((user) {
+    usersStream.where((user) => !teamUsersList.data.contains(user.uid)).listen((user) {
       setState(() => allUsersList.add(user));
     });
   }
@@ -120,7 +123,7 @@ class _TeamAddUserState extends State<TeamAddUser> {
                   elevation: 10,
                   onPressed: didClickOnFinishButton ? null : onSubmitPressed,
                   child: Text(
-                    "View Profile",
+                    "Submit",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   color: Colors.blue,

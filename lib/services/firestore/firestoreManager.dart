@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:teamapp/models/storageImage.dart';
 
@@ -31,5 +32,18 @@ class StorageManager {
 
   static DateTime convertStringToDateTime(String dateTimeString) {
     return DateTime.parse(dateTimeString);
+  }
+
+  static Future<void> deleteCollection(String collection, {String subcollection}) async {
+    QuerySnapshot query = await Firestore.instance.collection(collection).getDocuments();
+    for (DocumentSnapshot docSnap in query.documents) {
+      if (subcollection != null) {
+        QuerySnapshot q = await docSnap.reference.collection(subcollection).getDocuments();
+        for (DocumentSnapshot documentSnapshot in q.documents) {
+          await documentSnapshot.reference.delete();
+        }
+      }
+      docSnap.reference.delete();
+    }
   }
 }

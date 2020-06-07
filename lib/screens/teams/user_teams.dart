@@ -34,7 +34,7 @@ class _UserTeamsState extends State<UserTeams> {
 
   showAlertDialog(BuildContext context, Team team) async {
     await showDialog(context: context,
-        builder: (context) => TeamAlertDialog(
+        builder: (context) => GeneralAlertDialog(
           title: 'Alert',
           content: 'Are You Sure You Want To Delete ${team.name}',
           confirmCallback: () async {
@@ -51,7 +51,8 @@ class _UserTeamsState extends State<UserTeams> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Center(child: Text('Manage your teams')),
+          centerTitle: true,
+          title: Text('Manage your teams'),
         ),
         body: Container(
           child: Column(

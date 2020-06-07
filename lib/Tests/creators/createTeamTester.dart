@@ -22,23 +22,18 @@ class CreateTeamPageTester extends StatefulWidget {
 
 class _CreateTeamPageTesterState extends State<CreateTeamPageTester> {
   var _teamName = TextEditingController();
-  var _ownerID = TextEditingController();
   var _description = TextEditingController();
   bool isPrivate;
-  var group = UsersList.fromWithinApp(membersUids: []);
-  var meetings = [];
+  File _teamImage;
 
   double textInputHeight = 45;
   double distanceBetweenFields = 30;
-
-  File _teamImage;
 
   bool loading = false;
 
   @override
   void dispose() {
     _teamName.dispose();
-    _ownerID.dispose();
     _description.dispose();
     super.dispose();
   }
@@ -93,15 +88,6 @@ class _CreateTeamPageTesterState extends State<CreateTeamPageTester> {
                               cursorColor: Colors.white70,
                               style: kLabelStyle,
                               decoration: GetInputDecor('Name')),
-                        ),
-                        SizedBox(height: distanceBetweenFields),
-                        Container(
-                          height: textInputHeight,
-                          child: TextField(
-                              controller: _ownerID,
-                              cursorColor: Colors.white70,
-                              style: kLabelStyle,
-                              decoration: GetInputDecor('Owner ID')),
                         ),
                         SizedBox(height: distanceBetweenFields),
                         Container(
@@ -168,9 +154,9 @@ class _CreateTeamPageTesterState extends State<CreateTeamPageTester> {
                                 setState(() => loading = false);
                                 return;
                               }
-                              String owner = _ownerID.text;
+                              String owner = '';
                               if (owner.isEmpty){
-                                owner = Provider.of<User>(context).uid;
+                                owner = Provider.of<User>(context,listen: false).uid;
                               }
                               Team team = Team.fromWithinApp(
                                   name: _teamName.text,
@@ -178,13 +164,11 @@ class _CreateTeamPageTesterState extends State<CreateTeamPageTester> {
                                   isPublic: true,
                                   ownerUid: owner);
 
-                              team = await TeamDataManager.createTeam(team, _teamImage,
-                                  usersList: UsersList.fromWithinApp(membersUids: [_ownerID.text]));
+                              team = await TeamDataManager.createTeam(team, _teamImage);
 
                               setState(() => loading = false);
 
                               print(team.name + ' created.');
-                              Navigator.of(context).pop();
                             },
                             color: Color(0x181919).withOpacity(0.97),
                             child: Text(

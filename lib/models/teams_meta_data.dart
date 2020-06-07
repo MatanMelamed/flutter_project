@@ -1,3 +1,4 @@
+import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/models/usersList.dart';
@@ -37,7 +38,7 @@ class TeamsMetaData {
     return TeamDataManager.createTeam(
       team,
       await Utilities.loadImageFromAssetsAsFile("images/team.jpg"),
-      usersList: UsersList.fromWithinApp(membersUids: membersIds),
+      usersList: RecordList.fromWithinApp(data: membersIds),
     );
   }
 }

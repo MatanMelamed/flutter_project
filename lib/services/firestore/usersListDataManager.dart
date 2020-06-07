@@ -31,8 +31,8 @@ class UsersListDataManager {
     });
   }
 
-  static void removeUser(String ulid, String uid) async {
-    usersListsCollection.document(ulid).collection("members").document(uid).delete();
+  static Future<void> removeUser(String ulid, String uid) async {
+    await usersListsCollection.document(ulid).collection("members").document(uid).delete();
   }
 
   static Future<UsersList> getUsersList(String ulid) async {
