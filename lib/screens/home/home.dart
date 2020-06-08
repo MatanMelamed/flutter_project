@@ -6,7 +6,7 @@ import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/home/create.dart';
 import 'package:teamapp/screens/home/feed.dart';
 import 'package:teamapp/screens/home/mainDrawer.dart';
-import 'package:teamapp/screens/home/notifications.dart';
+import 'package:teamapp/screens/home/notificationsPage.dart';
 import 'package:teamapp/screens/home/search.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 
@@ -37,7 +37,7 @@ class Home extends StatelessWidget {
                   color: Colors.white,
                   onPressed: () {
                     print("notifications clicked");
-                    Navigator.of(context).push(createRoute(NotificationsPage()));
+//                    Navigator.of(context).push(createRoute(NotificationsPage()));
                   },
                 )
               ],

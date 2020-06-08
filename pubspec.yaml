@@ -24,6 +24,7 @@ dependencies:
   path_provider: ^1.6.7
   date_format:
   gender_selection: ^1.0.0
+  timeago: ^2.0.26
 
 
 dev_dependencies:
