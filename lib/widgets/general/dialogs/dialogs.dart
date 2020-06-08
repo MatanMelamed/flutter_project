@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
 
-showTextInputDialog(BuildContext context, String description) async{
-  return showDialog(
+class Dialogs {
+  static void showTwoButtonsDialog(
+      {@required BuildContext context,
+        @required MaterialButton firstButton,
+        @required MaterialButton secondButton,
+        @required Widget title,
+        @required Widget content}) {
+    AlertDialog dialog = AlertDialog(
+      title: title,
+      content: content,
+      actions: <Widget>[firstButton, secondButton],
+    );
+
+    showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return TextInputDialog(description);
-      });
+      builder: (BuildContext context) => dialog,
+    );
+  }
+
+  static showTextInputDialog(BuildContext context, String description) async{
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return TextInputDialog(description);
+        });
+  }
 }
 
 class TextInputDialog extends StatefulWidget {

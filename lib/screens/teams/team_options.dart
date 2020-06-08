@@ -8,7 +8,7 @@ import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
-import 'package:teamapp/widgets/general/text_input_dialog.dart';
+import 'package:teamapp/widgets/general/dialogs/dialogs.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
 import 'package:teamapp/widgets/general/editViewImage.dart';
 import 'package:teamapp/widgets/loading.dart';
@@ -113,7 +113,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                             child: GestureDetector(
                               child: Icon(Icons.edit, size: 21),
                               onTap: () async {
-                                String newName = await showTextInputDialog(context, "team name");
+                                String newName = await Dialogs.showTextInputDialog(context, "team name");
                                 if (newName.isNotEmpty) {
                                   TeamDataManager.updateTeamName(team, newName);
                                   setState(() {});
@@ -142,7 +142,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                             child: GestureDetector(
                               child: Icon(Icons.edit, size: 21),
                               onTap: () async {
-                                String newDescription = await showTextInputDialog(context, "description");
+                                String newDescription = await Dialogs.showTextInputDialog(context, "description");
                                 if (newDescription.isNotEmpty) {
                                   TeamDataManager.updateTeamDescription(team, newDescription);
                                   setState(() {});

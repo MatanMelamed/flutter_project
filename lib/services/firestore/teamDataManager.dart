@@ -5,34 +5,53 @@ import 'package:teamapp/models/user.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/team.dart';
+import 'package:teamapp/services/firestore/ChatDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 
 class TeamDataManager {
-  static final CollectionReference teamsCollection = Firestore.instance.collection("teams");
-  static final CollectionReference userTeamCollection = Firestore.instance.collection("user_teams");
+  static final CollectionReference teamsCollection =
+      Firestore.instance.collection("teams");
+  static final CollectionReference userTeamCollection =
+      Firestore.instance.collection("user_teams");
+  static final CollectionReference messagesCollection =
+      Firestore.instance.collection("messages");
 
-  static final String allUserTeams = "InTeams"; // the teams that the user is in them
+  static final String allUserTeams =
+      "InTeams"; // the teams that the user is in them
 
-  static Future<Team> createTeam(Team team, File teamImage, {UsersList usersList}) async {
+  static Future<Team> createTeam(Team team, File teamImage,
+      {UsersList usersList}) async {
+    DocumentReference messagesDocRef = messagesCollection.document();
+    await messagesDocRef.setData({});
+
     DocumentReference docRef = await teamsCollection.add({
       'name': team.name,
       'description': team.description,
       'isPublic': team.isPublic,
       'owner': team.ownerUid,
+      'messages': messagesDocRef.documentID
     });
 
     // register team on firestore
-    UsersList createdUsersList =
-        await UsersListDataManager.createUsersList(usersList ?? UsersList.fromWithinApp(membersUids: []));
+    UsersList createdUsersList = await UsersListDataManager.createUsersList(
+        usersList ?? UsersList.fromWithinApp(membersUids: [team.ownerUid]));
 
     // add and register image
-    StorageImage image = await StorageManager.saveImage(teamImage, 'teamProfiles/' + docRef.documentID);
+    StorageImage image = await StorageManager.saveImage(
+        teamImage, 'teamProfiles/' + docRef.documentID);
 
-    docRef.updateData({'imageUrl': image.url, 'imagePath': image.path, 'ulid': createdUsersList.ulid});
+    docRef.updateData({
+      'imageUrl': image.url,
+      'imagePath': image.path,
+      'ulid': createdUsersList.ulid
+    });
+
+    for (String uid in usersList.membersUids)
+      recordNewTeamForUser(docRef.documentID, uid);
 
     // add team to user's teams
-    recordNewTeamForUser(docRef.documentID, team.ownerUid);
+    // recordNewTeamForUser(docRef.documentID, team.ownerUid);
 
     return Team.fromDatabase(
         tid: docRef.documentID,
@@ -41,7 +60,8 @@ class TeamDataManager {
         name: team.name,
         description: team.description,
         isPublic: team.isPublic,
-        ownerUid: team.ownerUid);
+        ownerUid: team.ownerUid,
+        chatId: messagesDocRef.documentID);
   }
 
   static void updateTeamName(Team team, String newName) {
@@ -57,7 +77,8 @@ class TeamDataManager {
   }
 
   static void updateTeamImage(Team team, File newImage) async {
-    team.remoteStorageImage = await StorageManager.updateStorageImage(newImage, team.remoteStorageImage);
+    team.remoteStorageImage = await StorageManager.updateStorageImage(
+        newImage, team.remoteStorageImage);
     DocumentReference docRef = teamsCollection.document(team.tid);
     docRef.updateData({'imageUrl': team.remoteStorageImage.url});
   }
@@ -76,12 +97,15 @@ class TeamDataManager {
       Map<String, dynamic> data = docSnap.data;
       team = new Team.fromDatabase(
           tid: docSnap.documentID,
-          remoteStorageImage: StorageImage(url: data['imageUrl'], path: data['imagePath']),
+          remoteStorageImage:
+              StorageImage(url: data['imageUrl'], path: data['imagePath']),
           ulid: data['ulid'],
           name: data['name'],
           description: data['description'],
           isPublic: data['isPublic'],
-          ownerUid: data['owner']);
+          ownerUid: data['owner'],
+          chatId: data['messages'],
+      );
     } else {
       print('Tried to get nonexistent team id');
     }
@@ -94,11 +118,12 @@ class TeamDataManager {
     DocumentSnapshot snapshot = await userTeamsRef.get();
 
     // user doesn't have teams yet, it's his first team, then create his tracking teams doc.
-    if(!snapshot.exists){
+    if (!snapshot.exists) {
       userTeamsRef.setData({});
     }
 
-    DocumentReference newTeamRecord = userTeamsRef.collection(allUserTeams).document(tid);
+    DocumentReference newTeamRecord =
+        userTeamsRef.collection(allUserTeams).document(tid);
     return newTeamRecord.setData({}).then((_) {
       return true;
     }).catchError((error) {
@@ -107,7 +132,8 @@ class TeamDataManager {
     });
   }
 
-  static Future<bool> addUserToTeam(Team team, {User newUser, String newUserUid}) async {
+  static Future<bool> addUserToTeam(Team team,
+      {User newUser, String newUserUid}) async {
     String uid;
     if (newUser != null) {
       uid = newUser.uid;
@@ -133,7 +159,11 @@ class TeamDataManager {
     }
 
     UsersListDataManager.removeUser(team.ulid, uid);
-    userTeamCollection.document(uid).collection(allUserTeams).document(team.tid).delete();
+    userTeamCollection
+        .document(uid)
+        .collection(allUserTeams)
+        .document(team.tid)
+        .delete();
   }
 
   static Future<List<Team>> getUserTeams(User user) async {
@@ -144,7 +174,8 @@ class TeamDataManager {
 
     if (userTeamsSnapshot.exists) {
       try {
-        QuerySnapshot result = await userTeamsRef.collection(allUserTeams).getDocuments();
+        QuerySnapshot result =
+            await userTeamsRef.collection(allUserTeams).getDocuments();
         // query snapshot is a query result, may contain docs.
         for (int i = 0; i < result.documents.length; i++) {
           DocumentSnapshot tidDoc = result.documents[i];
@@ -153,10 +184,32 @@ class TeamDataManager {
       } catch (e, s) {
         print(s);
       }
-    }else{
+    } else {
       print('no teams found for user ${user.uid}');
     }
 
     return teams;
+  }
+
+  static Future<void> deleteTeam(String tid) async {
+    DocumentSnapshot team = await teamsCollection.document(tid).get();
+
+    String chatId = team.data["messages"];
+    String ulid = team.data["ulid"];
+
+    // Delete the specified team from user's teams lists.
+    UsersList users = await UsersListDataManager.getUsersList(ulid);
+    for (String uid in users.membersUids) {
+      await userTeamCollection
+          .document(uid)
+          .collection(allUserTeams)
+          .document(tid)
+          .delete();
+    }
+
+    // Deletes User's List & Messages List, corresponding to the deleted team.
+    await UsersListDataManager.removeUserList(ulid);
+    await ChatDataManager.deleteChat(chatId);
+    await teamsCollection.document(tid).delete();
   }
 }

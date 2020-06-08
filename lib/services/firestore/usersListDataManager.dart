@@ -9,16 +9,21 @@ class UsersListDataManager {
     docRef.setData({});
 
     for (var i = 0; i < usersList.membersUids.length; i++) {
-      DocumentReference userDocRef = docRef.collection("members").document(usersList.membersUids[i]);
-      userDocRef.setData({});
+      String uid = usersList.membersUids[i];
+      DocumentReference userDocRef = docRef.collection("members").document(uid);
+      userDocRef.setData(usersList.metadata[uid] ?? {});
     }
 
-    return UsersList.fromDatabase(ulid: docRef.documentID, membersUids: usersList.membersUids);
+    return UsersList.fromDatabase(
+      ulid: docRef.documentID,
+      membersUids: usersList.membersUids,
+      metadata: usersList.metadata,
+    );
   }
 
-  static Future<bool> addUser(String ulid, String uid) async {
+  static Future<bool> addUser(String ulid, String uid, {Map<String, dynamic> metadata}) async {
     DocumentReference userDocRef = usersListsCollection.document(ulid).collection("members").document(uid);
-    userDocRef.setData({}).then((_) {
+    userDocRef.setData(metadata ?? {}).then((_) {
       return true;
     }).catchError((error) {
       print('error in users list add user with ulid $ulid, uid $uid.');
@@ -41,23 +46,40 @@ class UsersListDataManager {
 
     if (ulSnapshot.exists) {
       List<String> members = [];
+      Map<String, Map<String, dynamic>> metadata = {};
       try {
         // get all documents in sub-collection members
         QuerySnapshot result = await ulReference.collection('members').getDocuments();
         // query snapshot is a query result, may contain docs.
         for (int i = 0; i < result.documents.length; i++) {
           DocumentSnapshot uidDoc = result.documents[i];
-          members.add(uidDoc.documentID);
+          String uid = uidDoc.documentID;
+          members.add(uid);
+          metadata[uid] = uidDoc.data ?? {};
         }
       } catch (e, s) {
         print(s);
       }
 
-      usersList = UsersList.fromDatabase(ulid: ulReference.documentID, membersUids: members);
+      usersList = UsersList.fromDatabase(
+        ulid: ulReference.documentID,
+        membersUids: members,
+        metadata: metadata,
+      );
     } else {
       print('Tried to get nonexistent users list id ' + ulid);
     }
 
     return usersList;
+  }
+
+  static Future<void> removeUserList(String ulid) async {
+    DocumentReference listRef = usersListsCollection.document(ulid);
+
+    QuerySnapshot usersSnap = await listRef.collection("members").getDocuments();
+
+    for (var userSnap in usersSnap.documents) await userSnap.reference.delete();
+
+    return listRef.delete();
   }
 }

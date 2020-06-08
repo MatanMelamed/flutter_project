@@ -25,6 +25,7 @@ dependencies:
   date_format:
   gender_selection: ^1.0.0
   timeago: ^2.0.26
+  enum_to_string: ^1.0.9
 
 
 dev_dependencies:
