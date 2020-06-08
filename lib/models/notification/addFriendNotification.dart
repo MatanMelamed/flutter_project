@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ class AddFriendNotification implements base.Notification {
   String type = "addFriendNotification";
   String _name;
   var metadata = [];
+
 
   String _description;
   String _fromID;
@@ -44,7 +44,7 @@ class AddFriendNotification implements base.Notification {
                       TextSpan(
                           text: _name,
                           style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: " has send you a friend request")
+                      TextSpan(text: _description)
                     ]),
               ),
             ),
