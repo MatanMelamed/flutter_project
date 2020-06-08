@@ -23,7 +23,6 @@ class NotificationsPageBuilder extends StatefulWidget {
 class _NotificationsPageBuilderState extends State<NotificationsPageBuilder> {
   @override
   Widget build(BuildContext context) {
-    log("building page builder");
     return Container(
       child: ListView(
           primary: false,
@@ -47,7 +46,7 @@ class NotificationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log("building notifications page ");
+    log("building notifications page...");
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -60,7 +59,6 @@ class NotificationsPage extends StatelessWidget {
                 (context, AsyncSnapshot<List<base.Notification>> snapshot) {
               if (snapshot.hasData) {
                 log("Done Loading notifications");
-                log("SIZE OF LIST 3:" + snapshot.data.toList().length.toString());
                 return NotificationsPageBuilder(snapshot.data.toList());
               } else {
                 log("Loading....");
@@ -74,7 +72,6 @@ class NotificationsPage extends StatelessWidget {
     Map<String, base.Notification> typeToNotification = {
       'addFriendNotification': (() => AddFriendNotification())(),
       'acceptedFriendNotification': (() => AcceptedFriendNotification())(),
-//      not.Type.acceptedFriendNotification: AcceptedFriendNotification(),
     };
     return typeToNotification;
   }
@@ -82,7 +79,6 @@ class NotificationsPage extends StatelessWidget {
 //TODO: refactor to use then (like getAll and remove logs)
   Future<List<base.Notification>> initPage() async {
     List<base.Notification> notificationsList = [];
-    log("SIZE OF LIST 1 :" + notificationsList.length.toString());
     DocumentReference _userNotDoc =
         Firestore.instance.collection("notifications").document(userId);
 
@@ -102,19 +98,13 @@ class NotificationsPage extends StatelessWidget {
       var metadata = doc.data['metadata'];
       // create Notification object from Map according to type
 
-      log("In getNot. value from map for key 'type': " +
-          typeToNotification[doc.data['type']].toString()); //TODO:REMOVE
-
       base.Notification n = typeToNotification[doc.data['type']];
-      log("In getNot." + n.toString()); //TODO:REMOVE
 
       await n.handleMapFromDB(timestamp,metadata);
-      log("returned from mapFromDB");
       notificationsList.add(n);
     }
     log("number of Notification objects created:" +
         notificationsList.length.toString());
-    log("SIZE OF LIST 2 :" + notificationsList.length.toString());
     return notificationsList;
   }
 }

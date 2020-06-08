@@ -21,7 +21,6 @@ class AddFriendNotification implements base.Notification {
 
   @override
   Widget getWidget(context) {
-    log("inside getWidget");
 
     return Padding(
         padding: EdgeInsets.only(bottom: 2.0),
@@ -64,8 +63,6 @@ class AddFriendNotification implements base.Notification {
   @override
   Future<void> handleMapFromDB(
       Timestamp timestamp, Map<String, dynamic> map) async {
-    log("Inside handleMapFromDB");
-    log(map.toString());
     _fromID = map['fromID'];
     _docFromOther =
         await Firestore.instance.collection("users").document(_fromID).get();
@@ -74,7 +71,6 @@ class AddFriendNotification implements base.Notification {
     _description = 'has sent you a friend request';
     _timestamp = timestamp;
 
-    log("exisitmg mapFromDB");
   }
 
 //
