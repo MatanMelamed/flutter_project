@@ -21,7 +21,10 @@ class _FriendStatusButtonState extends State<FriendStatusButton> {
 
   Future<String> createDataBase(User currentOnlineUser) async {
     _friendDataManager = FriendDataManager(
-        userId: currentOnlineUser.uid, otherId: widget.otherUser.uid);
+        userId: currentOnlineUser.uid,
+        userFullName: currentOnlineUser.firstName + " " + currentOnlineUser.lastName,
+        otherId: widget.otherUser.uid,
+        otherFullName: widget.otherUser.firstName + " " + widget.otherUser.lastName);
     _status = await _friendDataManager.getStatus();
     return _status;
   }
@@ -57,12 +60,15 @@ class _FriendStatusButtonState extends State<FriendStatusButton> {
   Widget buildNotTheSameUser(User currentOnlineUser, String _status){
     createDataBase(currentOnlineUser);
     if (_status == "no_friend")
+      // will send friend request and a notification
       return abstractButton(
           "  Add friend  ", _friendDataManager.sendFriendRequest, Icons.person_add);
     else if (_status == "friend")
       return abstractButton(
+        // will delete friendship from both sides - no notification needed
            "  Un Friend  ", _friendDataManager.unFriend, Icons.cancel);
     else if (_status == "send")
+      // will delete the requests from both sides and will delete the notification sent
       return abstractButton("  Cancel Request  ", _friendDataManager.cancelRequest, Icons.cancel);
     else if (_status == "request")
       return
@@ -70,6 +76,8 @@ class _FriendStatusButtonState extends State<FriendStatusButton> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              // will delete the requests delete the requests and notifications \
+              // and will create friendship with new notifications
               abstractButton("  Accept  ", _friendDataManager.acceptFriend, Icons.person_add),
               SizedBox(width: 20.0,),
               abstractButton("  Rejected  ", _friendDataManager.cancelRequest, Icons.cancel),

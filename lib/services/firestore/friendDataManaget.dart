@@ -1,10 +1,15 @@
 //import 'dart:html';
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:teamapp/models/notification/notification.dart';
+import 'package:teamapp/services/firestore/notifications/friendNotificationsManager.dart';
+import 'package:teamapp/services/firestore/notifications/baseNotificationManager.dart';
 import 'searchByName/searchUserByName.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 
-class FriendDataManager{
+class FriendDataManager {
   static final CollectionReference _friendRequestRef =
       Firestore.instance.collection("friendsRequest");
   static final CollectionReference _friendRef =
@@ -13,11 +18,14 @@ class FriendDataManager{
   String userId;
   String otherId;
   final String _requestType = 'request_type';
+  final String userFullName; //used for creating notification
+  final String
+      otherFullName; //used for creating notification, TODO: make sure needed
 
-  FriendDataManager({this.userId, this.otherId});
+  FriendDataManager(
+      {this.userId, this.userFullName, this.otherId, this.otherFullName});
 
   Future<String> getStatus() async {
-
     DocumentSnapshot documentFriendSnapshot = await _friendRef
         .document(userId)
         .collection("userFriends")
@@ -42,8 +50,8 @@ class FriendDataManager{
   }
 
   Future<void> unFriend() async {
-
-     _friendRef.document(userId)
+    _friendRef
+        .document(userId)
         .collection("userFriends")
         .document(otherId)
         .get()
@@ -53,7 +61,8 @@ class FriendDataManager{
       }
     });
 
-    _friendRef.document(otherId)
+    _friendRef
+        .document(otherId)
         .collection("userFriends")
         .document(userId)
         .get()
@@ -65,33 +74,28 @@ class FriendDataManager{
     _currentStatus = "no_friend";
   }
 
-  Future<void> sendFriendRequest() async{
-
+  Future<void> sendFriendRequest() async {
     _friendRequestRef
         .document(userId)
         .collection("userFriendsRequest")
         .document(otherId)
-        .setData(
-        {
-          _requestType : "send"
-        }
-        );
+        .setData({_requestType: "send"});
 
     _friendRequestRef
         .document(otherId)
         .collection("userFriendsRequest")
         .document(userId)
-        .setData(
-        {
-          _requestType : "request"
-        }
-    );
-
+        .setData({_requestType: "request"});
     _currentStatus = "send";
+
+    //sending a friend request notification
+    FriendNotificationManager.sendFriendReqNotification(userId, otherId);
   }
 
-  Future<void> cancelRequest() async{
-    _friendRequestRef.document(userId)
+// Former cancelRequest
+  Future<void> removeRequests() async {
+    _friendRequestRef
+        .document(userId)
         .collection("userFriendsRequest")
         .document(otherId)
         .get()
@@ -101,7 +105,8 @@ class FriendDataManager{
       }
     });
 
-    _friendRequestRef.document(otherId)
+    _friendRequestRef
+        .document(otherId)
         .collection("userFriendsRequest")
         .document(userId)
         .get()
@@ -114,31 +119,27 @@ class FriendDataManager{
     _currentStatus = "no_friend";
   }
 
-  Future<void> acceptFriend() async{
+  Future<void> cancelRequest() async {
+    removeRequests();
 
-    await cancelRequest();
-
-    _friendRef
-        .document(userId)
-        .collection("userFriends")
-        .document(otherId)
-        .setData(
-        {
-          "date" : DateTime.now().toIso8601String()
-        }
-    );
-
-    _friendRef
-        .document(otherId)
-        .collection("userFriends")
-        .document(userId)
-        .setData(
-        {
-          "date" : DateTime.now().toIso8601String()
-        }
-    );
-
+    FriendNotificationManager.deleteFriendNotification(userId, otherId);
   }
 
+  Future<void> acceptFriend() async {
+    await removeRequests();
 
+    _friendRef
+        .document(userId)
+        .collection("userFriends")
+        .document(otherId)
+        .setData({"date": DateTime.now().toIso8601String()});
+
+    _friendRef
+        .document(otherId)
+        .collection("userFriends")
+        .document(userId)
+        .setData({"date": DateTime.now().toIso8601String()});
+
+    FriendNotificationManager.acceptFriendNotification(userId, otherId);
+  }
 }
