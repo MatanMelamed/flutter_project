@@ -13,6 +13,8 @@ class MyApp extends StatelessWidget {
       value: authService.userStream, // what the provider listens to
       child: MaterialApp(
         home: AuthWrapper(),
+//theme: ThemeData(primaryColor: Colors.white),
+
 //        home: AutoLogin(
 //          user: DummyUsers.Elizabeth,
 //          child: UserTeams(),

@@ -21,7 +21,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _notificationsCounter =0;
   DocumentReference _notificationsDocument;
 
   final _pageOptions = [
@@ -48,14 +47,13 @@ class _HomePageState extends State<HomePage> {
           length: 3,
           child: Scaffold(
             appBar: AppBar(
-                title: Text("Title of the AppBar"),
+                title: Text("TeamApp",
+                style: TextStyle(fontSize: 40 , fontFamily: 'Signatra'),),
                 centerTitle: true,
                 backgroundColor: Theme.of(context).primaryColor,
                 actions: <Widget>[
                   IconButton(
                     icon: StreamBuilder<DocumentSnapshot>(
-//                      initialData: _notificationsCounter,
-//                      stream: _notificationsController.stream,
                       stream: _notificationsDocument.snapshots(),
                       builder: (context, snapshot) => BadgeIcon(
                         icon: Icon(Icons.notifications, size: 25),
@@ -75,6 +73,7 @@ class _HomePageState extends State<HomePage> {
                 ],
 
                 bottom: TabBar(
+                  labelStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   tabs: <Widget>[
                     Tab(
                       text: "Home",
@@ -110,7 +109,6 @@ class _HomePageState extends State<HomePage> {
     if (documentSnapshot.data != null) {
       log("notification badge:  document snapshot Does exist, returning: "
           +documentSnapshot.data['new_counter'].toString());
-      _notificationsCounter = documentSnapshot.data['new_counter']; //MAYBE REDUNDANT
       return documentSnapshot.data['new_counter'];
     }
     log("notification badge: documentSnapshot Does exist, but data=null, no counter, returning 0");
