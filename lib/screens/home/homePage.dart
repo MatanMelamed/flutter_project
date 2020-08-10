@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/screens/Home/notifications_badge.dart';
 import 'package:teamapp/screens/home/create.dart';
 import 'dart:async';
 import 'package:teamapp/screens/home/feed.dart';
@@ -12,6 +11,7 @@ import 'package:teamapp/screens/home/mainDrawer.dart';
 import 'package:teamapp/screens/home/search.dart';
 
 import 'notificationsPage.dart';
+import 'notifications_badge.dart';
 
 
 class HomePage extends StatefulWidget {

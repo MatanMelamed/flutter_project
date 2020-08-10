@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:teamapp/Tests/AgeRangeSlider.dart';
+import 'package:teamapp/models/location.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/team.dart';
+import 'package:teamapp/screens/location/search_address.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/theme/white.dart';
@@ -29,7 +32,8 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
   int _ageLimitStart = 15;
   int _ageLimitEnd = 80;
   var sports = TextEditingController();
-  var location = TextEditingController();
+  GeoPoint geoPointLocation;
+  var _addressLocation = TextEditingController();
 
   MeetingStatus status;
 
@@ -45,7 +49,7 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
     meetingName.dispose();
     description.dispose();
     sports.dispose();
-    location.dispose();
+    geoPointLocation;
     timeController.dispose();
   }
 
@@ -58,7 +62,7 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
       isPublic: isPublic,
       ageLimitStart: _ageLimitStart,
       ageLimitEnd: _ageLimitEnd,
-      location: location.text,
+      location: geoPointLocation,
       sport: sports.text,
     );
     MeetingDataManager.createMeeting(widget.team, meeting);
@@ -137,7 +141,7 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
                             style: kLabelStyle,
                             keyboardType: TextInputType.datetime,
                             cursorColor: Colors.blue,
-                            decoration: GetInputDecor('Date of Birth'),
+                            decoration: GetInputDecor('Date to Meet'),
                           ),
                         ),
                       ),
@@ -169,14 +173,21 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
                         _ageLimitEnd = b;
                       },
                     ),
+                    // TODO
                     Container(
                       padding: EdgeInsets.all(10),
-                      child: TextField(
-                          controller: location,
-                          cursorColor: Colors.white70,
-                          style: kLabelStyle,
-                          decoration: GetInputDecor('Meeting location')),
+                      child: GestureDetector(
+                        onTap: () => _selectLocation(context),
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            controller: _addressLocation,
+                            style: kLabelStyle,
+                            cursorColor: Colors.blue,
+                            decoration: GetInputDecor('Meeting location'),
+                          ),
+                        ),
                       ),
+                    ),
                     Container(
                       padding: EdgeInsets.all(10),
                       child: TextField(
@@ -206,5 +217,16 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
         ),
       ),
     );
+  }
+
+  Future<void> _selectLocation(context) async {
+    Location location = await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => SearchAddresses(),
+        ));
+    setState(() {
+      geoPointLocation = location.location;
+      _addressLocation = TextEditingController(text: location.address);
+    });
   }
 }

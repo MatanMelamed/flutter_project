@@ -26,6 +26,9 @@ dependencies:
   gender_selection: ^1.0.0
   timeago: ^2.0.26
   enum_to_string: ^1.0.9
+  google_maps_flutter:
+  geolocator: ^5.3.2+2
+  latlong: 0.6.1
 
 
 dev_dependencies:

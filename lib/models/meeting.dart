@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 enum MeetingStatus {
@@ -35,7 +36,7 @@ class Meeting {
   int ageLimitEnd;
 
   // not implemented
-  String location; // ?
+  GeoPoint location; // ?
   String sport; // ?
 
   Meeting.fromDatabase({
