@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/home/home.dart';
+import 'package:teamapp/screens/home/homePage.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:teamapp/widgets/loading.dart';
@@ -33,6 +34,6 @@ class AutoLogin extends StatelessWidget {
       login();
     }
 
-    return user == null ? Loading() : child ?? Home();
+    return user == null ? Loading() : child ?? HomePage();
   }
 }

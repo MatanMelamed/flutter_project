@@ -35,7 +35,7 @@ class MainDrawer extends StatelessWidget {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                             image: NetworkImage(user.remoteImage.url),
-                            fit: BoxFit.fill)),
+                            fit: BoxFit.cover)),
                   ),
                   Text(
                     user.firstName + " " + user.lastName,
