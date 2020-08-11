@@ -34,7 +34,9 @@ class _TeamMeetingsState extends State<TeamMeetings> {
 
   _loadMeetings() async {
     setState(() => isLoading = true);
+    debugPrint('starting to load meetings in team page');
     meetings = await MeetingDataManager.getAllMeetingsOfATeam(widget.team.tid);
+    debugPrint('finished to load meetings in team page');
     setState(() => isLoading = false);
   }
 
@@ -61,24 +63,26 @@ class _TeamMeetingsState extends State<TeamMeetings> {
           children: <Widget>[
             Container(
               padding: EdgeInsets.symmetric(vertical: 20),
-              child: RaisedButton(
-                elevation: 10,
-                color: Colors.blue,
-                child: Text(
-                  "Create a new meeting",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => CreateMeetingTester(
-                        team: widget.team,
-                        ),
+              child: !isAdmin
+                  ? Container()
+                  : RaisedButton(
+                      elevation: 10,
+                      color: Colors.blue,
+                      child: Text(
+                        "Create a new meeting",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
-                    );
-                },
-              ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) => CreateMeetingTester(
+                              team: widget.team,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
             ),
             Expanded(
               child: isLoading

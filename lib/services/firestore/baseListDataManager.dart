@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:teamapp/models/records_list.dart';
 
 class BaseListDataManager {
@@ -47,6 +48,10 @@ class BaseListDataManager {
       print('error in add record $record to record list $lid.');
       return false;
     });
+  }
+
+  Future<void> updateRecordMetadata(String lid, String record, Map<String, dynamic> metadata) async {
+    await recordsListCollection.document(lid).collection(subCollectionName).document(record).updateData(metadata);
   }
 
   Future<void> removeRecord(String lid, String record) async {
@@ -101,7 +106,7 @@ class BaseListDataManager {
     return listRef.delete();
   }
 
-  // Delete all the data for all teams !!
+  // Delete all the data !!
   Future<void> deleteAllRecordsLists() async {
     QuerySnapshot snapshot = await recordsListCollection.getDocuments();
     for (DocumentSnapshot docSnap in snapshot.documents) {

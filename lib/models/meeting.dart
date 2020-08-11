@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-enum MeetingStatus {
-  APPROVED,
-  ONGOING,
-  CANCELED,
-}
+enum MeetingStatus { APPROVED, ONGOING, CANCELED }
 
 enum MeetingField {
   MID,

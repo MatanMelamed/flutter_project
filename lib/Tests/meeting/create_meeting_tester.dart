@@ -49,7 +49,6 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
     meetingName.dispose();
     description.dispose();
     sports.dispose();
-    geoPointLocation;
     timeController.dispose();
   }
 

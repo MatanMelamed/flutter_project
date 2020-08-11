@@ -17,25 +17,26 @@ import 'package:teamapp/services/firestore/usersListDataManager.dart';
  */
 class MeetingDataManager {
   static final CollectionReference meetingsCollection = Firestore.instance.collection("meetings");
-  static const String USER_APPROVAL_STATUS = 'approval_status';
 
   static UserToMeetings userToMeetings = UserToMeetings();
   static TeamToMeetings teamToMeetings = TeamToMeetings();
   static MeetingToUsers meetingToUsers = MeetingToUsers();
 
   static Future<void> _createUsersListForMeeting(Team team, String mid) async {
-    Map<String, Map<String, dynamic>> metadata = {};
-
     // get the users of the team
-    RecordList users_in_team = await TeamToUsers().getRecordsList(team.tid);
+    RecordList usersInTeam = await TeamToUsers().getRecordsList(team.tid);
+    List<String> usersInMeeting = [];
 
     // create metadata per user in team's users list
-    for (String uid in users_in_team.data) {
-      metadata[uid] = {USER_APPROVAL_STATUS: false};
+    for (String uid in usersInTeam.data) {
+      var userMetadata = usersInTeam.metadata[uid];
+      if (userMetadata[TeamToUsers.AUTO_JOIN_NEW_MEETINGS]) {
+        usersInMeeting.add(uid);
+      }
     }
 
     // create meeting's users list with the metadata
-    RecordList meetingUl = RecordList.fromWithinApp(data: users_in_team.data, metadata: metadata);
+    RecordList meetingUl = RecordList.fromWithinApp(data: usersInMeeting, metadata: {});
 
     // save the meeting's users list in firestore
     meetingToUsers.createRecordList(recordList: meetingUl, documentName: mid);
@@ -150,7 +151,7 @@ class MeetingDataManager {
 
   static Future<void> addUserToMeeting(String mid, String uid) async {
     await userToMeetings.addRecord(uid, mid);
-    await meetingToUsers.addRecord(mid, uid, metadata: {USER_APPROVAL_STATUS: false});
+    await meetingToUsers.addRecord(mid, uid);
   }
 
   static Future<void> removeUserFromMeeting(String mid, String uid) async {

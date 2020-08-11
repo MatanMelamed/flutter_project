@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
@@ -20,9 +21,8 @@ import 'package:teamapp/widgets/teams/team_user_dialog.dart';
 
 class TeamOptionsPage extends StatefulWidget {
   final Team team;
-  final bool isAdmin;
 
-  TeamOptionsPage({@required this.team, @required this.isAdmin});
+  TeamOptionsPage({@required this.team});
 
   @override
   _TeamOptionsPageState createState() => _TeamOptionsPageState();
@@ -31,34 +31,68 @@ class TeamOptionsPage extends StatefulWidget {
 class _TeamOptionsPageState extends State<TeamOptionsPage> {
   Team team;
   List<User> users;
-  bool loading;
 
-  @override
-  void initState() {
-    super.initState();
+  User currentUser;
+  bool isInTeam;
+  bool isAdmin;
+  bool hasAutoJoin;
+
+  bool loading = true;
+  bool hasLoaded = false;
+
+  bool IsAdmin() {
+    return isAdmin;
+  }
+
+  loadWidgetOnce() async {
+    if (hasLoaded) return;
     team = widget.team;
-    loadUsers();
+    currentUser = Provider.of<User>(context);
+    isAdmin = team.ownerUid == currentUser.uid;
+    await loadUsers();
+    await loadAutoJoin();
+    hasLoaded = true;
+    setState(() => loading = false);
+  }
+
+//  LoadWidget() async {
+//    setState(() => loading = true);
+//    currentUser = Provider.of<User>(context);
+//    await loadUsers();
+//    await loadAutoJoin();
+//    setState(() => loading = false);
+//  }
+
+  loadAutoJoin() async {
+    if (isInTeam) {
+      hasAutoJoin = await TeamDataManager.teamToUsers.isUserAutoJoin(team.tid, currentUser.uid);
+    }
+  }
+
+  reloadUsers() async {
+    setState(() => loading = true);
+    await loadUsers();
+    setState(() => loading = false);
   }
 
   loadUsers() async {
-    setState(() => loading = true);
+    isInTeam = false;
     users = [];
     RecordList usersList = await TeamToUsers().getRecordsList(widget.team.tid);
 //    UsersList usersList = await UsersListDataManager.getUsersList(team.ulid);
     for (final uid in usersList.data) {
       User user = await UserDataManager.getUser(uid);
       users.add(user);
+      if (user.uid == currentUser.uid) {
+        isInTeam = true;
+      }
     }
-    setState(() => loading = false);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    loadWidgetOnce();
+
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     double top = MediaQuery.of(context).padding.top;
@@ -66,211 +100,290 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-//              IconButton(
-//                icon: Icon(Icons.account_circle),
-//                onPressed: () {
-//                  isAdmin = !isAdmin;
-//                  setState(() {});
-//                },
-//              ),
-              //GetNarrowReturnBar(context),
-              SizedBox(height: 30),
-              DiamondImage(
-                size: 150,
-                imageProvider: NetworkImage(team.remoteStorageImage.url),
-                callback: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return EditViewImage(
-                      imageProvider: NetworkImage(team.remoteStorageImage.url),
-                      onSaveNewImageFile: (file) async {
-                        await TeamDataManager.updateTeamImage(team, file);
+        body: loading
+            ? Loading()
+            : SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.account_circle),
+                      onPressed: () {
+                        isAdmin = !isAdmin;
                         setState(() {});
                       },
-                      heroTag: "teamProfileImage",
-                      mode: widget.isAdmin ? EditViewImageMode.ViewAndEdit : EditViewImageMode.ViewOnly,
-                    );
-                  }));
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                child: Divider(thickness: 2),
-              ),
-              Container(
-                padding: EdgeInsets.only(bottom: 10),
-                width: double.infinity,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Text(
-                      team.name,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
                     ),
-                    !widget.isAdmin
-                        ? SizedBox(height: 0, width: 0)
-                        : Positioned(
-                            right: 30,
-                            child: GestureDetector(
-                              child: Icon(Icons.edit, size: 21),
-                              onTap: () async {
-                                String newName = await Dialogs.showTextInputDialog(context, "team name");
-                                if (newName.isNotEmpty) {
-                                  TeamDataManager.updateTeamName(team, newName);
-                                  setState(() {});
-                                }
-                              },
-                            ),
-                          )
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(bottom: 20),
-                width: double.infinity,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Text(
-                      team.description,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black54, fontSize: 16),
+                    //GetNarrowReturnBar(context),
+                    SizedBox(height: 30),
+                    DiamondImage(
+                      size: 150,
+                      imageProvider: NetworkImage(team.remoteStorageImage.url),
+                      callback: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return EditViewImage(
+                            imageProvider: NetworkImage(team.remoteStorageImage.url),
+                            onSaveNewImageFile: (file) async {
+                              await TeamDataManager.updateTeamImage(team, file);
+                              setState(() {});
+                            },
+                            heroTag: "teamProfileImage",
+                            mode: IsAdmin() ? EditViewImageMode.ViewAndEdit : EditViewImageMode.ViewOnly,
+                          );
+                        }));
+                      },
                     ),
-                    !widget.isAdmin
-                        ? SizedBox(height: 0, width: 0)
-                        : Positioned(
-                            right: 30,
-                            child: GestureDetector(
-                              child: Icon(Icons.edit, size: 21),
-                              onTap: () async {
-                                String newDescription = await Dialogs.showTextInputDialog(context, "description");
-                                if (newDescription.isNotEmpty) {
-                                  TeamDataManager.updateTeamDescription(team, newDescription);
-                                  setState(() {});
-                                }
-                              },
-                            ),
-                          )
-                  ],
-                ),
-              ),
-              Tooltip(
-                message: !team.isPublic
-                    ? "Private means the team won't show up in searches."
-                    : "Public means the team will show up in searches.",
-                child: Container(
-                  padding: EdgeInsets.only(bottom: 25),
-                  width: double.infinity,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      Text(
-                        !team.isPublic ? "This team is private." : "This team is public.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black87, fontSize: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                      child: Divider(thickness: 2),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(bottom: 10),
+                      width: double.infinity,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          Text(
+                            team.name,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
+                          ),
+                          !IsAdmin()
+                              ? SizedBox(height: 0, width: 0)
+                              : Positioned(
+                                  right: 30,
+                                  child: GestureDetector(
+                                    child: Icon(Icons.edit, size: 21),
+                                    onTap: () async {
+                                      String newName = await Dialogs.showTextInputDialog(context, "team name");
+                                      if (newName.isNotEmpty) {
+                                        TeamDataManager.updateTeamField(team, TeamField.NAME, newName);
+                                        setState(() {});
+                                      }
+                                    },
+                                  ),
+                                )
+                        ],
                       ),
-                      !widget.isAdmin
-                          ? SizedBox(height: 0, width: 0)
-                          : Positioned(
-                              right: 30,
-                              child: Switch(
-                                value: team.isPublic,
-                                onChanged: (value) {
-                                  TeamDataManager.updateTeamPrivacy(team, value);
-                                  setState(() {});
-                                },
-                              ),
-                            )
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.all(10),
-                color: Colors.blue[400],
-                height: 60,
-                width: width - 20,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "Members",
-                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        Text(
-                          users.length > 0 ? "     " + users.length.toString() : "",
-                          style: TextStyle(color: Colors.white60, fontSize: 20, fontWeight: FontWeight.bold),
-                        )
-                      ],
                     ),
-                    !widget.isAdmin
-                        ? SizedBox(height: 0, width: 0)
-                        : Positioned(
-                            right: 10,
-                            child: IconButton(
-                                icon: Icon(Icons.add, color: Colors.white, size: 25),
-                                onPressed: () async {
-                                  dynamic didSomethingChange = await Navigator.of(context)
-                                      .push(MaterialPageRoute(builder: (context) => TeamAddUser(team: team)));
-                                  if (didSomethingChange != null && didSomethingChange) {
-                                    loadUsers();
-                                  }
-                                }),
-                          )
+                    Container(
+                      padding: EdgeInsets.only(bottom: 20),
+                      width: double.infinity,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          Text(
+                            team.description,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black54, fontSize: 16),
+                          ),
+                          !IsAdmin()
+                              ? SizedBox(height: 0, width: 0)
+                              : Positioned(
+                                  right: 30,
+                                  child: GestureDetector(
+                                    child: Icon(Icons.edit, size: 21),
+                                    onTap: () async {
+                                      String newDescription = await Dialogs.showTextInputDialog(context, "description");
+                                      if (newDescription.isNotEmpty) {
+                                        TeamDataManager.updateTeamField(team, TeamField.DESCRIPTION, newDescription);
+                                        setState(() {});
+                                      }
+                                    },
+                                  ),
+                                )
+                        ],
+                      ),
+                    ),
+                    Tooltip(
+                      message: !team.isPublic
+                          ? "Private means the team won't show up in searches."
+                          : "Public means the team will show up in searches.",
+                      child: Container(
+                        padding: EdgeInsets.only(bottom: 25),
+                        width: double.infinity,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: <Widget>[
+                            Text(
+                              !team.isPublic ? "This team is private." : "This team is public.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.black87, fontSize: 16),
+                            ),
+                            !IsAdmin()
+                                ? SizedBox(height: 0, width: 0)
+                                : Positioned(
+                                    right: 30,
+                                    child: Switch(
+                                      value: team.isPublic,
+                                      onChanged: (value) {
+                                        TeamDataManager.updateTeamField(team, TeamField.IS_PUBLIC, value);
+                                        setState(() {});
+                                      },
+                                    ),
+                                  )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: !isInTeam
+                          ? Container()
+                          : Tooltip(
+                              message: "Join automatically to all new meetings of this team",
+                              child: Container(
+                                padding: EdgeInsets.only(bottom: 25),
+                                width: double.infinity,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      "Automatically join new meetings",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.black87, fontSize: 16),
+                                    ),
+                                    Positioned(
+                                      right: 30,
+                                      child: Switch(
+                                        value: hasAutoJoin,
+                                        onChanged: (value) {
+                                          hasAutoJoin = !hasAutoJoin;
+                                          TeamDataManager.teamToUsers
+                                              .updateUserAutoJoin(team.tid, currentUser.uid, hasAutoJoin);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                    ),
+
+                    Container(
+                      margin: EdgeInsets.all(10),
+                      color: Colors.blue[400],
+                      height: 60,
+                      width: width - 20,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "Members",
+                                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                              ),
+                              Text(
+                                users.length > 0 ? "     " + users.length.toString() : "",
+                                style: TextStyle(color: Colors.white60, fontSize: 20, fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                          !IsAdmin()
+                              ? SizedBox(height: 0, width: 0)
+                              : Positioned(
+                                  right: 10,
+                                  child: IconButton(
+                                      icon: Icon(Icons.add, color: Colors.white, size: 25),
+                                      onPressed: () async {
+                                        dynamic didSomethingChange = await Navigator.of(context)
+                                            .push(MaterialPageRoute(builder: (context) => TeamAddUser(team: team)));
+                                        if (didSomethingChange != null && didSomethingChange) {
+                                          reloadUsers();
+                                        }
+                                      }),
+                                )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      child: ListView.separated(
+                          physics: ClampingScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemBuilder: (ctx, index) {
+                            return Container(
+                                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                                child: UserCard(
+                                  user: users[index],
+                                  trailing:
+                                      users[index].uid != team.ownerUid ? SizedBox(width: 0, height: 0) : Text('Admin'),
+                                  callback: () async {
+                                    User user = users[index];
+                                    await showDialog(
+                                        context: context,
+                                        builder: (ctx) => TeamUserDialog(
+                                              user: user,
+                                              isAdmin: IsAdmin(),
+                                              viewProfileCallback: () {
+                                                Navigator.of(context).push(MaterialPageRoute(
+                                                    builder: (context) => MainUserProfilePage(user: user)));
+                                              },
+                                              removeUserCallback: () {
+                                                _removeUser(user);
+                                              },
+                                            ));
+                                  },
+                                ));
+                          },
+                          separatorBuilder: (ctx, idx) => Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 15),
+                                child: Divider(thickness: 2),
+                              ),
+                          itemCount: users.length),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: !isInTeam
+                          ? Container()
+                          : RaisedButton(
+                              elevation: 10,
+                              onPressed: loading ? null : _leaveTeam,
+                              child: Text(
+                                "Leave Team",
+                                style: TextStyle(color: Colors.white, fontSize: 16),
+                              ),
+                              color: Colors.red[900],
+                            ),
+                    ),
                   ],
                 ),
               ),
-              Container(
-                child: loading
-                    ? Container(
-                        height: 150,
-                        child: Loading(),
-                      )
-                    : ListView.separated(
-                        physics: ClampingScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemBuilder: (ctx, index) {
-                          return Container(
-                              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                              child: UserCard(
-                                user: users[index],
-                                trailing:
-                                    users[index].uid != team.ownerUid ? SizedBox(width: 0, height: 0) : Text('Admin'),
-                                callback: () async {
-                                  User user = users[index];
-                                  await showDialog(
-                                      context: context,
-                                      builder: (ctx) => TeamUserDialog(
-                                            user: user,
-                                            isAdmin: widget.isAdmin,
-                                            viewProfileCallback: () {
-                                              Navigator.of(context).push(MaterialPageRoute(
-                                                  builder: (context) => MainUserProfilePage(user: user)));
-                                            },
-                                            removeUserCallback: () {
-                                              _removeUser(user);
-                                            },
-                                          ));
-                                },
-                              ));
-                        },
-                        separatorBuilder: (ctx, idx) => Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
-                              child: Divider(thickness: 2),
-                            ),
-                        itemCount: users.length),
-              ),
-            ],
-          ),
-        ),
       ),
     );
+  }
+
+  void _leaveTeam() async {
+    bool shouldRemove = await showDialog(
+        context: context,
+        builder: (ctx) => GeneralAlertDialog(
+              title: 'Alert',
+              content: "Are you sure you want to leave ${team.name}?",
+              confirmCallback: () {
+                Navigator.of(context).pop(true);
+              },
+              cancelCallback: () {
+                Navigator.of(context).pop(false);
+              },
+            ));
+
+    if (shouldRemove) {
+      setState(() => loading = true);
+      if (isAdmin) {
+        if (users.length > 1) {
+          for (User user in users) {
+            if (user.uid == currentUser.uid) {
+              continue;
+            }
+            print('${user.uid} and ${currentUser.uid}');
+            await TeamDataManager.updateTeamField(team, TeamField.OWNER_UID, user.uid);
+          }
+        } else {
+          // delete team
+        }
+      }
+      await TeamDataManager.removeUserFromTeam(team, newUser: currentUser);
+      Navigator.of(context).pop(true);
+    }
   }
 
   void _removeUser(User user) async {
@@ -295,9 +408,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
 
     if (shouldRemove) {
       TeamDataManager.removeUserFromTeam(team, newUser: user);
-      setState(() {
-        loadUsers();
-      });
+      reloadUsers();
       Navigator.of(context).pop();
     }
   }
