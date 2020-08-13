@@ -61,8 +61,9 @@ class AddFriendNotification implements base.Notification {
   }
 
   @override
-  Future<void> handleMapFromDB(
+  Future<bool> handleMapFromDB(
       Timestamp timestamp, Map<String, dynamic> map) async {
+
     _fromID = map['fromID'];
     _docFromOther =
         await Firestore.instance.collection("users").document(_fromID).get();
@@ -70,70 +71,6 @@ class AddFriendNotification implements base.Notification {
     _name = _docFromOther.data['first_name'] + _docFromOther.data['last_name'];
     _description = 'has sent you a friend request';
     _timestamp = timestamp;
-
+    return true;
   }
-
-//
-//  Widget acceptOrReject() {
-//    return
-//      Row(
-//        mainAxisAlignment: MainAxisAlignment.center,
-//        crossAxisAlignment: CrossAxisAlignment.center,
-//        children: <Widget>[
-//          // will delete the requests delete the requests and notifications \
-//          // and will create friendship with new notifications
-//          abstractButton(
-//              "  Accept  ", _friendDataManager.acceptFriend, Icons.person_add),
-//          SizedBox(width: 20.0,),
-//          abstractButton(
-//              "  Rejected  ", _friendDataManager.cancelRequest, Icons.cancel),
-//        ],
-//      );
-//  }
-
 }
-
-//
-//return Padding(
-//padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-//child: InkWell(
-//onTap: () {
-//var userProfile = UserDataManager.createUserFromDoc(_docFromOther);
-//Navigator.of(context).push(MaterialPageRoute(
-//builder: (context) => MainUserProfilePage(user: userProfile)));
-//},
-//child: Row(
-//mainAxisAlignment: MainAxisAlignment.start,
-//children: <Widget>[
-//Hero(
-//tag: _imageUrl,
-//child: CircleAvatar(
-//backgroundImage: NetworkImage(_imageUrl),
-//radius: 30.0,
-//),
-//),
-//SizedBox(
-//width: 10.0,
-//),
-//RichText(
-//text: TextSpan(
-//text: _name,
-//style: TextStyle(
-//color: Colors.black,
-//fontFamily: 'Montserrat',
-//fontSize: 17.0,
-//fontWeight: FontWeight.bold),
-//children: [
-//TextSpan(
-//text: _description,
-//style: TextStyle(
-//fontFamily: 'Montserrat',
-//fontSize: 17.0,
-//fontWeight: FontWeight.normal),
-//)
-//]),
-//)
-//],
-//),
-//),
-//);

@@ -13,7 +13,8 @@ class Notification {
 
   Widget getWidget(context) {}
 
-  Future<void> handleMapFromDB(Timestamp timestamp, Map<String,dynamic> map) {}
+  Future<bool> handleMapFromDB(Timestamp timestamp, Map<String,dynamic> metadata) {}
+
 
 //  UsersList.fromWithinApp({@required this.membersUids});
 //

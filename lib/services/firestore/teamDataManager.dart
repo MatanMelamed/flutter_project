@@ -1,18 +1,16 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/services/firestore/ChatDataManager.dart';
-import 'package:teamapp/services/firestore/baseListDataManager.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
-import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
+import 'package:teamapp/services/firestore/notifications/teamNotificationManager.dart';
+
 
 class TeamDataManager {
   static final CollectionReference teamsCollection = Firestore.instance.collection("teams");
@@ -35,6 +33,10 @@ class TeamDataManager {
       'owner': team.ownerUid,
       'messages': messagesDocRef.documentID
     });
+
+    // Sending notifications to all team members
+    TeamNotificationManager.sendTeamNotifications(team.ownerUid, usersList.data,docRef.documentID);
+
 
     // users list must contain at least the creator of the team - the owner
     usersList = usersList == null

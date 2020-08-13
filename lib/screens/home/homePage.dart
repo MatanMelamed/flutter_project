@@ -21,7 +21,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _notificationsCounter =0;
   DocumentReference _notificationsDocument;
 
   final _pageOptions = [
@@ -99,21 +98,15 @@ class _HomePageState extends State<HomePage> {
 
   int getBadgeCount(AsyncSnapshot asyncDocSnapshot) {
     if (!asyncDocSnapshot.hasData) {
-      log("notification badge: Async document snapshot DOESN'T have data, return 0");
       return 0;
     }
     DocumentSnapshot documentSnapshot = asyncDocSnapshot.data;
     if (!documentSnapshot.exists) {
-      log("notification badge: document snapshot does NOT exist, return 0");
       return 0;
     }
     if (documentSnapshot.data != null) {
-      log("notification badge:  document snapshot Does exist, returning: "
-          +documentSnapshot.data['new_counter'].toString());
-      _notificationsCounter = documentSnapshot.data['new_counter']; //MAYBE REDUNDANT
       return documentSnapshot.data['new_counter'];
     }
-    log("notification badge: documentSnapshot Does exist, but data=null, no counter, returning 0");
     return 0;
   }
 }
