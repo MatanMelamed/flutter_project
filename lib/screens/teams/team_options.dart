@@ -15,7 +15,7 @@ import 'package:teamapp/widgets/general/dialogs/dialogs.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
 import 'package:teamapp/widgets/general/editViewImage.dart';
 import 'package:teamapp/widgets/loading.dart';
-import 'package:teamapp/widgets/teams/team_alert.dart';
+import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/general/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
 import 'package:teamapp/widgets/teams/team_user_dialog.dart';
 
@@ -37,12 +37,8 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
   bool isAdmin;
   bool hasAutoJoin;
 
-  bool loading = true;
+  bool isLoading = true;
   bool hasLoaded = false;
-
-  bool IsAdmin() {
-    return isAdmin;
-  }
 
   loadWidgetOnce() async {
     if (hasLoaded) return;
@@ -50,36 +46,23 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
     currentUser = Provider.of<User>(context);
     isAdmin = team.ownerUid == currentUser.uid;
     await loadUsers();
-    await loadAutoJoin();
-    hasLoaded = true;
-    setState(() => loading = false);
-  }
-
-//  LoadWidget() async {
-//    setState(() => loading = true);
-//    currentUser = Provider.of<User>(context);
-//    await loadUsers();
-//    await loadAutoJoin();
-//    setState(() => loading = false);
-//  }
-
-  loadAutoJoin() async {
     if (isInTeam) {
       hasAutoJoin = await TeamDataManager.teamToUsers.isUserAutoJoin(team.tid, currentUser.uid);
     }
+    hasLoaded = true;
+    setState(() => isLoading = false);
   }
 
-  reloadUsers() async {
-    setState(() => loading = true);
+  reloadWidget() async {
+    setState(() => isLoading = true);
     await loadUsers();
-    setState(() => loading = false);
+    setState(() => isLoading = false);
   }
 
   loadUsers() async {
     isInTeam = false;
     users = [];
     RecordList usersList = await TeamToUsers().getRecordsList(widget.team.tid);
-//    UsersList usersList = await UsersListDataManager.getUsersList(team.ulid);
     for (final uid in usersList.data) {
       User user = await UserDataManager.getUser(uid);
       users.add(user);
@@ -100,7 +83,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
-        body: loading
+        body: isLoading
             ? Loading()
             : SingleChildScrollView(
                 child: Column(
@@ -126,7 +109,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                               setState(() {});
                             },
                             heroTag: "teamProfileImage",
-                            mode: IsAdmin() ? EditViewImageMode.ViewAndEdit : EditViewImageMode.ViewOnly,
+                            mode: isAdmin ? EditViewImageMode.ViewAndEdit : EditViewImageMode.ViewOnly,
                           );
                         }));
                       },
@@ -145,7 +128,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                             team.name,
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
                           ),
-                          !IsAdmin()
+                          !isAdmin
                               ? SizedBox(height: 0, width: 0)
                               : Positioned(
                                   right: 30,
@@ -174,7 +157,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                             textAlign: TextAlign.center,
                             style: TextStyle(color: Colors.black54, fontSize: 16),
                           ),
-                          !IsAdmin()
+                          !isAdmin
                               ? SizedBox(height: 0, width: 0)
                               : Positioned(
                                   right: 30,
@@ -207,7 +190,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.black87, fontSize: 16),
                             ),
-                            !IsAdmin()
+                            !isAdmin
                                 ? SizedBox(height: 0, width: 0)
                                 : Positioned(
                                     right: 30,
@@ -278,7 +261,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                               )
                             ],
                           ),
-                          !IsAdmin()
+                          !isAdmin
                               ? SizedBox(height: 0, width: 0)
                               : Positioned(
                                   right: 10,
@@ -288,7 +271,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                                         dynamic didSomethingChange = await Navigator.of(context)
                                             .push(MaterialPageRoute(builder: (context) => TeamAddUser(team: team)));
                                         if (didSomethingChange != null && didSomethingChange) {
-                                          reloadUsers();
+                                          reloadWidget();
                                         }
                                       }),
                                 )
@@ -313,7 +296,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                                         context: context,
                                         builder: (ctx) => TeamUserDialog(
                                               user: user,
-                                              isAdmin: IsAdmin(),
+                                              isAdmin: isAdmin,
                                               viewProfileCallback: () {
                                                 Navigator.of(context).push(MaterialPageRoute(
                                                     builder: (context) => MainUserProfilePage(user: user)));
@@ -337,7 +320,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
                           ? Container()
                           : RaisedButton(
                               elevation: 10,
-                              onPressed: loading ? null : _leaveTeam,
+                              onPressed: isLoading ? null : _leaveTeam,
                               child: Text(
                                 "Leave Team",
                                 style: TextStyle(color: Colors.white, fontSize: 16),
@@ -367,7 +350,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
             ));
 
     if (shouldRemove) {
-      setState(() => loading = true);
+      setState(() => isLoading = true);
       if (isAdmin) {
         if (users.length > 1) {
           for (User user in users) {
@@ -408,7 +391,7 @@ class _TeamOptionsPageState extends State<TeamOptionsPage> {
 
     if (shouldRemove) {
       TeamDataManager.removeUserFromTeam(team, newUser: user);
-      reloadUsers();
+      reloadWidget();
       Navigator.of(context).pop();
     }
   }

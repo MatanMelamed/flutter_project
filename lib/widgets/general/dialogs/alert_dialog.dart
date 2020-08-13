@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class GeneralAlertDialog extends StatefulWidget {
   final String title;
   final String content;
+  final String optionAText;
+  final String optionBText;
   final void Function() confirmCallback;
   final void Function() cancelCallback;
 
@@ -10,7 +12,9 @@ class GeneralAlertDialog extends StatefulWidget {
       {@required this.title,
       @required this.content,
       this.cancelCallback,
-      this.confirmCallback});
+      this.confirmCallback,
+      this.optionAText,
+      this.optionBText});
 
   @override
   _GeneralAlertDialogState createState() => _GeneralAlertDialogState();
@@ -31,12 +35,7 @@ class _GeneralAlertDialogState extends State<GeneralAlertDialog> {
             Container(
               decoration: BoxDecoration(
                 color: Colors.red[600],
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(0.0, 4.0),
-                      blurRadius: 2.0)
-                ],
+                boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(0.0, 4.0), blurRadius: 2.0)],
               ),
               height: 50,
               width: double.infinity,
@@ -72,7 +71,7 @@ class _GeneralAlertDialogState extends State<GeneralAlertDialog> {
                         elevation: 10,
                         onPressed: widget.confirmCallback ?? emptyCallback,
                         child: Text(
-                          "Remove",
+                          widget.optionAText ?? "Remove",
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         color: Colors.red[900],
@@ -85,9 +84,8 @@ class _GeneralAlertDialogState extends State<GeneralAlertDialog> {
                           elevation: 10,
                           onPressed: widget.cancelCallback ?? emptyCallback,
                           child: Text(
-                            "Cancel",
-                            style:
-                                TextStyle(color: Colors.red[900], fontSize: 16),
+                            widget.optionBText ?? "Cancel",
+                            style: TextStyle(color: Colors.red[900], fontSize: 16),
                           ),
                           color: Colors.white,
                           shape: Border.all(color: Colors.red[900])),

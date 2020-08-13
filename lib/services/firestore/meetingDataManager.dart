@@ -91,8 +91,9 @@ class MeetingDataManager {
 
     meetingToUsers.deleteRecordsList(mid);
 
-    teamToMeetings.removeRecord(meetingSnap.data[MeetingField.TID], mid);
+    teamToMeetings.removeRecord(meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
 
+    print('Meeting $mid deleted.');
     await meetingsCollection.document(mid).delete();
   }
 

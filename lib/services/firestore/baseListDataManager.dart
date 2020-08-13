@@ -55,6 +55,7 @@ class BaseListDataManager {
   }
 
   Future<void> removeRecord(String lid, String record) async {
+    print('Remove record in $collectionName :: remove $record in $lid');
     await recordsListCollection.document(lid).collection(subCollectionName).document(record).delete();
   }
 

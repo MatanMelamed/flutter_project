@@ -5,8 +5,9 @@ class UserCard extends StatefulWidget {
   final User user;
   final Widget trailing;
   final void Function() callback;
+  final Widget subtitle;
 
-  UserCard({@required this.user, this.trailing, this.callback});
+  UserCard({@required this.user, this.trailing, this.callback, this.subtitle});
 
   @override
   _UserCardState createState() => _UserCardState();
@@ -21,6 +22,7 @@ class _UserCardState extends State<UserCard> {
           backgroundImage: NetworkImage(widget.user.remoteImage.url),
           backgroundColor: Colors.red,
         ),
+        subtitle: widget.subtitle,
         title: Text(
           widget.user.firstName + ' ' + widget.user.lastName,
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[700]),
