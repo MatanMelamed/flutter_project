@@ -1,21 +1,15 @@
-import 'dart:ffi';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/screens/archive/page_transitions.dart';
 import 'package:teamapp/screens/chat/chat.dart';
 import 'package:teamapp/screens/meetings/team_meetings.dart';
 import 'package:teamapp/screens/teams/team_options.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
 import 'package:teamapp/widgets/general/editViewImage.dart';
-import 'package:teamapp/widgets/general/narrow_returnbar.dart';
 import 'package:teamapp/widgets/loading.dart';
 
 class TeamPage extends StatefulWidget {
@@ -74,6 +68,13 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.account_circle),
+                        onPressed: () {
+                          isAdmin = !isAdmin;
+                          setState(() {});
+                        },
+                        ),
                       // GetNarrowReturnBar(context),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 35),
