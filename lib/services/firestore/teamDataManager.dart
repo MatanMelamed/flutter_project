@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:teamapp/models/meeting.dart';
+import 'package:teamapp/models/notification/notification.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/models/usersList.dart';
@@ -124,6 +125,13 @@ class TeamDataManager {
       print('error in recording new team for null user.');
       return false;
     }
+    //send notification
+    TeamNotificationManager.sendTeamNotificationToUser(newUserUid, team.tid, Notification(
+        type: 'addedToTeamNotification',
+        metadata: {
+          'viewed': false,
+          'teamId': team.tid,
+        }));
 
     await teamToUsers.addRecord(team.tid, uid);
     await userToTeams.addRecord(uid, team.tid);
@@ -137,7 +145,6 @@ class TeamDataManager {
       print('error in recording new team for null user.');
       return false;
     }
-
     await teamToUsers.removeRecord(team.tid, uid);
     await userToTeams.removeRecord(uid, team.tid);
     await MeetingDataManager.userRemovedFromTeam(team.tid, uid);

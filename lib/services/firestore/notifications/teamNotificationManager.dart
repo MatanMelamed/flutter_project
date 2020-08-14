@@ -17,27 +17,34 @@ class TeamNotificationManager {
 
     memberIds.forEach((String memberId) {
       if (memberId != leaderId) {
-        DocumentReference teamDocRef = _notificationsCollection.document(
-            memberId).collection("teamNotifications").document(teamId);
-
-        teamDocRef.setData({
-          'type': n.type,
-          'timestamp': DateTime.now(),
-          'metadata': n.metadata,
-        }).then((_) {
-          log("new Team notification was sent to $memberId");
-          return true;
-        }).catchError((error) {
-          print(error);
-          print(
-              'error adding new notification. documentID: $teamId , in user:$memberId , with type: ${n
-                  .type} , and metadata: ${n.metadata}');
-        });
-        _notificationsCollection.document(memberId).setData({'new_counter': FieldValue.increment(1)}).then((_) {
-          log("increased $memberId new_counter by 1");
-
-        });
+        sendTeamNotificationToUser(memberId, teamId,n);
       }
     });
   }
+
+  static Future<void> sendTeamNotificationToUser(String memberId,
+      String teamId, Notification n) async {
+    DocumentReference teamDocRef = _notificationsCollection.document(
+        memberId).collection("teamNotifications").document(teamId);
+
+    teamDocRef.setData({
+      'type': n.type,
+      'timestamp': DateTime.now(),
+      'metadata': n.metadata,
+    }).then((_) {
+      log("new Team notification was sent to $memberId");
+      return true;
+    }).catchError((error) {
+      print(error);
+      print(
+          'error adding new notification. documentID: $teamId , in user:$memberId , with type: ${n
+              .type} , and metadata: ${n.metadata}');
+    });
+    _notificationsCollection.document(memberId).setData({'new_counter': FieldValue.increment(1)}).then((_) {
+      log("increased $memberId new_counter by 1");
+    });
+
+  }
+
+
 }
