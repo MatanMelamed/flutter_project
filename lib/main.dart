@@ -39,18 +39,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    get();
     AuthService authService = AuthService();
     return StreamProvider.value(
       value: authService.userStream, // what the provider listens to
-      child: MaterialApp(
-        home: AuthWrapper(),
-      ),
-      //      child: MaterialApp(
-      //        home: AutoLogin(
-      //          user: DummyUsers.Elizabeth
-      //        ),
-      //      ),
+//      child: MaterialApp(
+//        home: AuthWrapper(),
+//      ),
+            child: MaterialApp(
+              home: AutoLogin(
+                user: DummyUsers.Motek
+              ),
+            ),
     );
   }
 }

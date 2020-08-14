@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:teamapp/screens/location/search_address.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/friend/searchFriend.dart';
+import 'package:teamapp/screens/location/showMeetingLocation.dart';
 import 'package:teamapp/screens/teams/user_teams.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
@@ -32,7 +35,7 @@ class MainDrawer extends StatelessWidget {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                             image: NetworkImage(user.remoteImage.url),
-                            fit: BoxFit.fill)),
+                            fit: BoxFit.cover)),
                   ),
                   Text(
                     user.firstName + " " + user.lastName,
@@ -61,10 +64,9 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.people),
             title: Text('Manage teams', style: TextStyle(fontSize: 18)),
-            onTap: (){
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context)=>UserTeams())
-              );
+            onTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => UserTeams()));
             },
           ),
           ListTile(
@@ -75,7 +77,10 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.location_searching),
             title: Text('Fields', style: TextStyle(fontSize: 18)),
-            onTap: null,
+            onTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => ShowAddresses(GeoPoint(32.069217, 34.843012))));
+            },
           ),
           ListTile(
             leading: Icon(Icons.settings),

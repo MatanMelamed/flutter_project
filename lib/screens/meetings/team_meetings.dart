@@ -6,10 +6,9 @@ import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/meetings/meeting_page.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
-import 'package:teamapp/services/firestore/record_lists.dart';
+import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/meeting/meeting_card.dart';
-import 'package:teamapp/widgets/teams/team_alert.dart';
 
 class TeamMeetings extends StatefulWidget {
   final Team team;
@@ -34,7 +33,9 @@ class _TeamMeetingsState extends State<TeamMeetings> {
 
   _loadMeetings() async {
     setState(() => isLoading = true);
+    debugPrint('starting to load meetings in team page');
     meetings = await MeetingDataManager.getAllMeetingsOfATeam(widget.team.tid);
+    debugPrint('finished to load meetings in team page');
     setState(() => isLoading = false);
   }
 
@@ -55,71 +56,73 @@ class _TeamMeetingsState extends State<TeamMeetings> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: RaisedButton(
-                elevation: 10,
-                color: Colors.blue,
-                child: Text(
-                  "Create a new meeting",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => CreateMeetingTester(
-                        team: widget.team,
+    return Column(
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: !isAdmin
+              ? Container()
+              : RaisedButton(
+                  elevation: 10,
+                  color: Colors.blue,
+                  child: Text(
+                    "Create a new meeting",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => CreateMeetingTester(
+                          team: widget.team,
                         ),
                       ),
                     );
-                },
-              ),
-            ),
-            Expanded(
-              child: isLoading
-                  ? Loading()
-                  : ListView.separated(
-                      physics: ClampingScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: meetings.length,
-                      itemBuilder: (ctx, index) {
-                        Meeting currentMeeting = meetings[index];
-                        return Container(
-                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                          child: MeetingCard(
-                            meeting: currentMeeting,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => MeetingPage(
-                                    meeting: currentMeeting,
-                                    ownerUID: widget.team.ownerUid,
-                                  ),
-                                ),
-                              );
-                            },
-                            onLongPress: () {
-                              showAlertDialog(context, currentMeeting);
-                              setState(() {});
-                            },
-                          ),
-                        );
-                      },
-                      separatorBuilder: (ctx, idx) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Divider(thickness: 2),
-                      ),
-                    ),
-            )
-          ],
+                  },
+                ),
         ),
-      ),
+        Expanded(
+          child: isLoading
+              ? Loading()
+              : ListView.separated(
+                  physics: ClampingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: meetings.length,
+                  itemBuilder: (ctx, index) {
+                    Meeting currentMeeting = meetings[index];
+                    return Container(
+                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                      child: MeetingCard(
+                        meeting: currentMeeting,
+                        onTap: () async {
+                          dynamic hasChanged = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => MeetingPage(
+                                meeting: currentMeeting,
+                                ownerUID: widget.team.ownerUid,
+                              ),
+                            ),
+                          );
+
+                          if (hasChanged != null && hasChanged) {
+                            await _loadMeetings();
+                          }
+                        },
+                        onLongPress: () {
+                          showAlertDialog(context, currentMeeting);
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  },
+                  separatorBuilder: (ctx, idx) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Divider(thickness: 2),
+                  ),
+                ),
+        )
+      ],
     );
   }
 }

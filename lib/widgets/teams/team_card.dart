@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:teamapp/models/team.dart';
-import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
-import 'package:teamapp/widgets/teams/team_alert.dart';
 
 class TeamCard extends StatefulWidget {
   final Team team;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/home/home.dart';
+import 'package:teamapp/screens/home/homePage.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:teamapp/widgets/loading.dart';
@@ -12,6 +13,7 @@ class AutoLogin extends StatelessWidget {
   final DummyUsers user;
   final Widget child;
   final Map<DummyUsers, String> userToUid = new Map();
+  final AuthService authService = AuthService();
 
   AutoLogin({@required this.user, this.child}) {
     userToUid[DummyUsers.Mike] = '6XmkIWBQOQTSH1DKNkqpNl697mF3';
@@ -21,18 +23,23 @@ class AutoLogin extends StatelessWidget {
   }
 
   login() async {
-    AuthService authService = AuthService();
     String email = (await UserDataManager.getUser(userToUid[user])).email;
     authService.signInWithEmailAndPassword(email, '123123123');
   }
 
+  logout() async {
+    authService.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
-    if (user == null) {
+    final currentUser = Provider.of<User>(context);
+    if (currentUser == null) {
       login();
+    } else if (currentUser.uid != userToUid[user]) {
+      logout();
     }
 
-    return user == null ? Loading() : child ?? Home();
+    return currentUser == null ? Loading() : child ?? HomePage();
   }
 }

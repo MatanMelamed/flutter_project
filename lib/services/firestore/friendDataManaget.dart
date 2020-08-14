@@ -1,6 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:teamapp/services/firestore/notifications/friendNotificationsManager.dart';
 
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:teamapp/models/notification/notification.dart';
+import 'package:teamapp/services/firestore/notifications/friendNotificationsManager.dart';
+import 'package:teamapp/services/firestore/notifications/baseNotificationManager.dart';
+import 'searchByName/searchUserByName.dart';
+import 'package:teamapp/services/firestore/userDataManager.dart';
 
 class FriendDataManager {
   static final CollectionReference _friendRequestRef =

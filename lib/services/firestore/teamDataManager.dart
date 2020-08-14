@@ -1,13 +1,18 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enum_to_string/enum_to_string.dart';
+import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/user.dart';
+import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/models/storageImage.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/services/firestore/ChatDataManager.dart';
+import 'package:teamapp/services/firestore/baseListDataManager.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
+import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 import 'package:teamapp/services/firestore/notifications/teamNotificationManager.dart';
 
@@ -27,11 +32,11 @@ class TeamDataManager {
     await messagesDocRef.setData({});
 
     DocumentReference docRef = await teamsCollection.add({
-      'name': team.name,
-      'description': team.description,
-      'isPublic': team.isPublic,
-      'owner': team.ownerUid,
-      'messages': messagesDocRef.documentID
+      EnumToString.parse(TeamField.NAME): team.name,
+      EnumToString.parse(TeamField.DESCRIPTION): team.description,
+      EnumToString.parse(TeamField.IS_PUBLIC): team.isPublic,
+      EnumToString.parse(TeamField.OWNER_UID): team.ownerUid,
+      EnumToString.parse(TeamField.CHAT_ID): messagesDocRef.documentID
     });
 
     // Sending notifications to all team members
@@ -39,9 +44,8 @@ class TeamDataManager {
 
 
     // users list must contain at least the creator of the team - the owner
-    usersList = usersList == null
-        ? RecordList.fromWithinApp(data: [team.ownerUid])
-        : (usersList.data.length > 0 ? usersList : RecordList.fromWithinApp(data: [team.ownerUid]));
+    usersList =
+        (usersList == null || usersList.data.length > 1) ? RecordList.fromWithinApp(data: [team.ownerUid]) : usersList;
 
     // register team on firestore
     RecordList userList = await teamToUsers.createRecordList(recordList: usersList, documentName: docRef.documentID);
@@ -53,8 +57,8 @@ class TeamDataManager {
     StorageImage image = await StorageManager.saveImage(teamImage, 'teamProfiles/' + docRef.documentID);
 
     docRef.updateData({
-      'imageUrl': image.url,
-      'imagePath': image.path,
+      EnumToString.parse(TeamField.IMAGE) + "_URL": image.url,
+      EnumToString.parse(TeamField.IMAGE) + "_PATH": image.path,
     });
 
     for (String uid in usersList.data) userToTeams.addRecord(uid, docRef.documentID);
@@ -69,28 +73,24 @@ class TeamDataManager {
         chatId: messagesDocRef.documentID);
   }
 
-  static void updateTeamName(Team team, String newName) {
-    team.name = newName;
-    DocumentReference docRef = teamsCollection.document(team.tid);
-    docRef.updateData({'name': newName});
-  }
-
-  static void updateTeamDescription(Team team, String newDescription) {
-    team.description = newDescription;
-    DocumentReference docRef = teamsCollection.document(team.tid);
-    docRef.updateData({'description': newDescription});
-  }
-
   static void updateTeamImage(Team team, File newImage) async {
     team.remoteStorageImage = await StorageManager.updateStorageImage(newImage, team.remoteStorageImage);
     DocumentReference docRef = teamsCollection.document(team.tid);
-    docRef.updateData({'imageUrl': team.remoteStorageImage.url});
+    docRef.updateData({EnumToString.parse(TeamField.IMAGE) + "_URL": team.remoteStorageImage.url});
   }
 
-  static void updateTeamPrivacy(Team team, bool newValue) {
-    team.isPublic = newValue;
+//  static void updateTeamPrivacy(Team team, bool newValue) {
+//    team.isPublic = newValue;
+//    DocumentReference docRef = teamsCollection.document(team.tid);
+//    docRef.updateData({'isPublic': newValue});
+//  }
+
+  // changes after creation
+  static Future<void> updateTeamField(Team team, TeamField field, dynamic newValue) async {
+    if (field == TeamField.IMAGE) return; // shouldn't be updated here!
+    team.propAccess(field, newValue: newValue);
     DocumentReference docRef = teamsCollection.document(team.tid);
-    docRef.updateData({'isPublic': newValue});
+    await docRef.updateData({EnumToString.parse(field): newValue});
   }
 
   static Future<Team> getTeam(String tid) async {
@@ -101,12 +101,15 @@ class TeamDataManager {
       Map<String, dynamic> data = docSnap.data;
       team = new Team.fromDatabase(
         tid: docSnap.documentID,
-        remoteStorageImage: StorageImage(url: data['imageUrl'], path: data['imagePath']),
-        name: data['name'],
-        description: data['description'],
-        isPublic: data['isPublic'],
-        ownerUid: data['owner'],
-        chatId: data['messages'],
+        remoteStorageImage: StorageImage(
+          url: data[EnumToString.parse(TeamField.IMAGE) + "_URL"],
+          path: data[EnumToString.parse(TeamField.IMAGE) + "_PATH"],
+        ),
+        name: data[EnumToString.parse(TeamField.NAME)],
+        description: data[EnumToString.parse(TeamField.DESCRIPTION)],
+        isPublic: data[EnumToString.parse(TeamField.IS_PUBLIC)],
+        ownerUid: data[EnumToString.parse(TeamField.OWNER_UID)],
+        chatId: data[EnumToString.parse(TeamField.CHAT_ID)],
       );
     } else {
       print('Tried to get nonexistent team id $tid');
@@ -128,7 +131,7 @@ class TeamDataManager {
     return true;
   }
 
-  static Future<void> removeUserFromTeam(Team team, {User newUser, String newUserUid}) async{
+  static Future<void> removeUserFromTeam(Team team, {User newUser, String newUserUid}) async {
     String uid = newUser != null ? newUser.uid : newUserUid;
     if (uid == null || uid.isEmpty) {
       print('error in recording new team for null user.');
@@ -144,7 +147,7 @@ class TeamDataManager {
   static Future<List<Team>> getUserTeams(User user) async {
     RecordList userTeamsRecordList = await userToTeams.getRecordsList(user.uid);
     List<Team> teams = [];
-    for (String tid in userTeamsRecordList.data){
+    for (String tid in userTeamsRecordList.data) {
       teams.add(await getTeam(tid));
     }
     return teams;
@@ -153,12 +156,12 @@ class TeamDataManager {
   static Future<void> deleteTeam(String tid) async {
     DocumentSnapshot team = await teamsCollection.document(tid).get();
 
-    String chatId = team.data["messages"];
+    String chatId = team.data[EnumToString.parse(TeamField.CHAT_ID)];
 
     // delete team for all users
-    RecordList users_in_team = await teamToUsers.getRecordsList(tid);
+    RecordList usersInTeam = await teamToUsers.getRecordsList(tid);
 
-    for (String uid in users_in_team.data){
+    for (String uid in usersInTeam.data) {
       userToTeams.removeRecord(uid, tid);
     }
 

@@ -1,10 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-enum MeetingStatus {
-  APPROVED,
-  ONGOING,
-  CANCELED,
-}
+enum MeetingStatus { APPROVED, ONGOING, CANCELED }
 
 enum MeetingField {
   MID,
@@ -35,7 +32,7 @@ class Meeting {
   int ageLimitEnd;
 
   // not implemented
-  String location; // ?
+  GeoPoint location; // ?
   String sport; // ?
 
   Meeting.fromDatabase({
