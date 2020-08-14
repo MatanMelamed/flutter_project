@@ -9,7 +9,8 @@ import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/meeting/meeting_card.dart';
-import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/general/dialogs/alert_dialog.dart';
+//import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/general/dialogs/alert_dialog.dart';
+import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
 
 class TeamMeetings extends StatefulWidget {
   final Team team;

@@ -6,7 +6,8 @@ import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/teams/team_page.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/widgets/loading.dart';
-import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/general/dialogs/alert_dialog.dart';
+//import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/general/dialogs/alert_dialog.dart';
+import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/teams/team_card.dart';
 
 class UserTeams extends StatefulWidget {
