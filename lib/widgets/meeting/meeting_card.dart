@@ -42,7 +42,7 @@ class _MeetingCardState extends State<MeetingCard> {
                 Padding(
                   padding: EdgeInsets.only(top: 5, left: 20),
                   child: Text(
-                    widget.meeting.sport,
+                    "sport",
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,

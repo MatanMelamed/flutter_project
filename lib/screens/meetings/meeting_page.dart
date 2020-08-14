@@ -1,4 +1,5 @@
 import 'package:date_format/date_format.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/meeting.dart';
@@ -289,6 +290,30 @@ class _MeetingPageState extends State<MeetingPage> {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 15),
+                            Row(
+                              children: <Widget>[
+                                Icon(Icons.directions_bike),
+                                SizedBox(width: 20),
+                                GestureDetector(
+                                  onTap: inEditMode
+                                      ? () {}
+                                      : () {},
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      '${EnumToString.parse(widget.meeting.sport.type)}:\t\t\t'
+                                          '${EnumToString.parse(widget.meeting.sport.sport)}',
+                                      style:
+                                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                      ),
+                                    decoration: BoxDecoration(
+                                        color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                        borderRadius: BorderRadius.all(Radius.circular(30))),
+                                    ),
+                                  ),
+                              ],
+                              ),
                             SizedBox(height: 15),
                             Row(
                               children: <Widget>[
