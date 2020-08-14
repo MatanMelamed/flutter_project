@@ -65,13 +65,19 @@ class _MeetingPageState extends State<MeetingPage> {
     for (final uid in usersList.data) {
       User user = await UserDataManager.getUser(uid);
       users.add(user);
-      if (usersList.metadata[uid][MeetingToUsers.USER_APPROVAL_STATUS]) {
-        approved += 1;
-        isApproved = true;
-      }
+      bool isUserApproved = usersList.metadata[uid][MeetingToUsers.USER_APPROVAL_STATUS];
+
       if (user.uid == currentUser.uid) {
         isInMeeting = true;
+        if(isUserApproved){
+          isApproved = isUserApproved;
+          approved += 1;
+        }
       }
+      else if (isUserApproved) {
+        approved += 1;
+      }
+
     }
   }
 
@@ -477,7 +483,7 @@ class _MeetingPageState extends State<MeetingPage> {
         );
       },
     );
-
+    print('change arrival $newValue');
     if (newValue != null) {
       setState(() => isLoading = true);
       isApproved = newValue;
