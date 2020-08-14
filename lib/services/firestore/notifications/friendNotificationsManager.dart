@@ -1,8 +1,6 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:teamapp/models/notification/notification.dart';
-import 'package:teamapp/models/user.dart';
 import 'package:teamapp/services/firestore/notifications/baseNotificationManager.dart';
 
 class FriendNotificationManager {

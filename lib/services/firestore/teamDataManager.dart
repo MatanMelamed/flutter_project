@@ -14,6 +14,8 @@ import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
+import 'package:teamapp/services/firestore/notifications/teamNotificationManager.dart';
+
 
 class TeamDataManager {
   static final CollectionReference teamsCollection = Firestore.instance.collection("teams");
@@ -36,6 +38,10 @@ class TeamDataManager {
       EnumToString.parse(TeamField.OWNER_UID): team.ownerUid,
       EnumToString.parse(TeamField.CHAT_ID): messagesDocRef.documentID
     });
+
+    // Sending notifications to all team members
+    TeamNotificationManager.sendTeamNotifications(team.ownerUid, usersList.data,docRef.documentID);
+
 
     // users list must contain at least the creator of the team - the owner
     usersList =
