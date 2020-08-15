@@ -17,7 +17,6 @@ import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
 import 'package:teamapp/services/firestore/notifications/teamNotificationManager.dart';
 
-
 class TeamDataManager {
   static final CollectionReference teamsCollection = Firestore.instance.collection("teams");
   static final CollectionReference messagesCollection = Firestore.instance.collection("messages");
@@ -41,12 +40,10 @@ class TeamDataManager {
     });
 
     // Sending notifications to all team members
-    TeamNotificationManager.sendTeamNotifications(team.ownerUid, usersList.data,docRef.documentID);
-
+    TeamNotificationManager.sendTeamNotifications(team.ownerUid, usersList.data, docRef.documentID);
 
     // users list must contain at least the creator of the team - the owner
-    usersList =
-        (usersList == null || usersList.data.length > 1) ? RecordList.fromWithinApp(data: [team.ownerUid]) : usersList;
+    usersList = usersList ?? RecordList.fromWithinApp(data: [team.ownerUid]);
 
     // register team on firestore
     RecordList userList = await teamToUsers.createRecordList(recordList: usersList, documentName: docRef.documentID);
@@ -126,9 +123,10 @@ class TeamDataManager {
       return false;
     }
     //send notification
-    TeamNotificationManager.sendTeamNotificationToUser(newUserUid, team.tid, Notification(
-        type: 'addedToTeamNotification',
-        metadata: {
+    TeamNotificationManager.sendTeamNotificationToUser(
+        newUserUid,
+        team.tid,
+        Notification(type: 'addedToTeamNotification', metadata: {
           'viewed': false,
           'teamId': team.tid,
         }));

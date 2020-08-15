@@ -5,11 +5,11 @@ class LocationsDataManagers {
   static const double MAX_DISTANCE = 10.0;
   static final CollectionReference teamsLocationCollection = Firestore.instance.collection("team_location");
 
-  Future<void> addTeamLocation(String teamId, double latitude, double longitude, String address) async {
-    teamsLocationCollection
-        .document(teamId)
-        .setData({"location": new GeoPoint(latitude, longitude), "address": address});
-  }
+//  Future<void> addTeamLocation(String teamId, double latitude, double longitude, String address) async {
+//    teamsLocationCollection
+//        .document(teamId)
+//        .setData({"location": new GeoPoint(latitude, longitude), "address": address});
+//  }
 
   static double calculateTotalDistanceInKm(
       double userLatitude, double userLongitude, double teamLatitude, double teamLongitude) {
