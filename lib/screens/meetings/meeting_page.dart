@@ -1,11 +1,9 @@
-import 'package:date_format/date_format.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/screens/location/showMeetingLocation.dart';
 import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
@@ -15,8 +13,8 @@ import 'package:teamapp/services/general/utilites.dart';
 import 'package:teamapp/widgets/general/date_time.dart';
 import 'package:teamapp/widgets/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/dialogs/dialogs.dart';
-import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/meeting/meeting_approve_dialog.dart';
 import 'package:teamapp/widgets/loading.dart';
+import 'package:teamapp/widgets/meeting/meeting_approve_dialog.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
 import 'package:teamapp/widgets/teams/team_user_dialog.dart';
 

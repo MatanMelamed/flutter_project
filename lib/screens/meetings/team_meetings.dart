@@ -4,10 +4,7 @@ import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/meeting_creation/meeting_creation.dart';
-import 'package:teamapp/screens/meetings/meeting_page.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
-import 'package:teamapp/services/firestore/record_lists.dart';
-import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/meeting/meeting_card_dialog.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/meeting/meeting_card.dart';
 
