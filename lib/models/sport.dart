@@ -1,3 +1,4 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
 
 enum SportType {
@@ -25,4 +26,9 @@ class Sport {
     @required this.type,
     @required this.sport,
   });
+
+  @override
+  String toString() {
+    return EnumToString.parse(type) + ":\t\t" +EnumToString.parse(sport);
+  }
 }

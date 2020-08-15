@@ -5,7 +5,7 @@ import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/teams/team_page.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
-import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
+import 'package:teamapp/widgets/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/teams/team_card.dart';
 

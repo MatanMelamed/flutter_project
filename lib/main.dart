@@ -43,9 +43,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     AuthService authService = AuthService();
 
-    //MeetingDataManager.upgrade();
-//    MeetingDataManager.clearAllMeetings();
-
     return StreamProvider.value(
       value: authService.userStream, // what the provider listens to
 //      child: MaterialApp(
@@ -53,7 +50,7 @@ class MyApp extends StatelessWidget {
 //      ),
             child: MaterialApp(
               home: AutoLogin(
-                user: DummyUsers.Michael
+                user: DummyUsers.Motek
               ),
             ),
     );

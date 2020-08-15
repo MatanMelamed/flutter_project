@@ -6,7 +6,8 @@ import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/meetings/meeting_page.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
-import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
+import 'package:teamapp/services/firestore/record_lists.dart';
+import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/meeting/meeting_card_dialog.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/meeting/meeting_card.dart';
 
@@ -21,13 +22,19 @@ class TeamMeetings extends StatefulWidget {
 
 class _TeamMeetingsState extends State<TeamMeetings> {
   List<Meeting> meetings;
-  bool isAdmin;
-  bool isLoading;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    isAdmin = Provider.of<User>(context).uid == widget.team.ownerUid;
+  User currentUser;
+  bool isAdmin;
+
+  bool isLoading;
+  bool firstLoadHappened = false;
+
+  firstLoad() {
+    if (firstLoadHappened) return;
+    isLoading = true;
+    firstLoadHappened = true;
+    currentUser = Provider.of<User>(context);
+    isAdmin = widget.team.ownerUid == currentUser.uid;
     _loadMeetings();
   }
 
@@ -39,90 +46,82 @@ class _TeamMeetingsState extends State<TeamMeetings> {
     setState(() => isLoading = false);
   }
 
-  showAlertDialog(BuildContext context, Meeting meeting) async {
-    await showDialog(
-        context: context,
-        builder: (context) => GeneralAlertDialog(
-              title: 'Alert',
-              content: 'Are You Sure You Want To Delete ${meeting.name}',
-              confirmCallback: () async {
-                await MeetingDataManager.deleteMeetingByMID(meeting.mid);
-                meetings.remove(meeting);
-                setState(() => Navigator.of(context).pop());
-              },
-              cancelCallback: () => Navigator.of(context).pop(),
-            ));
-  }
+//  showAlertDialog(BuildContext context, Meeting meeting) async {
+//    await showDialog(
+//        context: context,
+//        builder: (context) => GeneralAlertDialog(
+//              title: 'Alert',
+//              content: 'Are You Sure You Want To Delete ${meeting.name}',
+//              confirmCallback: () async {
+//                await MeetingDataManager.deleteMeetingByMID(meeting.mid);
+//                meetings.remove(meeting);
+//                setState(() => Navigator.of(context).pop());
+//              },
+//              cancelCallback: () => Navigator.of(context).pop(),
+//            ));
+//  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 20),
-          child: !isAdmin
-              ? Container()
-              : RaisedButton(
-                  elevation: 10,
-                  color: Colors.blue,
-                  child: Text(
-                    "Create a new meeting",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (ctx) => CreateMeetingTester(
-                          team: widget.team,
+    firstLoad();
+
+    return isLoading
+        ? Loading()
+        : Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: !isAdmin
+                    ? Container()
+                    : RaisedButton(
+                        elevation: 10,
+                        color: Colors.blue,
+                        child: Text(
+                          "Create a new meeting",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
-                      ),
-                    );
-                  },
-                ),
-        ),
-        Expanded(
-          child: isLoading
-              ? Loading()
-              : ListView.separated(
-                  physics: ClampingScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: meetings.length,
-                  itemBuilder: (ctx, index) {
-                    Meeting currentMeeting = meetings[index];
-                    return Container(
-                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                      child: MeetingCard(
-                        meeting: currentMeeting,
-                        onTap: () async {
-                          dynamic hasChanged = await Navigator.of(context).push(
+                        onPressed: () {
+                          Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => MeetingPage(
-                                meeting: currentMeeting,
-                                ownerUID: widget.team.ownerUid,
+                              builder: (ctx) => CreateMeetingTester(
+                                team: widget.team,
                               ),
                             ),
                           );
-
-                          if (hasChanged != null && hasChanged) {
-                            await _loadMeetings();
-                          }
-                        },
-                        onLongPress: () {
-                          showAlertDialog(context, currentMeeting);
-                          setState(() {});
                         },
                       ),
-                    );
-                  },
-                  separatorBuilder: (ctx, idx) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(thickness: 2),
-                  ),
-                ),
-        )
-      ],
-    );
+              ),
+              Expanded(
+                child: isLoading
+                    ? Loading()
+                    : ListView.separated(
+                        physics: ClampingScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: meetings.length,
+                        itemBuilder: (ctx, index) {
+                          Meeting currentMeeting = meetings[index];
+                          return Container(
+                            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                            child: MeetingCard(
+                              meeting: currentMeeting,
+                              teamOwnerUid: widget.team.ownerUid,
+                              afterTap: (hasChanged) async{
+                                if (hasChanged != null && hasChanged) {
+                                  await _loadMeetings();
+                                }
+                              },
+                            ),
+                          );
+                        },
+                        separatorBuilder: (ctx, idx) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Divider(thickness: 2),
+                        ),
+                      ),
+              )
+            ],
+          );
   }
 }

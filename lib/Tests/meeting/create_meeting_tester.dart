@@ -66,6 +66,7 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
       sport: Sport(type: SportType.Aerobic, sport: SubSport.CrossFit)
     );
     MeetingDataManager.createMeeting(widget.team, meeting);
+
   }
 
   String dateFormat(DateTime dateTime) {
@@ -224,6 +225,8 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
         MaterialPageRoute(
           builder: (context) => SearchAddresses(),
         ));
+    print('location chosen: ${location.location.latitude} ${location.location.longitude}');
+    print('location chosen: ${location.address}');
     setState(() {
       geoPointLocation = location.location;
       _addressLocation = TextEditingController(text: location.address);
