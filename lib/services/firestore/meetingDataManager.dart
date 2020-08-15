@@ -198,4 +198,22 @@ class MeetingDataManager {
     }
     return meetings;
   }
+
+
+  // only for check !!!! in meeting_search_results.dart
+  static Future<List<Meeting>> check(String tid) async {
+    List<Meeting> meetings = [];
+    Meeting m;
+    RecordList meetingsRecordList = await TeamToMeetings().getRecordsList(tid);
+    for (String mid in meetingsRecordList.data) {
+      m = await getMeetingByMID(mid);
+      meetings.add(await getMeetingByMID(mid));
+    }
+
+    for (int i =0 ; i < 10; i++){
+      meetings.add(m);
+    }
+
+    return meetings;
+  }
 }
