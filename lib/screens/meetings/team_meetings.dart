@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:teamapp/Tests/meeting/create_meeting_tester.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
+import 'package:teamapp/screens/meeting_creation/meeting_creation.dart';
 import 'package:teamapp/screens/meetings/meeting_page.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
@@ -73,7 +73,7 @@ class _TeamMeetingsState extends State<TeamMeetings> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (ctx) => CreateMeetingTester(
+                        builder: (ctx) => CreateMeeting(
                           team: widget.team,
                         ),
                       ),

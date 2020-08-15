@@ -39,11 +39,15 @@ class _AgeRangeSlidersState extends State<AgeRangeSliders> {
 
   @override
   Widget build(BuildContext context) {
-    int div = ((max - min) / 5).round();
+    int div = (max - min).round();
     return Column(
       children: [
         Column(
           children: [
+            Text(
+              'Ages',
+              style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             RangeSlider(
               values: _discreteValues,
               min: min,
@@ -60,10 +64,6 @@ class _AgeRangeSlidersState extends State<AgeRangeSliders> {
                   widget.callback(_discreteValues.start.round(), _discreteValues.end.round());
                 }
               },
-            ),
-            Text(
-              'Ages',
-              style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ],
         ),

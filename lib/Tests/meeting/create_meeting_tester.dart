@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
-import 'package:teamapp/Tests/AgeRangeSlider.dart';
+import 'package:teamapp/widgets/meeting/AgeRangeSlider.dart';
 import 'package:teamapp/models/location.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/sport.dart';

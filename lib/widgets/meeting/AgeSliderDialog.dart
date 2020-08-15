@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:teamapp/Tests/AgeRangeSlider.dart';
+import 'package:teamapp/widgets/meeting/AgeRangeSlider.dart';
 
 class AgeSliderDialog extends StatefulWidget {
   final int currentStart;
