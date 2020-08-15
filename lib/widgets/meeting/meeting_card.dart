@@ -69,6 +69,7 @@ class _MeetingCardState extends State<MeetingCard> {
 
   @override
   Widget build(BuildContext context) {
+
     return isLoading
         ? Loading()
         : GestureDetector(

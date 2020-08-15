@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
 //      ),
             child: MaterialApp(
               home: AutoLogin(
-                user: DummyUsers.Mike
+                user: DummyUsers.Motek
               ),
             ),
     );
