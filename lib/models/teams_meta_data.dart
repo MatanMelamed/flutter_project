@@ -1,7 +1,6 @@
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/general/utilites.dart';
 

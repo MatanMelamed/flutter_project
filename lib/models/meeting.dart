@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:teamapp/models/sport.dart';
 
 enum MeetingStatus { APPROVED, ONGOING, CANCELED }
 
@@ -30,10 +31,8 @@ class Meeting {
   bool isPublic;
   int ageLimitStart;
   int ageLimitEnd;
-
-  // not implemented
-  GeoPoint location; // ?
-  String sport; // ?
+  GeoPoint location;
+  Sport sport;
 
   Meeting.fromDatabase({
     @required this.mid,

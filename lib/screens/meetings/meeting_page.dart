@@ -1,4 +1,5 @@
 import 'package:date_format/date_format.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/meeting.dart';
@@ -9,16 +10,12 @@ import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
-import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/general/utilites.dart';
 import 'package:teamapp/widgets/general/date_time.dart';
+import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/general/dialogs/dialogs.dart';
-import 'package:teamapp/widgets/general/dialogs/general_dialog.dart';
 import 'package:teamapp/widgets/general/dialogs/meeting_approve_dialog.dart';
 import 'package:teamapp/widgets/loading.dart';
-// import 'package:teamapp/widgets/meeting/meeting_update_arrival.dart';
-// import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/general/dialogs/alert_dialog.dart';
-import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
 import 'package:teamapp/widgets/teams/team_user_dialog.dart';
 
@@ -69,13 +66,19 @@ class _MeetingPageState extends State<MeetingPage> {
     for (final uid in usersList.data) {
       User user = await UserDataManager.getUser(uid);
       users.add(user);
-      if (usersList.metadata[uid][MeetingToUsers.USER_APPROVAL_STATUS]) {
-        approved += 1;
-        isApproved = true;
-      }
+      bool isUserApproved = usersList.metadata[uid][MeetingToUsers.USER_APPROVAL_STATUS];
+
       if (user.uid == currentUser.uid) {
         isInMeeting = true;
+        if(isUserApproved){
+          isApproved = isUserApproved;
+          approved += 1;
+        }
       }
+      else if (isUserApproved) {
+        approved += 1;
+      }
+
     }
   }
 
@@ -290,6 +293,30 @@ class _MeetingPageState extends State<MeetingPage> {
                             SizedBox(height: 15),
                             Row(
                               children: <Widget>[
+                                Icon(Icons.directions_bike),
+                                SizedBox(width: 20),
+                                GestureDetector(
+                                  onTap: inEditMode
+                                      ? () {}
+                                      : () {},
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(
+                                      '${EnumToString.parse(widget.meeting.sport.type)}:\t\t\t'
+                                          '${EnumToString.parse(widget.meeting.sport.sport)}',
+                                      style:
+                                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                      ),
+                                    decoration: BoxDecoration(
+                                        color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                        borderRadius: BorderRadius.all(Radius.circular(30))),
+                                    ),
+                                  ),
+                              ],
+                              ),
+                            SizedBox(height: 15),
+                            Row(
+                              children: <Widget>[
                                 Icon(Icons.location_on),
                                 SizedBox(width: 20),
                                 GestureDetector(
@@ -481,7 +508,7 @@ class _MeetingPageState extends State<MeetingPage> {
         );
       },
     );
-
+    print('change arrival $newValue');
     if (newValue != null) {
       setState(() => isLoading = true);
       isApproved = newValue;

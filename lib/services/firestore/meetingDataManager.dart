@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/records_list.dart';
+import 'package:teamapp/models/sport.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/services/firestore/baseListDataManager.dart';
@@ -42,6 +43,16 @@ class MeetingDataManager {
     meetingToUsers.createRecordList(recordList: meetingUl, documentName: mid);
   }
 
+  static void upgrade() async {
+    var q = await meetingsCollection.getDocuments();
+    for (var f in q.documents) {
+      meetingsCollection.document(f.documentID).updateData({
+        EnumToString.parse(MeetingField.SPORT) + "_TYPE": EnumToString.parse(SportType.Aerobic),
+        EnumToString.parse(MeetingField.SPORT) + "_SPORT": EnumToString.parse(SubSport.CrossFit)
+      });
+    }
+  }
+
   static Future<Meeting> createMeeting(Team team, Meeting meeting) async {
     DocumentReference meetingDocRef = await meetingsCollection.add({
       EnumToString.parse(MeetingField.NAME): meeting.name,
@@ -52,7 +63,8 @@ class MeetingDataManager {
       EnumToString.parse(MeetingField.AGE_LIMIT_START): meeting.ageLimitStart,
       EnumToString.parse(MeetingField.AGE_LIMIT_END): meeting.ageLimitEnd,
       EnumToString.parse(MeetingField.LOCATION): meeting.location,
-      EnumToString.parse(MeetingField.SPORT): meeting.sport,
+      EnumToString.parse(MeetingField.SPORT) + "_TYPE": EnumToString.parse(meeting.sport.type),
+      EnumToString.parse(MeetingField.SPORT) + "_SPORT": EnumToString.parse(meeting.sport.sport),
       EnumToString.parse(MeetingField.TID): team.tid
     });
 
@@ -82,7 +94,7 @@ class MeetingDataManager {
   static Future<void> deleteMeetingByMID(String mid) async {
     DocumentSnapshot meetingSnap = await meetingsCollection.document(mid).get();
 
-    // remove meeting from user to meetings tracking
+//     remove meeting from user to meetings tracking
     RecordList usersInMeeting = await meetingToUsers.getRecordsList(mid);
 
     for (String uid in usersInMeeting.data) {
@@ -91,7 +103,7 @@ class MeetingDataManager {
 
     meetingToUsers.deleteRecordsList(mid);
 
-    teamToMeetings.removeRecord(meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
+     teamToMeetings.removeRecord(meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
 
     print('Meeting $mid deleted.');
     await meetingsCollection.document(mid).delete();
@@ -115,7 +127,16 @@ class MeetingDataManager {
         ageLimitStart: data[EnumToString.parse(MeetingField.AGE_LIMIT_START)],
         ageLimitEnd: data[EnumToString.parse(MeetingField.AGE_LIMIT_END)],
         location: data[EnumToString.parse(MeetingField.LOCATION)],
-        sport: data[EnumToString.parse(MeetingField.SPORT)],
+        sport: Sport(
+          type: EnumToString.fromString(
+            SportType.values,
+            data[EnumToString.parse(MeetingField.SPORT) + "_TYPE"],
+          ),
+          sport: EnumToString.fromString(
+            SubSport.values,
+            data[EnumToString.parse(MeetingField.SPORT) + "_SPORT"],
+          ),
+        ),
       );
     } else {
       print('Tried to get nonexistent team id');
@@ -162,7 +183,9 @@ class MeetingDataManager {
 
   static void clearAllMeetings() async {
     QuerySnapshot allMeetingsSnapshot = await meetingsCollection.getDocuments();
+
     for (var meetingSnap in allMeetingsSnapshot.documents) {
+      print('begin deletion of meeting ${meetingSnap.documentID}');
       deleteMeetingByMID(meetingSnap.documentID);
     }
   }

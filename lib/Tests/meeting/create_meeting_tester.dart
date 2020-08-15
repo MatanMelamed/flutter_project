@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:teamapp/Tests/AgeRangeSlider.dart';
 import 'package:teamapp/models/location.dart';
 import 'package:teamapp/models/meeting.dart';
+import 'package:teamapp/models/sport.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/screens/location/search_address.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
@@ -62,7 +63,7 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
       ageLimitStart: _ageLimitStart,
       ageLimitEnd: _ageLimitEnd,
       location: geoPointLocation,
-      sport: sports.text,
+      sport: Sport(type: SportType.Aerobic, sport: SubSport.CrossFit)
     );
     MeetingDataManager.createMeeting(widget.team, meeting);
   }
