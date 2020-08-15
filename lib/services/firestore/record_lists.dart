@@ -96,7 +96,7 @@ class MeetingToUsers extends BaseListDataManager {
     RecordList list = await super.createRecordList(recordList: recordList, documentName: documentName);
 
     updateUsersCounter(documentName, recordList.data.length);
-    updateUsersCounter(documentName, DEF_APPROVAL ? recordList.data.length : 0);
+    updateUsersApprovedCounter(documentName, DEF_APPROVAL ? recordList.data.length : 0);
 
     return list;
   }

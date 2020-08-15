@@ -7,6 +7,8 @@ import 'package:teamapp/screens/meetings/meeting_page.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
+import 'package:teamapp/services/general/location.dart';
+import 'package:teamapp/services/general/utilites.dart';
 import 'package:teamapp/widgets/loading.dart';
 
 import 'meeting_card_dialog.dart';
@@ -39,6 +41,7 @@ class _MeetingCardState extends State<MeetingCard> {
   int totalCount;
 
   String teamOwnerUid;
+  double distance;
 
   @override
   void initState() {
@@ -52,12 +55,14 @@ class _MeetingCardState extends State<MeetingCard> {
       teamOwnerUid = team.ownerUid;
     }
     await getApprovalCounters();
+    await setDistance();
     setState(() => isLoading = false);
   }
 
-  void reload() async{
+  void reload() async {
     setState(() => isLoading = true);
     await getApprovalCounters();
+    await setDistance();
     setState(() => isLoading = false);
   }
 
@@ -67,9 +72,13 @@ class _MeetingCardState extends State<MeetingCard> {
     approvedCount = list[1];
   }
 
+  void setDistance() async {
+    var l = widget.meeting.location;
+    distance = await LocationService.distanceInKmFromUserLocation(l.latitude, l.longitude);
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return isLoading
         ? Loading()
         : GestureDetector(
@@ -80,7 +89,7 @@ class _MeetingCardState extends State<MeetingCard> {
             },
             child: Container(
               height: 80,
-              decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+//              decoration: BoxDecoration(border: Border.all(color: Colors.black)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -112,7 +121,7 @@ class _MeetingCardState extends State<MeetingCard> {
                       Padding(
                         padding: EdgeInsets.only(top: 5, left: 20),
                         child: Text(
-                          widget.meeting.time.toString(),
+                          Utilities.dateTimeToString(widget.meeting.time),
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -126,7 +135,7 @@ class _MeetingCardState extends State<MeetingCard> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(top: 15, right: 5),
+                        padding: EdgeInsets.only(top: 15, right: 15),
                         child: Text(
                           "$approvedCount / $totalCount",
                           style: TextStyle(
@@ -139,7 +148,7 @@ class _MeetingCardState extends State<MeetingCard> {
                       Padding(
                         padding: EdgeInsets.only(top: 10, right: 5),
                         child: Text(
-                          '500 m',
+                          '${distance.toStringAsFixed(1)} km',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,

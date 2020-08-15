@@ -347,7 +347,7 @@ class _MeetingPageState extends State<MeetingPage> {
                                     child: Container(
                                       padding: EdgeInsets.all(10),
                                       child: Text(
-                                        '${widget.meeting.time.toDisplayString()}',
+                                        '${Utilities.dateTimeToString(widget.meeting.time)}',
                                         style:
                                             TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                                       ),
