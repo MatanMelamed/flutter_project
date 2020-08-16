@@ -8,7 +8,7 @@ import 'package:teamapp/screens/home/create.dart';
 import 'dart:async';
 import 'package:teamapp/screens/home/feed.dart';
 import 'package:teamapp/screens/home/mainDrawer.dart';
-import 'package:teamapp/screens/home/search.dart';
+import 'package:teamapp/screens/home/searchAndCreate.dart';
 
 import 'notificationsPage.dart';
 import 'notifications_badge.dart';
@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   final _pageOptions = [
     FeedPage(),
     SearchPage(),
-    CreatePage()
+//    CreatePage()
   ];
 
 
@@ -44,10 +44,10 @@ class _HomePageState extends State<HomePage> {
 
     return SafeArea( // Optional !!
       child: DefaultTabController(
-          length: 3,
+          length: 2,
           child: Scaffold(
             appBar: AppBar(
-                title: Text("Title of the AppBar"),
+                title: Text("TeamApp", style: TextStyle(fontFamily: 'Signatra',fontSize: 47),),
                 centerTitle: true,
                 backgroundColor: Theme.of(context).primaryColor,
                 actions: <Widget>[
@@ -79,11 +79,11 @@ class _HomePageState extends State<HomePage> {
                       text: "Home",
                     ),
                     Tab(
-                      text: "Search",
+                      text: "Search & Create",
                     ),
-                    Tab(
-                      text: "Create",
-                    )
+//                    Tab(
+//                      text: "Create",
+//                    )
                   ],
                 )
               ),
