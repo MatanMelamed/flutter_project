@@ -33,8 +33,8 @@ class ExpandedHomeCard extends StatelessWidget {
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.all(8.0),
-                      width: 200,
-                      height: 290,
+                      width: 250,
+                      height: 210,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
@@ -45,7 +45,7 @@ class ExpandedHomeCard extends StatelessWidget {
                                 this.title,
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
-                                    fontSize: 24.0,
+                                    fontSize: 27.0,
                                     fontWeight: FontWeight.bold),
                               )),
                             ),
@@ -54,7 +54,7 @@ class ExpandedHomeCard extends StatelessWidget {
                               this.description,
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: 18.0,
+                                  fontSize: 20.0,
                                   fontWeight: FontWeight.bold),
                             )),
                           ],

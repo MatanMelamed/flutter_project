@@ -7,7 +7,7 @@ import 'package:teamapp/screens/home/create.dart';
 import 'package:teamapp/screens/home/feed.dart';
 import 'package:teamapp/screens/home/mainDrawer.dart';
 import 'package:teamapp/screens/home/notificationsPage.dart';
-import 'package:teamapp/screens/home/search.dart';
+import 'package:teamapp/screens/home/searchAndCreate.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 
 class Home extends StatelessWidget {

@@ -63,6 +63,7 @@ flutter:
     - assets/images/touch.svg
     - assets/images/three_friends_play.png
     - assets/images/number_one.jpg
+    - assets/images/coach.png
 
 
   fonts:
@@ -101,3 +102,7 @@ flutter:
         - asset: assets/fonts/Heebo/Heebo-Medium.ttf
         - asset: assets/fonts/Heebo/Heebo-Regular.ttf
         - asset: assets/fonts/Heebo/Heebo-Thin.ttf
+
+    - family: Signatra
+      fonts:
+        - asset: assets/fonts/signatra/Signatra.ttf
