@@ -15,7 +15,7 @@ import 'package:teamapp/widgets/general/dialogs/dialogs.dart';
 import 'package:teamapp/widgets/general/diamond_image.dart';
 import 'package:teamapp/widgets/general/editViewImage.dart';
 import 'package:teamapp/widgets/loading.dart';
-import 'file:///C:/Workspace/Flutter/flutter_project/lib/widgets/general/dialogs/alert_dialog.dart';
+import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
 import 'package:teamapp/widgets/teams/team_user_dialog.dart';
 

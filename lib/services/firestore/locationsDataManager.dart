@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:latlong/latlong.dart';
 
 class LocationsDataManagers {
-  final double MaxDis = 10.0;
+  static final double MaxDis = 10.0;
   static final CollectionReference teamsLocationCollection =
       Firestore.instance.collection("team_location");
 
@@ -14,7 +14,7 @@ class LocationsDataManagers {
         {"location": new GeoPoint(latitude, longitude), "address": address});
   }
 
-  double calculateTotalDistanceInKm(double userLatitude, double userLongitude,
+  static double calculateTotalDistanceInKm(double userLatitude, double userLongitude,
       double teamLatitude, double teamLongitude) {
     final Distance distance = Distance();
 
@@ -26,7 +26,7 @@ class LocationsDataManagers {
     return totalDistanceInKm;
   }
 
-  Future<List<String>> getTeamIdAtMaxDis(
+  static Future<List<String>> getTeamIdAtMaxDis(
       double userLatitude, double userLongitude) async {
     List<String> teamsId = [];
     QuerySnapshot teamsLocation = await teamsLocationCollection.getDocuments();

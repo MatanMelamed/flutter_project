@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/services/firestore/baseListDataManager.dart';
+import 'package:teamapp/services/firestore/locationsDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
@@ -16,7 +18,8 @@ import 'package:teamapp/services/firestore/usersListDataManager.dart';
     UserToMeeting - saves all meetings of a user under a doc for fast retrieve
  */
 class MeetingDataManager {
-  static final CollectionReference meetingsCollection = Firestore.instance.collection("meetings");
+  static final CollectionReference meetingsCollection =
+      Firestore.instance.collection("meetings");
 
   static UserToMeetings userToMeetings = UserToMeetings();
   static TeamToMeetings teamToMeetings = TeamToMeetings();
@@ -36,7 +39,8 @@ class MeetingDataManager {
     }
 
     // create meeting's users list with the metadata
-    RecordList meetingUl = RecordList.fromWithinApp(data: usersInMeeting, metadata: {});
+    RecordList meetingUl =
+        RecordList.fromWithinApp(data: usersInMeeting, metadata: {});
 
     // save the meeting's users list in firestore
     meetingToUsers.createRecordList(recordList: meetingUl, documentName: mid);
@@ -46,7 +50,8 @@ class MeetingDataManager {
     DocumentReference meetingDocRef = await meetingsCollection.add({
       EnumToString.parse(MeetingField.NAME): meeting.name,
       EnumToString.parse(MeetingField.DESCRIPTION): meeting.description,
-      EnumToString.parse(MeetingField.STATUS): EnumToString.parse(meeting.status),
+      EnumToString.parse(MeetingField.STATUS):
+          EnumToString.parse(meeting.status),
       EnumToString.parse(MeetingField.TIME): meeting.time.toString(),
       EnumToString.parse(MeetingField.IS_PUBLIC): meeting.isPublic,
       EnumToString.parse(MeetingField.AGE_LIMIT_START): meeting.ageLimitStart,
@@ -91,7 +96,8 @@ class MeetingDataManager {
 
     meetingToUsers.deleteRecordsList(mid);
 
-    teamToMeetings.removeRecord(meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
+    teamToMeetings.removeRecord(
+        meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
 
     print('Meeting $mid deleted.');
     await meetingsCollection.document(mid).delete();
@@ -130,7 +136,8 @@ class MeetingDataManager {
   }
 
   // changes after creation
-  static Future<void> updateMeetingField(Meeting meeting, MeetingField field, dynamic newValue) async {
+  static Future<void> updateMeetingField(
+      Meeting meeting, MeetingField field, dynamic newValue) async {
     meeting.propAccess(field, newValue: newValue);
     DocumentReference docRef = meetingsCollection.document(meeting.mid);
     await docRef.updateData({EnumToString.parse(field): newValue});
@@ -174,5 +181,64 @@ class MeetingDataManager {
       meetings.add(await getMeetingByMID(mid));
     }
     return meetings;
+  }
+
+  static Future<List<Meeting>> searchMeeting(int km, GeoPoint useLocation,
+      DateTime startDate, DateTime endDate, String sportType) async {
+    List<Meeting> meetings = [];
+    meetingsCollection.getDocuments().then((value) {
+      value.documents.forEach((element) async {
+        if (isInUserRule(
+            km, useLocation, startDate, endDate, sportType, element)) {
+          Meeting meeting = await convertDocToMeeting(element);
+          meetings.add(meeting);
+        }
+      });
+    });
+    return meetings;
+  }
+
+  static bool isInUserRule(int km, GeoPoint useLocation, DateTime startDate,
+      DateTime endDate, String sportType, DocumentSnapshot meeting) {
+    bool checkLocation = isDisSmallThenKMUser(km, useLocation, meeting);
+    bool checkDate = isDateInUseRange(startDate, endDate, meeting);
+    bool checkSportType = isInUserSportTypeList(sportType, meeting);
+    return (checkLocation ^ checkDate ^ checkSportType);
+  }
+
+  static bool isDisSmallThenKMUser(
+      int km, GeoPoint useLocation, DocumentSnapshot meeting) {
+    GeoPoint meetingLocation =
+        meeting.data[EnumToString.parse(MeetingField.LOCATION)];
+    bool checkLocation = km >=
+        LocationsDataManagers.calculateTotalDistanceInKm(
+            useLocation.latitude,
+            useLocation.longitude,
+            meetingLocation.latitude,
+            meetingLocation.longitude);
+    return checkLocation;
+  }
+
+  static bool isDateInUseRange(
+      DateTime startDate, DateTime endDate, DocumentSnapshot meeting) {
+    DateTime meetingDate =
+        DateTime.parse(meeting.data[EnumToString.parse(MeetingField.TIME)]);
+    bool isInRange =
+        meetingDate.isAfter(startDate) ^ meetingDate.isBefore(endDate);
+    return isInRange;
+  }
+
+  static bool isInUserSportTypeList(
+      String sportType, DocumentSnapshot meeting) {
+    var meetingSportType = meeting.data[EnumToString.parse(MeetingField.SPORT)];
+    var sportTypeList = List();
+    sportType.split(" ").forEach((element) {
+      sportTypeList.add(element.split("-")[1]);
+    });
+    for( String type in sportTypeList){
+      if (type == meetingSportType)
+        return true;
+    }
+    return false;
   }
 }

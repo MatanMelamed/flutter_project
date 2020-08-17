@@ -55,6 +55,34 @@ class _SearchAddressesState extends State<SearchAddresses> {
             ),
           ),
           Positioned(
+              top: 100.0,
+              right: 20.0,
+              left: 340.0,
+              child: SizedBox.fromSize(
+                size: Size(10, 50), // button width and height
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.blueAccent, // button color
+                    child: InkWell(
+                      splashColor: Colors.green, // splash color
+                      onTap: ()  {
+                        _handleCurrentLocation();
+                      }, // button pressed
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.my_location,
+                            color: Colors.white,
+                          ),
+                          // icon
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )),
+          Positioned(
               bottom: 30.0,
               right: 335.0,
               left: 15.0,
@@ -65,9 +93,9 @@ class _SearchAddressesState extends State<SearchAddresses> {
                     color: Colors.blueAccent, // button color
                     child: InkWell(
                       splashColor: Colors.green, // splash color
-                      onTap: () {
-                        var location = _handleAddLocationButton();
-                        Navigator.of(context).pop(new Location(location, _searchAddress));
+                      onTap: () async {
+                        var location = await _handleAddLocationButton();
+                        Navigator.of(context).pop(location);
                       }, // button pressed
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -86,6 +114,17 @@ class _SearchAddressesState extends State<SearchAddresses> {
         ],
       ),
     );
+  }
+
+
+  void _handleCurrentLocation(){
+    Geolocator().getCurrentPosition().then((result) {
+      LatLng newPosition =
+      LatLng(result.latitude, result.longitude);
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: newPosition, zoom: 15.0)));
+      _handleTap(newPosition);
+    });
   }
 
   void searchAndNavigate() {
@@ -118,14 +157,31 @@ class _SearchAddressesState extends State<SearchAddresses> {
     });
   }
 
-  GeoPoint _handleAddLocationButton() {
-    if (_searchAddress == null || myMarkers.isEmpty) {
-      print("no address to save");
+  Future<Location> _handleAddLocationButton() async {
+    if (myMarkers.isEmpty) {
+      print("no address to save - error");
       return null;
     } else {
       LatLng location = myMarkers.elementAt(0).position;
-      return GeoPoint(location.latitude, location.longitude);
-
+      List<Placemark> placemark = await Geolocator()
+          .placemarkFromCoordinates(location.latitude, location.longitude);
+      return new Location(GeoPoint(location.latitude, location.longitude),
+          _createAddress(placemark.elementAt(0)));
     }
   }
+
+  String _createAddress(Placemark placemark) {
+    String address = placemark.thoroughfare +
+        " " +
+        placemark.subThoroughfare + // street
+        ", " +
+        placemark.locality + // city
+        ", " +
+        placemark.country;
+    print(address);
+    return address;
+  }
+
+
+
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:teamapp/screens/archive/page_transitions.dart';
+import 'package:teamapp/screens/meetings/search_meeting.dart';
 
 class SearchPage extends StatelessWidget {
   @override
@@ -22,6 +24,7 @@ class SearchPage extends StatelessWidget {
               description:"join a one-time event and try out! \n \n"
                   "you can't repeat a one time event" ,
               trailImageUrl:"assets/images/number_one.jpg",
+
             ),
 
             ExpandedHomeCard(
@@ -60,7 +63,7 @@ class ExpandedHomeCard extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.all(Radius.circular(50)),
                   onTap: () {
-
+                    Navigator.of(context).push(createRoute(SearchForAOneTimeMeeting()));
                   },
                   child: Row(
                     children: <Widget>[

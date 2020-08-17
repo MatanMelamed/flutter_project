@@ -26,3 +26,9 @@ class Sport {
     @required this.sport,
   });
 }
+
+class ItemSport {
+  const ItemSport(this.name,this.icon);
+  final String name;
+  final Icon icon;
+}
