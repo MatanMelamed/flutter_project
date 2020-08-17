@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:date_format/date_format.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Utilities {
@@ -12,6 +14,12 @@ class Utilities {
 
     return file;
   }
+
+  static String dateTimeToString(DateTime d){
+    final DateFormat hourFormatter = DateFormat('HH:mm, dd/MM/yy');
+    final String formattedHour = hourFormatter.format(d);
+    return '$formattedHour';
+  }
 }
 
 extension StringExtension on String {
@@ -20,8 +28,11 @@ extension StringExtension on String {
   }
 }
 
+
+
 extension ToString on DateTime {
   String toDisplayString() {
+    return '${this.hour}:${this.minute}';
     return formatDate(this, [dd, '-', mm, '-', yyyy]);
   }
 }

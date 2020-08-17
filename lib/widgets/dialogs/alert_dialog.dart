@@ -81,14 +81,15 @@ class _GeneralAlertDialogState extends State<GeneralAlertDialog> {
                       padding: EdgeInsets.only(bottom: 30),
                       width: 180,
                       child: RaisedButton(
-                          elevation: 10,
-                          onPressed: widget.cancelCallback ?? emptyCallback,
-                          child: Text(
-                            widget.optionBText ?? "Cancel",
-                            style: TextStyle(color: Colors.red[900], fontSize: 16),
-                          ),
-                          color: Colors.white,
-                          shape: Border.all(color: Colors.red[900])),
+                        elevation: 10,
+                        onPressed: widget.cancelCallback ?? emptyCallback,
+                        child: Text(
+                          widget.optionBText ?? "Cancel",
+                          style: TextStyle(color: Colors.red[900], fontSize: 16),
+                        ),
+                        color: Colors.white,
+                        shape: Border.all(color: Colors.red[900]),
+                      ),
                     )
                   ],
                 ),

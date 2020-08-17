@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:teamapp/models/meeting.dart';
+import 'package:teamapp/models/notification/notification.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/models/usersList.dart';
@@ -14,6 +15,7 @@ import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
+import 'package:teamapp/services/firestore/notifications/teamNotificationManager.dart';
 
 class TeamDataManager {
   static final CollectionReference teamsCollection = Firestore.instance.collection("teams");
@@ -37,9 +39,11 @@ class TeamDataManager {
       EnumToString.parse(TeamField.CHAT_ID): messagesDocRef.documentID
     });
 
+    // Sending notifications to all team members
+    TeamNotificationManager.sendTeamNotifications(team.ownerUid, usersList.data, docRef.documentID);
+
     // users list must contain at least the creator of the team - the owner
-    usersList =
-        (usersList == null || usersList.data.length > 1) ? RecordList.fromWithinApp(data: [team.ownerUid]) : usersList;
+    usersList = usersList ?? RecordList.fromWithinApp(data: [team.ownerUid]);
 
     // register team on firestore
     RecordList userList = await teamToUsers.createRecordList(recordList: usersList, documentName: docRef.documentID);
@@ -118,6 +122,14 @@ class TeamDataManager {
       print('error in recording new team for null user.');
       return false;
     }
+    //send notification
+    TeamNotificationManager.sendTeamNotificationToUser(
+        newUserUid,
+        team.tid,
+        Notification(type: 'addedToTeamNotification', metadata: {
+          'viewed': false,
+          'teamId': team.tid,
+        }));
 
     await teamToUsers.addRecord(team.tid, uid);
     await userToTeams.addRecord(uid, team.tid);
@@ -131,7 +143,6 @@ class TeamDataManager {
       print('error in recording new team for null user.');
       return false;
     }
-
     await teamToUsers.removeRecord(team.tid, uid);
     await userToTeams.removeRecord(uid, team.tid);
     await MeetingDataManager.userRemovedFromTeam(team.tid, uid);

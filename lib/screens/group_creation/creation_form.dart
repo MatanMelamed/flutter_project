@@ -15,7 +15,7 @@ import 'package:teamapp/services/firestore/searchByName/friends_suggestions.dart
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:teamapp/services/general/utilites.dart';
-import 'package:teamapp/widgets/general/dialogs/dialogs.dart';
+import 'package:teamapp/widgets/dialogs/dialogs.dart';
 import 'package:teamapp/widgets/group_creation/usefull_widgets.dart';
 
 const NAME_STEP_ID = "Name";

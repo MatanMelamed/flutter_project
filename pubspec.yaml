@@ -15,7 +15,7 @@ dependencies:
   cloud_firestore: ^0.13.4+2
   firebase_storage:
   provider: ^4.0.4
-  flutter_svg: ^0.17.3+1
+  flutter_svg: ^0.18.0
   flutter_spinkit: ^4.1.2+1
   flutter_typeahead: ^1.8.0
   image_picker: ^0.6.0+9
@@ -30,6 +30,7 @@ dependencies:
   geolocator: ^5.3.2+2
   latlong: 0.6.1
   date_range_picker: ^1.0.3
+  intl: ^0.16.1
 
 
 dev_dependencies:
@@ -63,6 +64,7 @@ flutter:
     - assets/images/touch.svg
     - assets/images/three_friends_play.png
     - assets/images/number_one.jpg
+    - assets/images/coach.png
 
 
   fonts:
@@ -101,3 +103,7 @@ flutter:
         - asset: assets/fonts/Heebo/Heebo-Medium.ttf
         - asset: assets/fonts/Heebo/Heebo-Regular.ttf
         - asset: assets/fonts/Heebo/Heebo-Thin.ttf
+
+    - family: Signatra
+      fonts:
+        - asset: assets/fonts/signatra/Signatra.ttf

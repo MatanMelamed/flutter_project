@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
-import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
 
 class TeamAddUser extends StatefulWidget {

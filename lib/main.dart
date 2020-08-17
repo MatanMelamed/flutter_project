@@ -11,6 +11,8 @@ import 'package:teamapp/Tests/meeting/view_meeting_tester.dart';
 import 'package:teamapp/screens/meetings/team_meetings.dart';
 import 'package:teamapp/services/authenticate/auth_service.dart';
 import 'package:teamapp/services/firestore/firestoreManager.dart';
+import 'package:teamapp/services/firestore/meetingDataManager.dart';
+import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/sportsDataManager.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/widgets/auth_warrper.dart';
@@ -40,6 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthService authService = AuthService();
+
     return StreamProvider.value(
       value: authService.userStream, // what the provider listens to
 //      child: MaterialApp(

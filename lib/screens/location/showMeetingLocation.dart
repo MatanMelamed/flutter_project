@@ -31,7 +31,7 @@ class _ShowAddressesState extends State<ShowAddresses> {
           GoogleMap(
             onMapCreated: onMapCreated,
             initialCameraPosition:
-                CameraPosition(target: LatLng(widget.pointLocation.latitude, widget.pointLocation.longitude), zoom: 10.0),
+                CameraPosition(target: LatLng(widget.pointLocation.latitude, widget.pointLocation.longitude), zoom: 16.0),
             //mapType: MapType.hybrid,
             markers: Set.from(myMarkers),
           ),

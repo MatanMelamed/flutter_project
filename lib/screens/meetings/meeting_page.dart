@@ -1,23 +1,20 @@
-import 'package:date_format/date_format.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/records_list.dart';
 import 'package:teamapp/models/user.dart';
-import 'package:teamapp/models/usersList.dart';
+import 'package:teamapp/screens/location/showMeetingLocation.dart';
 import 'package:teamapp/screens/userProfile/mainUserProfilePage.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
-import 'package:teamapp/services/firestore/usersListDataManager.dart';
 import 'package:teamapp/services/general/utilites.dart';
 import 'package:teamapp/widgets/general/date_time.dart';
-import 'package:teamapp/widgets/general/dialogs/dialogs.dart';
-import 'package:teamapp/widgets/general/dialogs/general_dialog.dart';
-import 'package:teamapp/widgets/general/dialogs/meeting_approve_dialog.dart';
+import 'package:teamapp/widgets/dialogs/alert_dialog.dart';
+import 'package:teamapp/widgets/dialogs/dialogs.dart';
 import 'package:teamapp/widgets/loading.dart';
-//import 'package:teamapp/widgets/meeting/meeting_update_arrival.dart';
-import 'package:teamapp/widgets/general/dialogs/alert_dialog.dart';
+import 'package:teamapp/widgets/meeting/meeting_approve_dialog.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
 import 'package:teamapp/widgets/teams/team_user_dialog.dart';
 
@@ -48,6 +45,7 @@ class _MeetingPageState extends State<MeetingPage> {
 
   bool isLoading = true;
   bool hasLoaded = false;
+  bool hasChanged = false;
 
   loadWidgetOnce() async {
     if (hasLoaded) return;
@@ -68,12 +66,16 @@ class _MeetingPageState extends State<MeetingPage> {
     for (final uid in usersList.data) {
       User user = await UserDataManager.getUser(uid);
       users.add(user);
-      if (usersList.metadata[uid][MeetingToUsers.USER_APPROVAL_STATUS]) {
-        approved += 1;
-        isApproved = true;
-      }
+      bool isUserApproved = usersList.metadata[uid][MeetingToUsers.USER_APPROVAL_STATUS];
+
       if (user.uid == currentUser.uid) {
         isInMeeting = true;
+        if (isUserApproved) {
+          isApproved = isUserApproved;
+          approved += 1;
+        }
+      } else if (isUserApproved) {
+        approved += 1;
       }
     }
   }
@@ -159,6 +161,7 @@ class _MeetingPageState extends State<MeetingPage> {
         field,
         newName,
       );
+      hasChanged = true;
       setState(() {});
     }
   }
@@ -178,6 +181,10 @@ class _MeetingPageState extends State<MeetingPage> {
     publicDisclaimer = widget.meeting.isPublic ? 'This meeting is public.' : 'This meeting is private.';
   }
 
+  Future<bool> pop() async{
+    Navigator.of(context).pop(hasChanged);
+  }
+
   @override
   Widget build(BuildContext context) {
     loadWidgetOnce();
@@ -187,258 +194,280 @@ class _MeetingPageState extends State<MeetingPage> {
         appBar: AppBar(),
         body: isLoading
             ? Loading()
-            : SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.account_circle),
-                        onPressed: () {
-                          isAdmin = !isAdmin;
-                          setState(() {});
-                        },
-                      ),
-                      //GetNarrowReturnBar(context),
-                      SizedBox(height: 20),
-                      Container(
-                        width: double.infinity,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap:
-                                  inEditMode ? () => updateMeetingField('meeting\'s name', MeetingField.NAME) : () {},
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                child: Text(
-                                  widget.meeting.name,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                ),
-                                decoration: BoxDecoration(
-                                    color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                    borderRadius: BorderRadius.all(Radius.circular(30))),
-                              ),
-                            ),
-                            !isAdmin
-                                ? SizedBox(height: 0, width: 0)
-                                : Positioned(
-                                    right: 0,
-                                    bottom: 7,
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.edit,
-                                        size: 20,
-                                      ),
-                                      onPressed: () => setState(() => inEditMode = !inEditMode),
-                                    ),
-                                  ),
-                          ],
+            : WillPopScope(
+              onWillPop: pop,
+              child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.account_circle),
+                          onPressed: () {
+                            isAdmin = !isAdmin;
+                            setState(() {});
+                          },
                         ),
-                      ),
-                      Divider(
-                        thickness: 2,
-                        color: Colors.black45,
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                        width: double.infinity,
-                        child: GestureDetector(
-                          onTap: inEditMode
-                              ? () => updateMeetingField('meeting\'s description', MeetingField.DESCRIPTION)
-                              : () {},
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                              widget.meeting.description,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20, color: Colors.black45),
-                            ),
-                            decoration: BoxDecoration(
-                                color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                borderRadius: BorderRadius.all(Radius.circular(30))),
+                        //GetNarrowReturnBar(context),
+                        SizedBox(height: 20),
+                        Container(
+                          width: double.infinity,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap:
+                                    inEditMode ? () => updateMeetingField('meeting\'s name', MeetingField.NAME) : () {},
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  child: Text(
+                                    widget.meeting.name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                      borderRadius: BorderRadius.all(Radius.circular(30))),
+                                ),
+                              ),
+                              !isAdmin
+                                  ? SizedBox(height: 0, width: 0)
+                                  : Positioned(
+                                      right: 0,
+                                      bottom: 7,
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                        ),
+                                        onPressed: () => setState(() => inEditMode = !inEditMode),
+                                      ),
+                                    ),
+                            ],
                           ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      Container(
-                        padding: EdgeInsets.only(left: 20),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Icon(Icons.assignment_turned_in),
-                                SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: _changeArrival,
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      'Arrival:\t\t\t' + (isApproved ? 'Approved' : 'Not Approved'),
-                                      style:
-                                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            Row(
-                              children: <Widget>[
-                                Icon(Icons.location_on),
-                                SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: inEditMode
-                                      ? () => updateMeetingField('meeting\'s location', MeetingField.LOCATION)
-                                      : () {},
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      'Meetings location',
-                                      style:
-                                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            Row(
-                              children: <Widget>[
-                                Icon(Icons.access_time),
-                                SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: editTime,
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      '${widget.meeting.time.toDisplayString()}',
-                                      style:
-                                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            Row(
-                              children: <Widget>[
-                                Icon(Icons.arrow_right),
-                                SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: inEditMode
-                                      ? () async {
-                                          MeetingDataManager.updateMeetingField(
-                                            widget.meeting,
-                                            MeetingField.IS_PUBLIC,
-                                            !widget.meeting.isPublic,
-                                          );
-                                          setState(() => updatePublicity());
-                                        }
-                                      : () {},
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      '$publicDisclaimer',
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            Row(
-                              children: <Widget>[
-                                Icon(Icons.arrow_right),
-                                SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: inEditMode
-                                      ? () async {
-                                          List<int> newRange = await Dialogs.showAgeSlider(
-                                            context,
-                                            widget.meeting.ageLimitStart,
-                                            widget.meeting.ageLimitEnd,
-                                          );
-                                          if (newRange != null) {
-                                            MeetingDataManager.updateMeetingField(
-                                              widget.meeting,
-                                              MeetingField.AGE_LIMIT_START,
-                                              newRange[0],
-                                            );
-                                            MeetingDataManager.updateMeetingField(
-                                              widget.meeting,
-                                              MeetingField.AGE_LIMIT_END,
-                                              newRange[1],
-                                            );
-                                            setState(() {});
-                                          }
-                                        }
-                                      : () {},
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(
-                                      'Marked for ages: ${widget.meeting.ageLimitStart} - ${widget.meeting.ageLimitEnd}',
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
+                        Divider(
+                          thickness: 2,
+                          color: Colors.black45,
                         ),
-                      ),
-                      SizedBox(height: 35),
-                      getUsersListView(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GetLeaveJoinButton(),
-                          !isAdmin
-                              ? Container()
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: 25,
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(vertical: 20),
-                                      child: RaisedButton(
-                                        elevation: 10,
-                                        onPressed: isLoading ? null : _deleteMeeting,
-                                        child: Text(
-                                          "Delete Meeting",
-                                          style: TextStyle(color: Colors.white, fontSize: 16),
-                                        ),
-                                        color: Colors.red[900],
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                          width: double.infinity,
+                          child: GestureDetector(
+                            onTap: inEditMode
+                                ? () => updateMeetingField('meeting\'s description', MeetingField.DESCRIPTION)
+                                : () {},
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                widget.meeting.description,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20, color: Colors.black45),
+                              ),
+                              decoration: BoxDecoration(
+                                  color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                  borderRadius: BorderRadius.all(Radius.circular(30))),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Container(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Column(
+                            children: <Widget>[
+                              isInMeeting
+                              ? Row(
+                                children: <Widget>[
+                                  Icon(Icons.assignment_turned_in),
+                                  SizedBox(width: 20),
+                                  GestureDetector(
+                                    onTap: _changeArrival,
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                        'Arrival:\t\t\t' + (isApproved ? 'Approved' : 'Not Approved'),
+                                        style:
+                                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                                       ),
-                                    )
-                                  ],
-                                )
-                        ],
-                      )
-                    ],
+                                      decoration: BoxDecoration(
+                                          color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                          borderRadius: BorderRadius.all(Radius.circular(30))),
+                                    ),
+                                  ),
+                                ],
+                              )
+                              : Container(),
+                              SizedBox(height: 15),
+                              Row(
+                                children: <Widget>[
+                                  Icon(Icons.directions_bike),
+                                  SizedBox(width: 20),
+                                  GestureDetector(
+                                    onTap: inEditMode ? () {} : () {},
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                        '${EnumToString.parse(widget.meeting.sport.type)}:\t\t\t'
+                                        '${EnumToString.parse(widget.meeting.sport.sport)}',
+                                        style:
+                                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                          borderRadius: BorderRadius.all(Radius.circular(30))),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Row(
+                                children: <Widget>[
+                                  Icon(Icons.location_on),
+                                  SizedBox(width: 20),
+                                  GestureDetector(
+                                    onTap: inEditMode ? () {} : () {},
+                                    child: widget.meeting.location == null
+                                        ? Text('is null')
+                                        : Container(
+                                      padding: EdgeInsets.symmetric(vertical: 10),
+                                            width: 250,
+                                            height: 200,
+                                            child: ShowAddresses(widget.meeting.location),
+                                          ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Row(
+                                children: <Widget>[
+                                  Icon(Icons.access_time),
+                                  SizedBox(width: 20),
+                                  GestureDetector(
+                                    onTap: editTime,
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                        '${Utilities.dateTimeToString(widget.meeting.time)}',
+                                        style:
+                                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                          borderRadius: BorderRadius.all(Radius.circular(30))),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Row(
+                                children: <Widget>[
+                                  Icon(Icons.arrow_right),
+                                  SizedBox(width: 20),
+                                  GestureDetector(
+                                    onTap: inEditMode
+                                        ? () async {
+                                            MeetingDataManager.updateMeetingField(
+                                              widget.meeting,
+                                              MeetingField.IS_PUBLIC,
+                                              !widget.meeting.isPublic,
+                                            );
+                                            setState(() => updatePublicity());
+                                          }
+                                        : () {},
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                        '$publicDisclaimer',
+                                        style:
+                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                          borderRadius: BorderRadius.all(Radius.circular(30))),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Row(
+                                children: <Widget>[
+                                  Icon(Icons.arrow_right),
+                                  SizedBox(width: 20),
+                                  GestureDetector(
+                                    onTap: inEditMode
+                                        ? () async {
+                                            List<int> newRange = await Dialogs.showAgeSlider(
+                                              context,
+                                              widget.meeting.ageLimitStart,
+                                              widget.meeting.ageLimitEnd,
+                                            );
+                                            if (newRange != null) {
+                                              MeetingDataManager.updateMeetingField(
+                                                widget.meeting,
+                                                MeetingField.AGE_LIMIT_START,
+                                                newRange[0],
+                                              );
+                                              MeetingDataManager.updateMeetingField(
+                                                widget.meeting,
+                                                MeetingField.AGE_LIMIT_END,
+                                                newRange[1],
+                                              );
+                                              setState(() {});
+                                            }
+                                          }
+                                        : () {},
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      child: Text(
+                                        'Marked for ages: ${widget.meeting.ageLimitStart} - ${widget.meeting.ageLimitEnd}',
+                                        style:
+                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                          borderRadius: BorderRadius.all(Radius.circular(30))),
+                                    ),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 35),
+                        getUsersListView(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GetLeaveJoinButton(),
+                            !isAdmin
+                                ? Container()
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 25,
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(vertical: 20),
+                                        child: RaisedButton(
+                                          elevation: 10,
+                                          onPressed: isLoading ? null : _deleteMeeting,
+                                          child: Text(
+                                            "Delete Meeting",
+                                            style: TextStyle(color: Colors.white, fontSize: 16),
+                                          ),
+                                          color: Colors.red[900],
+                                        ),
+                                      )
+                                    ],
+                                  )
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
+            ),
       ),
     );
   }
@@ -480,9 +509,10 @@ class _MeetingPageState extends State<MeetingPage> {
         );
       },
     );
-
-    if (newValue != null) {
+    print('change arrival $newValue');
+    if (newValue != null && newValue != isApproved) {
       setState(() => isLoading = true);
+      hasChanged = true;
       isApproved = newValue;
       await MeetingToUsers().updateUserApproval(widget.meeting.mid, currentUser.uid, newValue);
       await loadUsers();
@@ -514,6 +544,7 @@ class _MeetingPageState extends State<MeetingPage> {
 
   void _joinMeeting() async {
     setState(() => isLoading = true);
+    hasChanged = true;
     await MeetingDataManager.addUserToMeeting(widget.meeting.mid, currentUser.uid);
     await loadUsers();
     setState(() => isLoading = false);
@@ -521,6 +552,7 @@ class _MeetingPageState extends State<MeetingPage> {
 
   void _leaveMeeting() async {
     setState(() => isLoading = true);
+    hasChanged = true;
     await MeetingDataManager.removeUserFromMeeting(widget.meeting.mid, currentUser.uid);
     await loadUsers();
     setState(() => isLoading = false);

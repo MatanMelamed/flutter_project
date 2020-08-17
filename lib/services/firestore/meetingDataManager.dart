@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:date_format/date_format.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/models/records_list.dart';
+import 'package:teamapp/models/sport.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/services/firestore/baseListDataManager.dart';
-import 'package:teamapp/services/firestore/locationsDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
@@ -18,8 +17,7 @@ import 'package:teamapp/services/firestore/usersListDataManager.dart';
     UserToMeeting - saves all meetings of a user under a doc for fast retrieve
  */
 class MeetingDataManager {
-  static final CollectionReference meetingsCollection =
-      Firestore.instance.collection("meetings");
+  static final CollectionReference meetingsCollection = Firestore.instance.collection("meetings");
 
   static UserToMeetings userToMeetings = UserToMeetings();
   static TeamToMeetings teamToMeetings = TeamToMeetings();
@@ -39,25 +37,34 @@ class MeetingDataManager {
     }
 
     // create meeting's users list with the metadata
-    RecordList meetingUl =
-        RecordList.fromWithinApp(data: usersInMeeting, metadata: {});
+    RecordList meetingUl = RecordList.fromWithinApp(data: usersInMeeting, metadata: {});
 
     // save the meeting's users list in firestore
     meetingToUsers.createRecordList(recordList: meetingUl, documentName: mid);
+  }
+
+  static void upgrade() async {
+    var q = await meetingsCollection.getDocuments();
+    for (var f in q.documents) {
+      meetingsCollection.document(f.documentID).updateData({
+        EnumToString.parse(MeetingField.SPORT) + "_TYPE": EnumToString.parse(SportType.Aerobic),
+        EnumToString.parse(MeetingField.SPORT) + "_SPORT": EnumToString.parse(SubSport.CrossFit)
+      });
+    }
   }
 
   static Future<Meeting> createMeeting(Team team, Meeting meeting) async {
     DocumentReference meetingDocRef = await meetingsCollection.add({
       EnumToString.parse(MeetingField.NAME): meeting.name,
       EnumToString.parse(MeetingField.DESCRIPTION): meeting.description,
-      EnumToString.parse(MeetingField.STATUS):
-          EnumToString.parse(meeting.status),
+      EnumToString.parse(MeetingField.STATUS): EnumToString.parse(meeting.status),
       EnumToString.parse(MeetingField.TIME): meeting.time.toString(),
       EnumToString.parse(MeetingField.IS_PUBLIC): meeting.isPublic,
       EnumToString.parse(MeetingField.AGE_LIMIT_START): meeting.ageLimitStart,
       EnumToString.parse(MeetingField.AGE_LIMIT_END): meeting.ageLimitEnd,
       EnumToString.parse(MeetingField.LOCATION): meeting.location,
-      EnumToString.parse(MeetingField.SPORT): meeting.sport,
+      EnumToString.parse(MeetingField.SPORT) + "_TYPE": EnumToString.parse(meeting.sport.type),
+      EnumToString.parse(MeetingField.SPORT) + "_SPORT": EnumToString.parse(meeting.sport.sport),
       EnumToString.parse(MeetingField.TID): team.tid
     });
 
@@ -87,7 +94,7 @@ class MeetingDataManager {
   static Future<void> deleteMeetingByMID(String mid) async {
     DocumentSnapshot meetingSnap = await meetingsCollection.document(mid).get();
 
-    // remove meeting from user to meetings tracking
+//     remove meeting from user to meetings tracking
     RecordList usersInMeeting = await meetingToUsers.getRecordsList(mid);
 
     for (String uid in usersInMeeting.data) {
@@ -96,8 +103,7 @@ class MeetingDataManager {
 
     meetingToUsers.deleteRecordsList(mid);
 
-    teamToMeetings.removeRecord(
-        meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
+    teamToMeetings.removeRecord(meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
 
     print('Meeting $mid deleted.');
     await meetingsCollection.document(mid).delete();
@@ -121,7 +127,16 @@ class MeetingDataManager {
         ageLimitStart: data[EnumToString.parse(MeetingField.AGE_LIMIT_START)],
         ageLimitEnd: data[EnumToString.parse(MeetingField.AGE_LIMIT_END)],
         location: data[EnumToString.parse(MeetingField.LOCATION)],
-        sport: data[EnumToString.parse(MeetingField.SPORT)],
+        sport: Sport(
+          type: EnumToString.fromString(
+            SportType.values,
+            data[EnumToString.parse(MeetingField.SPORT) + "_TYPE"],
+          ),
+          sport: EnumToString.fromString(
+            SubSport.values,
+            data[EnumToString.parse(MeetingField.SPORT) + "_SPORT"],
+          ),
+        ),
       );
     } else {
       print('Tried to get nonexistent team id');
@@ -136,8 +151,7 @@ class MeetingDataManager {
   }
 
   // changes after creation
-  static Future<void> updateMeetingField(
-      Meeting meeting, MeetingField field, dynamic newValue) async {
+  static Future<void> updateMeetingField(Meeting meeting, MeetingField field, dynamic newValue) async {
     meeting.propAccess(field, newValue: newValue);
     DocumentReference docRef = meetingsCollection.document(meeting.mid);
     await docRef.updateData({EnumToString.parse(field): newValue});
@@ -169,7 +183,9 @@ class MeetingDataManager {
 
   static void clearAllMeetings() async {
     QuerySnapshot allMeetingsSnapshot = await meetingsCollection.getDocuments();
+
     for (var meetingSnap in allMeetingsSnapshot.documents) {
+      print('begin deletion of meeting ${meetingSnap.documentID}');
       deleteMeetingByMID(meetingSnap.documentID);
     }
   }
@@ -182,6 +198,7 @@ class MeetingDataManager {
     }
     return meetings;
   }
+
 
   static Future<List<Meeting>> searchMeeting(int km, GeoPoint useLocation,
       DateTime startDate, DateTime endDate, String sportType) async {
@@ -209,7 +226,7 @@ class MeetingDataManager {
   static bool isDisSmallThenKMUser(
       int km, GeoPoint useLocation, DocumentSnapshot meeting) {
     GeoPoint meetingLocation =
-        meeting.data[EnumToString.parse(MeetingField.LOCATION)];
+    meeting.data[EnumToString.parse(MeetingField.LOCATION)];
     bool checkLocation = km >=
         LocationsDataManagers.calculateTotalDistanceInKm(
             useLocation.latitude,
@@ -222,9 +239,9 @@ class MeetingDataManager {
   static bool isDateInUseRange(
       DateTime startDate, DateTime endDate, DocumentSnapshot meeting) {
     DateTime meetingDate =
-        DateTime.parse(meeting.data[EnumToString.parse(MeetingField.TIME)]);
+    DateTime.parse(meeting.data[EnumToString.parse(MeetingField.TIME)]);
     bool isInRange =
-        meetingDate.isAfter(startDate) ^ meetingDate.isBefore(endDate);
+    meetingDate.isAfter(startDate) ^ meetingDate.isBefore(endDate);
     return isInRange;
   }
 

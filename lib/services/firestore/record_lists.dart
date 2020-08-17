@@ -76,8 +76,9 @@ class UserToMeetings extends BaseListDataManager {
 class MeetingToUsers extends BaseListDataManager {
   static final MeetingToUsers _singleton = MeetingToUsers._internal();
   static const String USER_APPROVAL_STATUS = 'approval_status';
-  static const String USERS_COUNT = 'SIZE';
-  static bool DEF_APPROVAL = false;
+  static const String USERS_COUNTER = 'SIZE';
+  static const String APPROVED_COUNTER = 'APPROVED';
+  static const bool DEF_APPROVAL = false;
 
   factory MeetingToUsers() {
     return _singleton;
@@ -91,13 +92,36 @@ class MeetingToUsers extends BaseListDataManager {
     for (String uid in recordList.data) {
       recordList.metadata[uid] = {USER_APPROVAL_STATUS: DEF_APPROVAL};
     }
-    super.createRecordList(recordList: recordList, documentName: documentName);
 
-    updateUsersCount(documentName, recordList.data.length);
+    RecordList list = await super.createRecordList(recordList: recordList, documentName: documentName);
+
+    updateUsersCounter(documentName, recordList.data.length);
+    updateUsersApprovedCounter(documentName, DEF_APPROVAL ? recordList.data.length : 0);
+
+    return list;
   }
 
-  void updateUsersCount(String mid, int newValue) {
-    recordsListCollection.document(mid).updateData({USERS_COUNT: newValue});
+  Future<bool> isUserInMeeting(String mid, String uid) async{
+    var doc = await recordsListCollection.document(mid).collection(subCollectionName).document(uid).get();
+    return doc.exists;
+  }
+
+  Future<bool> isUserApproved(String mid, String uid) async {
+    var doc = await recordsListCollection.document(mid).collection(subCollectionName).document(uid).get();
+    return doc[USER_APPROVAL_STATUS];
+  }
+
+  Future<List> getCounters(String mid) async {
+    DocumentSnapshot docSnap = await recordsListCollection.document(mid).get();
+    return [docSnap.data[USERS_COUNTER], docSnap.data[APPROVED_COUNTER]];
+  }
+
+  void updateUsersApprovedCounter(String mid, int newValue) {
+    recordsListCollection.document(mid).updateData({APPROVED_COUNTER: newValue});
+  }
+
+  void updateUsersCounter(String mid, int newValue) {
+    recordsListCollection.document(mid).updateData({USERS_COUNTER: newValue});
   }
 
   @override
@@ -110,17 +134,31 @@ class MeetingToUsers extends BaseListDataManager {
     super.addRecord(lid, record, metadata: metadata);
 
     DocumentSnapshot docSnap = await recordsListCollection.document(lid).get();
-    updateUsersCount(lid, docSnap.data[USERS_COUNT] + 1);
+    updateUsersCounter(lid, docSnap.data[USERS_COUNTER] + 1);
+    if (DEF_APPROVAL) {
+      updateUsersApprovedCounter(lid, docSnap.data[APPROVED_COUNTER] + 1);
+    }
   }
 
   Future<void> updateUserApproval(String mid, String uid, bool newApproval) async {
     updateRecordMetadata(mid, uid, {USER_APPROVAL_STATUS: newApproval});
+    if (newApproval) {
+      DocumentSnapshot docSnap = await recordsListCollection.document(mid).get();
+      updateUsersApprovedCounter(mid, docSnap.data[APPROVED_COUNTER] + 1);
+    } else {
+      DocumentSnapshot docSnap = await recordsListCollection.document(mid).get();
+      updateUsersApprovedCounter(mid, docSnap.data[APPROVED_COUNTER] - 1);
+    }
   }
 
   @override
   Future<void> removeRecord(String lid, String record) async {
-    super.removeRecord(lid, record);
+    var userDoc = await recordsListCollection.document(lid).collection(subCollectionName).document(record).get();
     DocumentSnapshot docSnap = await recordsListCollection.document(lid).get();
-    updateUsersCount(lid, docSnap.data[USERS_COUNT] - 1);
+    updateUsersCounter(lid, docSnap.data[USERS_COUNTER] - 1);
+    if (userDoc.data[USER_APPROVAL_STATUS]) {
+      updateUsersApprovedCounter(lid, docSnap.data[APPROVED_COUNTER]-1);
+    }
+    super.removeRecord(lid, record);
   }
 }
