@@ -32,3 +32,9 @@ class Sport {
     return EnumToString.parse(type) + ":\t\t" +EnumToString.parse(sport);
   }
 }
+
+class ItemSport {
+  const ItemSport(this.name,this.icon);
+  final String name;
+  final Icon icon;
+}

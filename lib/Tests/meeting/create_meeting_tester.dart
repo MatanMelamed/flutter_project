@@ -174,7 +174,6 @@ class _CreateMeetingTesterState extends State<CreateMeetingTester> {
                         _ageLimitEnd = b;
                       },
                     ),
-                    // TODO
                     Container(
                       padding: EdgeInsets.all(10),
                       child: GestureDetector(

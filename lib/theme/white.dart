@@ -12,6 +12,13 @@ final kLabelStyle = TextStyle(
     fontSize: 16,
     letterSpacing: 0.3);
 
+final kLabelStyleBlue = TextStyle(
+    color: Colors.blueAccent,
+    fontFamily: 'OpenSans',
+    fontWeight: FontWeight.w600,
+    fontSize: 16,
+    letterSpacing: 0.3);
+
 final kLabelStyleBlack = TextStyle(
     color: Colors.black,
     fontFamily: 'OpenSans',

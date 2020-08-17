@@ -6,6 +6,7 @@ import 'package:teamapp/models/sport.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/services/firestore/baseListDataManager.dart';
+import 'package:teamapp/services/firestore/locationsDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
@@ -103,7 +104,7 @@ class MeetingDataManager {
 
     meetingToUsers.deleteRecordsList(mid);
 
-     teamToMeetings.removeRecord(meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
+    teamToMeetings.removeRecord(meetingSnap.data[EnumToString.parse(MeetingField.TID)], mid);
 
     print('Meeting $mid deleted.');
     await meetingsCollection.document(mid).delete();
@@ -197,5 +198,71 @@ class MeetingDataManager {
       meetings.add(await getMeetingByMID(mid));
     }
     return meetings;
+  }
+
+  static Stream<List<Meeting>> streamSearchMeeting(int km, GeoPoint useLocation,
+      DateTime startDate, DateTime endDate, String sportType){
+    return Stream.fromFuture(searchMeeting(km, useLocation, startDate, endDate, sportType));
+  }
+
+  static Future<List<Meeting>> searchMeeting(int km, GeoPoint useLocation,
+      DateTime startDate, DateTime endDate, String sportType) async {
+    List<Meeting> meetings = List();
+    var docs = await meetingsCollection.getDocuments();
+    for (DocumentSnapshot element in docs.documents){
+      if (isInUserRule(
+          km, useLocation, startDate, endDate, sportType, element)) {
+        Meeting meeting = await convertDocToMeeting(element);
+        print(meeting.name);
+        meetings.add(meeting);
+      }
+    }
+    return meetings;
+  }
+
+  static bool isInUserRule(int km, GeoPoint useLocation, DateTime startDate,
+      DateTime endDate, String sportType, DocumentSnapshot meeting) {
+    bool checkLocation = isDisSmallThenKMUser(km, useLocation, meeting);
+    bool checkDate = isDateInUseRange(startDate, endDate, meeting);
+    bool checkSportType = isInUserSportTypeList(sportType, meeting);
+    return (checkLocation ^ checkDate ^ checkSportType);
+  }
+
+  static bool isDisSmallThenKMUser(
+      int km, GeoPoint useLocation, DocumentSnapshot meeting) {
+    GeoPoint meetingLocation =
+    meeting.data[EnumToString.parse(MeetingField.LOCATION)];
+    bool checkLocation = km >=
+        LocationsDataManagers.calculateTotalDistanceInKm(
+            useLocation.latitude,
+            useLocation.longitude,
+            meetingLocation.latitude,
+            meetingLocation.longitude);
+    return checkLocation;
+  }
+
+  static bool isDateInUseRange(
+      DateTime startDate, DateTime endDate, DocumentSnapshot meeting) {
+    DateTime meetingDate =
+    DateTime.parse(meeting.data[EnumToString.parse(MeetingField.TIME)]);
+    bool isInRange =
+    meetingDate.isAfter(startDate) ^ meetingDate.isBefore(endDate);
+    return isInRange;
+  }
+
+  static bool isInUserSportTypeList(
+      String sportType, DocumentSnapshot meeting) {
+    var meetingSportType = meeting.data[EnumToString.parse(MeetingField.SPORT)];
+    var sportTypeList = List();
+    sportType.split(" ").forEach((element) {
+      var split = element.split("-");
+      if(split.length > 1)
+        sportTypeList.add(split[1]);
+    });
+    for( String type in sportTypeList){
+      if (type == meetingSportType)
+        return true;
+    }
+    return false;
   }
 }
