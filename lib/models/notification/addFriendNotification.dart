@@ -7,7 +7,7 @@ import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:timeago/timeago.dart' as tAgo;
 
 class AddFriendNotification implements base.Notification {
-  String type = "addFriendNotification";
+  String type ;
   String _name;
   var metadata = [];
 
