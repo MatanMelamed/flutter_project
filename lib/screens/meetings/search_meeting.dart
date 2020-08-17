@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:teamapp/models/location.dart';
 import 'package:teamapp/screens/location/search_address.dart';
 import 'package:teamapp/screens/meetings/choose_sport.dart';
+import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/theme/white.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
+import 'package:teamapp/widgets/general/future_list.dart';
 
 class SearchForAOneTimeMeeting extends StatefulWidget {
   @override
@@ -135,8 +137,8 @@ class _SearchMeetingState extends State<SearchMeeting> {
           child: RaisedButton(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
-            onPressed: () {
-              handleSearchButton();
+            onPressed: () async{
+              await handleSearchButton(context);
             },
             color: Colors.blueAccent,
             child: Text(
@@ -188,5 +190,14 @@ class _SearchMeetingState extends State<SearchMeeting> {
     });
   }
 
-  void handleSearchButton() {}
+  Future<void> handleSearchButton(context) async{
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => FutureList(
+              _currentSliderValue.toInt(),
+              geoPointLocation,
+              _startDate,
+              _endDate,
+              _sportTypes.value.text),
+    ));
+  }
 }

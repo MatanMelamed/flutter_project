@@ -6,6 +6,7 @@ import 'package:teamapp/models/sport.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/usersList.dart';
 import 'package:teamapp/services/firestore/baseListDataManager.dart';
+import 'package:teamapp/services/firestore/locationsDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/usersListDataManager.dart';
@@ -199,19 +200,23 @@ class MeetingDataManager {
     return meetings;
   }
 
+  static Stream<List<Meeting>> streamSearchMeeting(int km, GeoPoint useLocation,
+      DateTime startDate, DateTime endDate, String sportType){
+    return Stream.fromFuture(searchMeeting(km, useLocation, startDate, endDate, sportType));
+  }
 
   static Future<List<Meeting>> searchMeeting(int km, GeoPoint useLocation,
       DateTime startDate, DateTime endDate, String sportType) async {
-    List<Meeting> meetings = [];
-    meetingsCollection.getDocuments().then((value) {
-      value.documents.forEach((element) async {
-        if (isInUserRule(
-            km, useLocation, startDate, endDate, sportType, element)) {
-          Meeting meeting = await convertDocToMeeting(element);
-          meetings.add(meeting);
-        }
-      });
-    });
+    List<Meeting> meetings = List();
+    var docs = await meetingsCollection.getDocuments();
+    for (DocumentSnapshot element in docs.documents){
+      if (isInUserRule(
+          km, useLocation, startDate, endDate, sportType, element)) {
+        Meeting meeting = await convertDocToMeeting(element);
+        print(meeting.name);
+        meetings.add(meeting);
+      }
+    }
     return meetings;
   }
 
@@ -250,7 +255,9 @@ class MeetingDataManager {
     var meetingSportType = meeting.data[EnumToString.parse(MeetingField.SPORT)];
     var sportTypeList = List();
     sportType.split(" ").forEach((element) {
-      sportTypeList.add(element.split("-")[1]);
+      var split = element.split("-");
+      if(split.length > 1)
+        sportTypeList.add(split[1]);
     });
     for( String type in sportTypeList){
       if (type == meetingSportType)
