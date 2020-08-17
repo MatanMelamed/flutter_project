@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:teamapp/screens/group_creation/creation_wrapper.dart';
+import 'package:teamapp/screens/teams/search_team.dart';
 import 'package:teamapp/widgets/general/ExpandedHomeCard.dart';
 
 class SearchPage extends StatelessWidget {
@@ -34,6 +35,13 @@ class SearchPage extends StatelessWidget {
                 description:"Search for a new team and make new friends! \n"
                     "What are you waiting for??" ,
                 trailImageUrl:"assets/images/three_friends_play.png",
+              onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SearchTeamPage(),
+                    )
+                  );
+              },
             ),
             ExpandedHomeCard(
               title:"Search for One-time meeting",
