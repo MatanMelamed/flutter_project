@@ -12,12 +12,14 @@ import 'package:timeago/timeago.dart' as tAgo;
 class JoinedTeamNotification implements base.Notification {
 
   String type;
-  String _name;
+  String _memberName;
   var metadata = [];
+
+  DocumentSnapshot _docFromOther;
+  String _imageUrl;
 
   Team _team;
   String _teamName;
-  DocumentSnapshot _ownerDoc;
   Timestamp _timestamp;
   JoinedTeamNotification({this.type, this.metadata});
 
@@ -32,10 +34,12 @@ class JoinedTeamNotification implements base.Notification {
           child: ListTile(
             title: GestureDetector(
               onTap: () {
+                var userProfile =
+                UserDataManager.createUserFromDoc(_docFromOther);
                 Navigator.of(context).pop();
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
-                        TeamPage(team: _team)));
+                        MainUserProfilePage(user: userProfile)));
               },
               child: RichText(
                 overflow: TextOverflow.clip,
@@ -43,18 +47,17 @@ class JoinedTeamNotification implements base.Notification {
                     style: TextStyle(fontSize: 14, color: Colors.black),
                     children: [
                       TextSpan(
-                          text: _name,
+                          text: _memberName,
                           style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: " has added you to "),
+                      TextSpan(text: " joined your team "),
                       TextSpan(
                           text: _teamName,
                           style: TextStyle(fontWeight: FontWeight.bold)),
-                      TextSpan(text: "'s team"),
                     ]),
               ),
             ),
             leading: CircleAvatar(
-              backgroundImage: NetworkImage(_team.remoteStorageImage.url),
+              backgroundImage: NetworkImage(_imageUrl),
             ),
             subtitle: Text(
               tAgo.format(_timestamp.toDate()),
@@ -69,20 +72,20 @@ class JoinedTeamNotification implements base.Notification {
   Future<bool> handleMapFromDB(
       Timestamp timestamp, Map<String, dynamic> metadata) async {
 
+    String fromID = metadata['fromID'];
+    _docFromOther =
+    await Firestore.instance.collection("users").document(fromID).get();
+    _imageUrl = _docFromOther.data['imageUrl'];
+    _memberName = _docFromOther.data['first_name'] + _docFromOther.data['last_name'];
+
     String teamId = metadata['teamId'];
+
     _team = await TeamDataManager.getTeam(teamId);
     if (_team == null) {
       return false;
     }
-    String leaderId = _team.ownerUid;
     _teamName = _team.name;
-    _ownerDoc =
-    await Firestore.instance.collection("users").document(leaderId).get();
-    _name = _ownerDoc.data['first_name'] + _ownerDoc.data['last_name'];
     _timestamp = timestamp;
     return true;
-
   }
-
-
 }
