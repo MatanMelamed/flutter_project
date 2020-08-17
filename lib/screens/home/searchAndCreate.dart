@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:teamapp/screens/group_creation/creation_wrapper.dart';
+import 'package:teamapp/screens/meetings/search_meeting.dart';
 import 'package:teamapp/screens/teams/search_team.dart';
 import 'package:teamapp/widgets/general/ExpandedHomeCard.dart';
 
@@ -47,6 +48,13 @@ class SearchPage extends StatelessWidget {
               title:"Search for One-time meeting",
               description:"Don't waste time and join an existing meeting!" ,
               trailImageUrl:"assets/images/number_one.jpg",
+              onTap: (){
+                Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SearchForAOneTimeMeeting(),
+                    )
+                );
+              },
             ),
 
           ],

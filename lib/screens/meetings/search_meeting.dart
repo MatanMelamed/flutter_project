@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:teamapp/models/location.dart';
 import 'package:teamapp/screens/location/search_address.dart';
 import 'package:teamapp/screens/meetings/choose_sport.dart';
-import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/theme/white.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRagePicker;
 import 'package:teamapp/widgets/general/future_list.dart';

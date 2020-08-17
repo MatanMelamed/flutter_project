@@ -1,43 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:teamapp/models/meeting.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
-import 'package:teamapp/theme/white.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/meeting/meeting_card.dart';
 
-/*class ValueFutureList extends StatefulWidget {
-  int km;
-  GeoPoint useLocation;
-  DateTime startDate;
-  DateTime endDate;
-  String sportType;
-
-  ValueFutureList(
-      this.km,
-      this.useLocation,
-      this.startDate,
-      this.endDate,
-      this.sportType);
-
-  _ValueFutureListState createState() => _ValueFutureListState();
-}
-
-class _ValueFutureListState extends State<ValueFutureList> {
-  @override
-  Widget build(BuildContext context) {
-    return StreamProvider.value(
-      value: MeetingDataManager.streamSearchMeeting(
-          widget.km,
-          widget.useLocation,
-          widget.startDate,
-          widget.endDate,
-          widget.sportType),
-      child: FutureList(),
-    );
-  }
-}*/
 
 class FutureList extends StatefulWidget {
   int km;
@@ -78,7 +45,8 @@ class _FutureListState extends State<FutureList> {
               return Container(
                 padding: EdgeInsets.all(10.0),
                 child: MeetingCard(
-                  meeting: meetings[i]
+                  meeting: meetings[i],
+                  userLocation: widget.useLocation,
                 ),
               );
             },
