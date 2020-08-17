@@ -43,6 +43,33 @@ class TeamNotificationManager {
     _notificationsCollection.document(memberId).setData({'new_counter': FieldValue.increment(1)}).then((_) {
       log("increased $memberId new_counter by 1");
     });
+  }
+
+
+  static Future<void> sendJoinedNotification(String memberId, String leaderID,
+      String teamId,String collectionName, Notification n) async {
+    String documentID = memberId + teamId;
+
+    DocumentReference joinedRef = _notificationsCollection.document(
+        leaderID).collection(collectionName).document(documentID);
+
+    joinedRef.setData({
+      'type': n.type,
+      'timestamp': DateTime.now(),
+      'metadata': n.metadata,
+    }).then((_) {
+      log("new Team notification was sent to $leaderID");
+      return true;
+    }).catchError((error) {
+      print(error);
+      print(
+          'error adding new notification. documentID: $documentID , in user:$leaderID , with type: ${n
+              .type} , and metadata: ${n.metadata}');
+    });
+    _notificationsCollection.document(leaderID).setData({'new_counter': FieldValue.increment(1)}).then((_) {
+      log("increased $leaderID new_counter by 1");
+    });
+
 
   }
 

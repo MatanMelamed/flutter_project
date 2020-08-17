@@ -87,7 +87,7 @@ class NotificationsPage extends StatelessWidget {
 
     QuerySnapshot userN =  await userNotDoc.collection("userNotifications").getDocuments();
     QuerySnapshot teamN =  await userNotDoc.collection("teamNotifications").getDocuments();
-    QuerySnapshot joinedTeamN =  await userNotDoc.collection("joinedTeamNotification").getDocuments();
+    QuerySnapshot joinedTeamN =  await userNotDoc.collection("joinedTeamNotifications").getDocuments();
 
 
     List<DocumentSnapshot> docs = [];

@@ -122,15 +122,6 @@ class TeamDataManager {
       print('error in recording new team for null user.');
       return false;
     }
-    //send notification
-    TeamNotificationManager.sendTeamNotificationToUser(
-        newUserUid,
-        team.tid,
-        Notification(type: 'addedToTeamNotification', metadata: {
-          'viewed': false,
-          'teamId': team.tid,
-        }));
-
     await teamToUsers.addRecord(team.tid, uid);
     await userToTeams.addRecord(uid, team.tid);
     await MeetingDataManager.userAddedToTeam(team.tid, uid);

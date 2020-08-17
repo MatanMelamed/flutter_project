@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class JoinDialog extends StatefulWidget {
   final String title;
-  final String description;
+  final String content;
   final void Function() confirmCallback;
   final void Function() cancelCallback;
 
   JoinDialog(
       {@required this.title,
-        @required this.description,
+        @required this.content,
         this.cancelCallback,
         this.confirmCallback,
 });
@@ -49,7 +49,7 @@ class _JoinDialogState extends State<JoinDialog> {
             ),
             Container(
               child: Text(
-                widget.description,
+                widget.content,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
@@ -98,66 +98,3 @@ class _JoinDialogState extends State<JoinDialog> {
     );
   }
 }
-//
-//
-//void _leaveTeam() async {
-//  bool shouldRemove = await showDialog(
-//      context: context,
-//      builder: (ctx) => GeneralAlertDialog(
-//        title: 'Alert',
-//        content: "Are you sure you want to leave ${team.name}?",
-//        confirmCallback: () {
-//          Navigator.of(context).pop(true);
-//        },
-//        cancelCallback: () {
-//          Navigator.of(context).pop(false);
-//        },
-//      ));
-//
-//  if (shouldRemove) {
-//    setState(() => isLoading = true);
-//    if (isAdmin) {
-//      if (users.length > 1) {
-//        for (User user in users) {
-//          if (user.uid == currentUser.uid) {
-//            continue;
-//          }
-//          print('${user.uid} and ${currentUser.uid}');
-//          await TeamDataManager.updateTeamField(team, TeamField.OWNER_UID, user.uid);
-//        }
-//      } else {
-//        // delete team
-//      }
-//    }
-//    await TeamDataManager.removeUserFromTeam(team, newUser: currentUser);
-//    Navigator.of(context).pop(true);
-//  }
-//}
-//
-//void _removeUser(User user) async {
-//  bool shouldRemove = await showDialog(
-//      context: context,
-//      builder: (ctx) => GeneralAlertDialog(
-//        title: 'Alert',
-//        content: "Are you sure you want to remove " +
-//            user.firstName +
-//            " " +
-//            user.lastName +
-//            " from " +
-//            team.name +
-//            "?",
-//        confirmCallback: () {
-//          Navigator.of(context).pop(true);
-//        },
-//        cancelCallback: () {
-//          Navigator.of(context).pop(false);
-//        },
-//      ));
-//
-//  if (shouldRemove) {
-//    TeamDataManager.removeUserFromTeam(team, newUser: user);
-//    reloadWidget();
-//    Navigator.of(context).pop();
-//  }
-//}
-//}
