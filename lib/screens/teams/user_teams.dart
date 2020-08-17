@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:teamapp/Tests/creators/createTeamTester.dart';
 import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
+import 'package:teamapp/screens/group_creation/creation_wrapper.dart';
+import 'package:teamapp/screens/teams/search_team.dart';
 import 'package:teamapp/screens/teams/team_page.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/widgets/dialogs/alert_dialog.dart';
@@ -67,9 +69,9 @@ class _UserTeamsState extends State<UserTeams> {
                       width: 170,
                       child: RaisedButton(
                         elevation: 10,
-                        onPressed: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>CreateTeamPageTester()));
-                        },
+                        onPressed: () async {
+                          await Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>GroupCreationPage()));
+                          },
                         child: Text(
                           "Create a new Team",
                           style: TextStyle(color: Colors.white, fontSize: 16),
@@ -82,7 +84,13 @@ class _UserTeamsState extends State<UserTeams> {
                       width: 170,
                       child: RaisedButton(
                         elevation: 10,
-                        onPressed: (){},
+                        onPressed: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SearchTeamPage(),
+                            ),
+                          );
+                        },
                         child: Text(
                           "Search a Team",
                           style: TextStyle(color: Colors.white, fontSize: 16),

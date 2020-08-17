@@ -177,4 +177,25 @@ class TeamDataManager {
     await ChatDataManager.deleteChat(chatId);
     await teamsCollection.document(tid).delete();
   }
+
+  static Future<dynamic> fromPrefix(String substring) async {
+    /*
+    * Returning List<teams> which their names starts with 'substring'.
+    * */
+    var teamsList = [];
+    var matched = (await teamsCollection.getDocuments())
+        .documents
+        .where((element) => element.data['NAME']
+        .toString()
+        .toLowerCase()
+        .startsWith(substring
+        .toLowerCase())
+        ).map((e) => e.documentID)
+        .toList();
+
+    for (String id in matched) teamsList.add(await getTeam(id));
+
+    return teamsList;
+  }
+
 }
