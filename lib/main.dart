@@ -15,6 +15,7 @@ import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/sportsDataManager.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
+import 'package:teamapp/services/general/permissions.dart';
 import 'package:teamapp/widgets/auth_warrper.dart';
 
 import 'models/sport.dart';
@@ -42,17 +43,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthService authService = AuthService();
+    PermissionManager.Initialize();
 
     return StreamProvider.value(
       value: authService.userStream, // what the provider listens to
 //      child: MaterialApp(
 //        home: AuthWrapper(),
 //      ),
-            child: MaterialApp(
-              home: AutoLogin(
-                user: DummyUsers.Michael
-              ),
-            ),
+      child: MaterialApp(
+        home: AutoLogin(user: DummyUsers.Michael),
+      ),
     );
   }
 }

@@ -8,6 +8,7 @@ import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/general/location.dart';
+import 'package:teamapp/services/general/permissions.dart';
 import 'package:teamapp/services/general/utilites.dart';
 import 'package:teamapp/widgets/loading.dart';
 
@@ -42,6 +43,7 @@ class _MeetingCardState extends State<MeetingCard> {
 
   String teamOwnerUid;
   double distance;
+  bool shouldDisplayDistance;
 
   @override
   void initState() {
@@ -50,19 +52,25 @@ class _MeetingCardState extends State<MeetingCard> {
   }
 
   void load() async {
+    shouldDisplayDistance = PermissionManager.isLocationGranted;
+
     if (widget.teamOwnerUid == null) {
       Team team = await TeamDataManager.getTeam(widget.meeting.tid);
       teamOwnerUid = team.ownerUid;
     }
     await getApprovalCounters();
-    await setDistance();
+    if (shouldDisplayDistance) {
+      await setDistance();
+    }
     setState(() => isLoading = false);
   }
 
   void reload() async {
     setState(() => isLoading = true);
     await getApprovalCounters();
-    await setDistance();
+    if (shouldDisplayDistance) {
+      await setDistance();
+    }
     setState(() => isLoading = false);
   }
 
@@ -145,17 +153,19 @@ class _MeetingCardState extends State<MeetingCard> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10, right: 5),
-                        child: Text(
-                          '${distance.toStringAsFixed(1)} km',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                      )
+                      !shouldDisplayDistance
+                          ? Container()
+                          : Padding(
+                              padding: EdgeInsets.only(top: 10, right: 5),
+                              child: Text(
+                                '${distance.toStringAsFixed(1)} km',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            )
                     ],
                   )
                 ],
