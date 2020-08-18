@@ -5,27 +5,28 @@ import 'package:teamapp/services/firestore/meetingDataManager.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/meeting/meeting_card.dart';
 
-
 class FutureList extends StatefulWidget {
   int km;
   GeoPoint useLocation;
   DateTime startDate;
   DateTime endDate;
   String sportType;
+  String title;
 
   FutureList(
-      this.km, this.useLocation, this.startDate, this.endDate, this.sportType);
+      this.km, this.useLocation, this.startDate, this.endDate, this.sportType, this.title);
 
   @override
   _FutureListState createState() => _FutureListState();
 }
 
 class _FutureListState extends State<FutureList> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("all your result"),
+        title: Text(widget.title),
       ),
       body: FutureBuilder<List<Meeting>>(
         future: MeetingDataManager.searchMeeting(widget.km, widget.useLocation,
@@ -56,3 +57,4 @@ class _FutureListState extends State<FutureList> {
     );
   }
 }
+

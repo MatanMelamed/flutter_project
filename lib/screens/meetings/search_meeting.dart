@@ -76,7 +76,7 @@ class _SearchMeetingState extends State<SearchMeeting> {
                 controller: _addressLocation,
                 style: kLabelStyleBlue,
                 cursorColor: Colors.blueAccent,
-                decoration: GetInputDecorBlue('location..'),
+                decoration: GetInputDecorBlue('you location..'),
               ),
             ),
           ),
@@ -196,7 +196,9 @@ class _SearchMeetingState extends State<SearchMeeting> {
               geoPointLocation,
               _startDate,
               _endDate,
-              _sportTypes.value.text),
+              _sportTypes.value.text,
+              "all your result"
+      ),
     ));
   }
 }

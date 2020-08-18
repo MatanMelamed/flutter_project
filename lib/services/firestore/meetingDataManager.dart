@@ -225,7 +225,7 @@ class MeetingDataManager {
     bool checkLocation = isDisSmallThenKMUser(km, useLocation, meeting);
     bool checkDate = isDateInUseRange(startDate, endDate, meeting);
     bool checkSportType = isInUserSportTypeList(sportType, meeting);
-    return (checkLocation ^ checkDate ^ checkSportType);
+    return (checkLocation && checkDate && checkSportType);
   }
 
   static bool isDisSmallThenKMUser(
@@ -246,13 +246,13 @@ class MeetingDataManager {
     DateTime meetingDate =
     DateTime.parse(meeting.data[EnumToString.parse(MeetingField.TIME)]);
     bool isInRange =
-    meetingDate.isAfter(startDate) ^ meetingDate.isBefore(endDate);
+    meetingDate.isAfter(startDate) && meetingDate.isBefore(endDate);
     return isInRange;
   }
 
   static bool isInUserSportTypeList(
       String sportType, DocumentSnapshot meeting) {
-    var meetingSportType = meeting.data[EnumToString.parse(MeetingField.SPORT)];
+    var meetingSportType = meeting.data[EnumToString.parse(MeetingField.SPORT) + "_SPORT"];
     var sportTypeList = List();
     sportType.split(" ").forEach((element) {
       var split = element.split("-");

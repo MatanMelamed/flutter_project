@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:teamapp/services/general/location.dart';
+import 'package:teamapp/widgets/general/future_list.dart';
+import 'package:teamapp/widgets/loading.dart';
 
 class FeedPage extends StatefulWidget {
   @override
@@ -8,7 +12,6 @@ class FeedPage extends StatefulWidget {
 class _FeedPageState extends State<FeedPage> {
   final List<EntryInfo> _entries = <EntryInfo>[];
   ScrollController _scrollController = new ScrollController();
-
   @override
   void initState() {
     super.initState();
@@ -23,23 +26,24 @@ class _FeedPageState extends State<FeedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        body: ListView.builder(
-          controller: _scrollController,
-          itemCount: _entries.length,
-          scrollDirection: Axis.vertical,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              leading: Icon(Icons.person), //Category
-              title: Text(_entries[index].title),
-              subtitle: Text(_entries[index].description),
-              trailing: Icon(Icons.unfold_more),
-              isThreeLine: true,
-              selected: false,
-              dense: true,
+    return FutureBuilder<GeoPoint>(
+      future: LocationService.getCurrentLocationGeoPoint(),
+        builder: (context, AsyncSnapshot<GeoPoint> locationSnapshot){
+          if(locationSnapshot.hasData){
+            return new Scaffold(
+                body: FutureList(
+                    50,
+                    locationSnapshot.data,
+                    DateTime.now(),
+                    DateTime.now().add(new Duration(days: 14)),
+                    "Aerobic-CrossFit BallSport-BasketBall BodyBuilding-WeightLifting",
+                    "meeting you may like.."
+                )
             );
-          },
-        ));
+          }
+          return Loading();
+        }
+    );
   }
 
   //TO CHANGE
