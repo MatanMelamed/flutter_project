@@ -11,7 +11,7 @@ import 'package:timeago/timeago.dart' as tAgo;
 
 class AddedToTeamNotification implements base.Notification {
 
-  String type = "addFriendNotification";
+  String type ;
   String _name;
   var metadata = [];
 

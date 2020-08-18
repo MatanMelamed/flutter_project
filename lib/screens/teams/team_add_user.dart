@@ -6,6 +6,10 @@ import 'package:teamapp/services/firestore/record_lists.dart';
 import 'package:teamapp/services/firestore/teamDataManager.dart';
 import 'package:teamapp/services/firestore/userDataManager.dart';
 import 'package:teamapp/widgets/teams/team_user_card.dart';
+import 'package:teamapp/services/firestore/notifications/teamNotificationManager.dart';
+import 'package:teamapp/models/notification/notification.dart' as base;
+
+
 
 class TeamAddUser extends StatefulWidget {
   final Team team;
@@ -140,7 +144,19 @@ class _TeamAddUserState extends State<TeamAddUser> {
 
     // adding users and waiting for addition to finish
     for (String id in markedUids) {
-      await TeamDataManager.addUserToTeam(widget.team, newUserUid: id);
+      bool result = await TeamDataManager.addUserToTeam(widget.team, newUserUid: id);
+
+      if (result == true) {
+        //send notification
+        TeamNotificationManager.sendTeamNotificationToUser(
+            id,
+            widget.team.tid,
+            base.Notification(type: 'addedToTeamNotification', metadata: {
+              'viewed': false,
+              'teamId': widget.team.tid,
+            }));
+      }
+
     }
 
     // return if any user was added.

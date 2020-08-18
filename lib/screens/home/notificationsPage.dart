@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:teamapp/models/notification/acceptedFriendNotification.dart';
 import 'package:teamapp/models/notification/addFriendNotification.dart';
 import 'package:teamapp/models/notification/addedToTeamNotification.dart';
+import 'package:teamapp/models/notification/joinedTeamNotification.dart';
 import 'package:teamapp/models/notification/notification.dart' as base;
 import 'package:teamapp/widgets/loading.dart';
 
@@ -72,6 +73,8 @@ class NotificationsPage extends StatelessWidget {
       'addFriendNotification': () => AddFriendNotification(),
       'acceptedFriendNotification': (() => AcceptedFriendNotification()),
       'addedToTeamNotification': (() => AddedToTeamNotification()),
+      'joinedTeamNotification': (() => JoinedTeamNotification()),
+
     };
     return typeToNotification;
   }
@@ -84,10 +87,14 @@ class NotificationsPage extends StatelessWidget {
 
     QuerySnapshot userN =  await userNotDoc.collection("userNotifications").getDocuments();
     QuerySnapshot teamN =  await userNotDoc.collection("teamNotifications").getDocuments();
+    QuerySnapshot joinedTeamN =  await userNotDoc.collection("joinedTeamNotifications").getDocuments();
+
 
     List<DocumentSnapshot> docs = [];
     docs.addAll(userN.documents);
     docs.addAll(teamN.documents);
+    docs.addAll(joinedTeamN.documents);
+
 
     docs.sort((a,b) {
       Timestamp adate = a.data['timestamp'];
