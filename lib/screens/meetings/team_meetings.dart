@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/meeting.dart';
@@ -5,6 +6,7 @@ import 'package:teamapp/models/team.dart';
 import 'package:teamapp/models/user.dart';
 import 'package:teamapp/screens/meeting_creation/meeting_creation.dart';
 import 'package:teamapp/services/firestore/meetingDataManager.dart';
+import 'package:teamapp/services/general/location.dart';
 import 'package:teamapp/widgets/loading.dart';
 import 'package:teamapp/widgets/meeting/meeting_card.dart';
 
@@ -26,6 +28,8 @@ class _TeamMeetingsState extends State<TeamMeetings> {
   bool isLoading;
   bool firstLoadHappened = false;
 
+  GeoPoint userLocation;
+
   firstLoad() {
     if (firstLoadHappened) return;
     isLoading = true;
@@ -39,6 +43,7 @@ class _TeamMeetingsState extends State<TeamMeetings> {
     setState(() => isLoading = true);
     debugPrint('starting to load meetings in team page');
     meetings = await MeetingDataManager.getAllMeetingsOfATeam(widget.team.tid);
+    userLocation = await LocationService.getCurrentLocationGeoPoint();
     debugPrint('finished to load meetings in team page');
     setState(() => isLoading = false);
   }
@@ -102,6 +107,7 @@ class _TeamMeetingsState extends State<TeamMeetings> {
                           return Container(
                             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                             child: MeetingCard(
+                              userLocation: userLocation,
                               meeting: currentMeeting,
                               teamOwnerUid: widget.team.ownerUid,
                               afterTap: (hasChanged) async{

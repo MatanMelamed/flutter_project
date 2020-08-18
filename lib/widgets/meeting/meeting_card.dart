@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:teamapp/models/meeting.dart';
@@ -21,6 +22,7 @@ class MeetingCard extends StatefulWidget {
   final bool Function() onTap; // returns if something has changed in the meeting
   final void Function(bool hasChanged) afterTap;
   final VoidCallback onLongPress;
+  final GeoPoint userLocation;
 
   MeetingCard({
     @required this.meeting,
@@ -29,6 +31,7 @@ class MeetingCard extends StatefulWidget {
     this.onTap,
     this.afterTap,
     this.onLongPress,
+    this.userLocation
   });
 
   @override
@@ -82,7 +85,10 @@ class _MeetingCardState extends State<MeetingCard> {
 
   void setDistance() async {
     var l = widget.meeting.location;
-    distance = await LocationService.distanceInKmFromUserLocation(l.latitude, l.longitude);
+    if(widget.userLocation == null)
+      distance = await LocationService.distanceInKmFromUserLocation(l.latitude, l.longitude);
+    else
+      distance = await LocationService.calculateTotalDistanceInKm(l.latitude, l.longitude, widget.userLocation.latitude, widget.userLocation.longitude);
   }
 
   @override

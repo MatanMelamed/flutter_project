@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong/latlong.dart';
 
@@ -7,6 +8,13 @@ class LocationService {
     var result = await Geolocator().getCurrentPosition();
     return LatLng(result.latitude, result.longitude);
   }
+
+
+  static Future<GeoPoint> getCurrentLocationGeoPoint() async {
+    var result = await Geolocator().getCurrentPosition();
+    return GeoPoint(result.latitude, result.longitude);
+  }
+
 
   static double calculateTotalDistanceInKm(double lat1, double lon1, double lat2, double lon2) {
     final Distance distance = Distance();
