@@ -68,13 +68,13 @@ class _TeamPageState extends State<TeamPage> with TickerProviderStateMixin {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      IconButton(
-                        icon: Icon(Icons.account_circle),
-                        onPressed: () {
-                          isAdmin = !isAdmin;
-                          setState(() {});
-                        },
-                        ),
+//                      IconButton(
+//                        icon: Icon(Icons.account_circle),
+//                        onPressed: () {
+//                          isAdmin = !isAdmin;
+//                          setState(() {});
+//                        },
+//                        ),
                       // GetNarrowReturnBar(context),
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 35),

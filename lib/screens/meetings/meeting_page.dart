@@ -181,7 +181,7 @@ class _MeetingPageState extends State<MeetingPage> {
     publicDisclaimer = widget.meeting.isPublic ? 'This meeting is public.' : 'This meeting is private.';
   }
 
-  Future<bool> pop() async{
+  Future<bool> pop() async {
     Navigator.of(context).pop(hasChanged);
   }
 
@@ -195,21 +195,21 @@ class _MeetingPageState extends State<MeetingPage> {
         body: isLoading
             ? Loading()
             : WillPopScope(
-              onWillPop: pop,
-              child: SingleChildScrollView(
+                onWillPop: pop,
+                child: SingleChildScrollView(
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.account_circle),
-                          onPressed: () {
-                            isAdmin = !isAdmin;
-                            setState(() {});
-                          },
-                        ),
+//                        IconButton(
+//                          icon: Icon(Icons.account_circle),
+//                          onPressed: () {
+//                            isAdmin = !isAdmin;
+//                            setState(() {});
+//                          },
+//                        ),
                         //GetNarrowReturnBar(context),
-                        SizedBox(height: 20),
+//                        SizedBox(height: 20),
                         Container(
                           width: double.infinity,
                           child: Stack(
@@ -223,7 +223,8 @@ class _MeetingPageState extends State<MeetingPage> {
                                   child: Text(
                                     widget.meeting.name,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                    style:
+                                        TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                                   ),
                                   decoration: BoxDecoration(
                                       color: inEditMode ? Colors.blue[100] : Colors.transparent,
@@ -276,27 +277,27 @@ class _MeetingPageState extends State<MeetingPage> {
                           child: Column(
                             children: <Widget>[
                               isInMeeting
-                              ? Row(
-                                children: <Widget>[
-                                  Icon(Icons.assignment_turned_in),
-                                  SizedBox(width: 20),
-                                  GestureDetector(
-                                    onTap: _changeArrival,
-                                    child: Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Text(
-                                        'Arrival:\t\t\t' + (isApproved ? 'Approved' : 'Not Approved'),
-                                        style:
-                                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                                      ),
-                                      decoration: BoxDecoration(
-                                          color: inEditMode ? Colors.blue[100] : Colors.transparent,
-                                          borderRadius: BorderRadius.all(Radius.circular(30))),
-                                    ),
-                                  ),
-                                ],
-                              )
-                              : Container(),
+                                  ? Row(
+                                      children: <Widget>[
+                                        Icon(Icons.assignment_turned_in),
+                                        SizedBox(width: 20),
+                                        GestureDetector(
+                                          onTap: _changeArrival,
+                                          child: Container(
+                                            padding: EdgeInsets.all(10),
+                                            child: Text(
+                                              'Arrival:\t\t\t' + (isApproved ? 'Approved' : 'Not Approved'),
+                                              style: TextStyle(
+                                                  fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: inEditMode ? Colors.blue[100] : Colors.transparent,
+                                                borderRadius: BorderRadius.all(Radius.circular(30))),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Container(),
                               SizedBox(height: 15),
                               Row(
                                 children: <Widget>[
@@ -309,8 +310,8 @@ class _MeetingPageState extends State<MeetingPage> {
                                       child: Text(
                                         '${EnumToString.parse(widget.meeting.sport.type)}:\t\t\t'
                                         '${EnumToString.parse(widget.meeting.sport.sport)}',
-                                        style:
-                                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                        style: TextStyle(
+                                            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                                       ),
                                       decoration: BoxDecoration(
                                           color: inEditMode ? Colors.blue[100] : Colors.transparent,
@@ -329,7 +330,7 @@ class _MeetingPageState extends State<MeetingPage> {
                                     child: widget.meeting.location == null
                                         ? Text('is null')
                                         : Container(
-                                      padding: EdgeInsets.symmetric(vertical: 10),
+                                            padding: EdgeInsets.symmetric(vertical: 10),
                                             width: 250,
                                             height: 200,
                                             child: ShowAddresses(widget.meeting.location),
@@ -348,8 +349,8 @@ class _MeetingPageState extends State<MeetingPage> {
                                       padding: EdgeInsets.all(10),
                                       child: Text(
                                         '${Utilities.dateTimeToString(widget.meeting.time)}',
-                                        style:
-                                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                                        style: TextStyle(
+                                            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                                       ),
                                       decoration: BoxDecoration(
                                           color: inEditMode ? Colors.blue[100] : Colors.transparent,
@@ -378,8 +379,8 @@ class _MeetingPageState extends State<MeetingPage> {
                                       padding: EdgeInsets.all(10),
                                       child: Text(
                                         '$publicDisclaimer',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
                                       ),
                                       decoration: BoxDecoration(
                                           color: inEditMode ? Colors.blue[100] : Colors.transparent,
@@ -420,8 +421,8 @@ class _MeetingPageState extends State<MeetingPage> {
                                       padding: EdgeInsets.all(10),
                                       child: Text(
                                         'Marked for ages: ${widget.meeting.ageLimitStart} - ${widget.meeting.ageLimitEnd}',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey[800]),
                                       ),
                                       decoration: BoxDecoration(
                                           color: inEditMode ? Colors.blue[100] : Colors.transparent,
@@ -467,7 +468,7 @@ class _MeetingPageState extends State<MeetingPage> {
                     ),
                   ),
                 ),
-            ),
+              ),
       ),
     );
   }
